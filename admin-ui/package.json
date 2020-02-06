@@ -6,6 +6,15 @@
   "author": "Gruppe-4",
   "license": "UNLICENSED",
   "private": true,
+  "scripts": {
+    "clean": "rimraf dist",
+    "webpack": "webpack",
+    "webpack-dev-server": "webpack-dev-server",
+    "dev": "webpack-dev-server --config webpack/webpack.dev.js",
+    "prod": "npm run clean && webpack -p --config webpack/webpack.prod.js",
+    "analyze": "npm run clean && webpack -p --config webpack/webpack.analyze.js",
+    "compress": "npm run clean && webpack -p --config webpack/webpack.compress.js"
+  },
   "dependencies": {
     "@babel/runtime": "^7.8.4",
     "react": "^16.12.0",
