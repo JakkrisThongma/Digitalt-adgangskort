@@ -25,7 +25,7 @@ trigger:
 
 variables: 
   Terraform.backendServiceArm: 'bacheloroppgave-dev-gruppe5-sc'
-  Terraform.backendAzureRmResourceGroupName: 'stud-gruppe1-oppgave5-dwe-rg'
+  Terraform.backendAzureRmResourceGroupName: 'stud-gruppe5-oppgave5-dwe-rg'
   Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
   Terraform.backendAzureRmContainerName: 'gruppe5'
   Terraform.Terraform.backendAzureRmKey: 'build.tfstate'
