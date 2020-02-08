@@ -10,11 +10,10 @@ trigger:
 
 
 variables: 
-  AzP.ServiceConnectionName: 'in.lab'
-  Terraform.backendServiceArm: 'in.lab'
-  Terraform.backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
-  Terraform.backendAzureRmStorageAccountName: 'bachelorgrupperstorage'
-  Terraform.backendAzureRmContainerName: 'gruppedemo'
+  Terraform.backendServiceArm: 'bacheloroppgave-dev-gruppe5-sc'
+  Terraform.backendAzureRmResourceGroupName: 'stud-gruppe5-oppgave5-dwe-rg'
+  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
+  Terraform.backendAzureRmContainerName: 'gruppe5'
   Terraform.Terraform.backendAzureRmKey: 'build.tfstate'
   Terraform.version: '0.12.12'
 
