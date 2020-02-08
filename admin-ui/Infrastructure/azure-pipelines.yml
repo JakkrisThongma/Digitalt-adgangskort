@@ -31,7 +31,7 @@ phases:
     - task: CopyFiles@2
       displayName: Copy artifacts
       inputs:
-        SourceFolder: Infrastructure
+        SourceFolder: admin-ui/Infrastructure
         contents: |
           **
           !.vsts-ci.yml
