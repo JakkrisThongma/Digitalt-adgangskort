@@ -1,13 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 # ASP.NET Core (.NET Framework with ReactJS)
 # Build and test ASP.NET Core projects targeting the full .NET Framework.
 
@@ -15,22 +5,18 @@ name: $(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyy-MM-dd).$(Buil
 trigger:
   branches:
     include: 
-    - users/mohamad/set-up-admin-ui-infrastructure
     - develop
     - master
-  paths:
-    include:
-    - admin-ui/*
 
 
 variables: 
-  Terraform.backendServiceArm: 'bacheloroppgave-dev-gruppe5-sc'
-  Terraform.backendAzureRmResourceGroupName: 'stud-gruppe5-oppgave5-dwe-rg'
-  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
-  Terraform.backendAzureRmContainerName: 'gruppe5'
+  AzP.ServiceConnectionName: 'in.lab'
+  Terraform.backendServiceArm: 'in.lab'
+  Terraform.backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
+  Terraform.backendAzureRmStorageAccountName: 'bachelorgrupperstorage'
+  Terraform.backendAzureRmContainerName: 'gruppedemo'
   Terraform.Terraform.backendAzureRmKey: 'build.tfstate'
   Terraform.version: '0.12.12'
-
 
   ${{ if eq( variables['Build.SourceBranchName'], 'master') }}:
      ConfigBuild: 'Release'
@@ -52,7 +38,7 @@ phases:
           !.vsts-ci.yml
           !**/.git/**
           !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure    
+        targetFolder: $(Build.ArtifactStagingDirectory)/Infrastructure    
     
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
       displayName: 'Install Terraform version: 0.12.12'
@@ -62,7 +48,7 @@ phases:
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: 'Terraform : azurerm init'
       inputs:
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/Infrastructure'
         commandOptions: '-no-color'
         backendServiceArm: '$(Terraform.backendServiceArm)'
         backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
@@ -77,17 +63,17 @@ phases:
         variables: |
           environment=dev
           release=release
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/Infrastructure'
       
     - task: DeleteFiles@1
       inputs:
-        sourceFolder: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+        sourceFolder: '$(Build.ArtifactStagingDirectory)/Infrastructure'
         Contents: '.terraform'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish artifacts
       inputs:
-        pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
+        pathToPublish: $(Build.ArtifactStagingDirectory)/Infrastructure
         artifactName: Infrastructure
         artifactType: container
 
@@ -95,7 +81,7 @@ phases:
   - phase: Build
     displayName: Project Build And Publish
     queue: 
-      name: 'Gruppe 5 - Digital adgangskort'
+      name: 'Private VS2019'
       workspace:
         clean: outputs
     variables:
@@ -103,42 +89,49 @@ phases:
       BuildConfiguration: '$(ConfigBuild)'
       IsPrerelease: True
     steps: 
-    - task: NodeTool@0
+    - task: DotNetCoreInstaller@0
+      displayName: 'Install .NET Core sdk 3.0.100'
       inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
+        version: 3.0.100
 
-
-    - task: Npm@1
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 3.x'
       inputs:
-        command: 'install'
-        workingDir: 'admin-ui'
+        version: 3.x
 
-    - task: Npm@1
+    - task: DotNetCoreCLI@2
+      displayName: restore    
       inputs:
-        command: 'custom'
-        workingDir: 'admin-ui'
-        customCommand: 'run build'
+        command: 'restore'
+        projects: '**/*.csproj'
+        nugetConfigPath: '$(Build.SourcesDirectory)/Bachelorprosjekt/Bachelorprosjekt/nuget.config'
+        arguments: '-r win-x64' 
 
-    - task: CopyFiles@2
-      displayName: Copy artifacts
+    - task: DotNetCoreCLI@2
+      displayName: Build
       inputs:
-        SourceFolder: admin-ui/dist
-        contents: |
-          **
-          !.vsts-ci.yml
-          !**/.git/**
-          !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/dist   
+        command: build
+        projects: '**/*.csproj'
+        arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: '**/*[Tt]est/*.csproj'
+        arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        arguments: '-r win-x64 --self-contained --no-restore --configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)/project" -f netcoreapp3.1'
+        zipAfterPublish: True
+        projects: '$(Build.SourcesDirectory)/Bachelorprosjekt/Bachelorprosjekt/Bachelorprosjekt.csproj'
+        workingDirectory: '$(Build.SourcesDirectory)/Bachelorprosjekt'
+
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish Project Artifact'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/gruppe-5/admin-ui'
-        ArtifactName: 'gruppe-5-digital-adgangskort'
-        publishLocation: 'Container'
-
-    - task: Npm@1
-      inputs:
-        command: 'custom'
-        workingDir: 'admin-ui'
-        customCommand: 'run prod:serve'
-
+        PathtoPublish: '$(build.artifactstagingdirectory)/project'
