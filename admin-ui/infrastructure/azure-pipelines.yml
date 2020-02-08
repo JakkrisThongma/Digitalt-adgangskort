@@ -52,7 +52,7 @@ phases:
           !.vsts-ci.yml
           !**/.git/**
           !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/Infrastructure    
+        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure    
     
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
       displayName: 'Install Terraform version: 0.12.12'
@@ -62,7 +62,7 @@ phases:
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: 'Terraform : azurerm init'
       inputs:
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/Infrastructure'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
         commandOptions: '-no-color'
         backendServiceArm: '$(Terraform.backendServiceArm)'
         backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
@@ -77,17 +77,17 @@ phases:
         variables: |
           environment=dev
           release=release
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/Infrastructure'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
       
     - task: DeleteFiles@1
       inputs:
-        sourceFolder: '$(Build.ArtifactStagingDirectory)/Infrastructure'
+        sourceFolder: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
         Contents: '.terraform'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish artifacts
       inputs:
-        pathToPublish: $(Build.ArtifactStagingDirectory)/Infrastructure
+        pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
         artifactName: Infrastructure
         artifactType: container
 
