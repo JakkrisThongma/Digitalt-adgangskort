@@ -1,5 +1,8 @@
-# ASP.NET Core (.NET Framework with ReactJS)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
 
 name: $(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyy-MM-dd).$(BuildID)
 trigger:
@@ -7,7 +10,9 @@ trigger:
     include: 
     - develop
     - master
-
+  paths:
+    include:
+    - admin-ui/*
 
 variables: 
   Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
@@ -23,10 +28,11 @@ variables:
   ${{ if ne( variables['Build.SourceBranchName'], 'master') }}:
      ConfigBuild: 'Debug'    
 
-phases:
+
+  phases:
   - phase: Infrastructure
     queue:
-      name: 'Private VS2019'
+      name: 'ubuntu-1604'
     steps:
     - task: CopyFiles@2
       displayName: Copy artifacts
@@ -88,49 +94,38 @@ phases:
       BuildConfiguration: '$(ConfigBuild)'
       IsPrerelease: True
     steps: 
-    - task: DotNetCoreInstaller@0
-      displayName: 'Install .NET Core sdk 3.0.100'
-      inputs:
-        version: 3.0.100
 
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk 3.x'
+    - task: NodeTool@0
       inputs:
-        version: 3.x
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-    - task: DotNetCoreCLI@2
-      displayName: restore    
+
+    - task: Npm@1
       inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
-        nugetConfigPath: '$(Build.SourcesDirectory)/Bachelorprosjekt/Bachelorprosjekt/nuget.config'
-        arguments: '-r win-x64' 
+        command: 'install'
+        workingDir: 'admin-ui'
 
-    - task: DotNetCoreCLI@2
-      displayName: Build
+    - task: Npm@1
       inputs:
-        command: build
-        projects: '**/*.csproj'
-        arguments: '--configuration $(BuildConfiguration) --no-restore'
+        command: 'custom'
+        workingDir: 'admin-ui'
+        customCommand: 'run build'
 
-    - task: DotNetCoreCLI@2
-      displayName: Test
+    - task: CopyFiles@2
+      displayName: Copy artifacts
       inputs:
-        command: test
-        projects: '**/*[Tt]est/*.csproj'
-        arguments: '--configuration $(BuildConfiguration) --no-restore'
-
-    - task: DotNetCoreCLI@2
-      displayName: Publish
-      inputs:
-        command: publish
-        publishWebProjects: false
-        arguments: '-r win-x64 --self-contained --no-restore --configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)/project" -f netcoreapp3.1'
-        zipAfterPublish: True
-        projects: '$(Build.SourcesDirectory)/Bachelorprosjekt/Bachelorprosjekt/Bachelorprosjekt.csproj'
-        workingDirectory: '$(Build.SourcesDirectory)/Bachelorprosjekt'
-
+        SourceFolder: admin-ui/dist
+        contents: |
+          **
+          !.vsts-ci.yml
+          !**/.git/**
+          !**/.terraform/**
+        targetFolder: $(Build.ArtifactStagingDirectory)/react-test/dist   
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Project Artifact'
       inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)/project'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/gruppe-5'
+        ArtifactName: 'admin-ui'
+        publishLocation: 'Container'
+
+ 
