@@ -14,7 +14,7 @@ variables:
   Terraform.backendAzureRmResourceGroupName: 'stud-gruppe5-oppgave5-dwe-rg'
   Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
   Terraform.backendAzureRmContainerName: 'gruppe5'
-  Terraform.Terraform.backendAzureRmKey: 'build.tfstate'
+  Terraform.backendAzureRmKey: 'build.tfstate'
   Terraform.version: '0.12.12'
 
   ${{ if eq( variables['Build.SourceBranchName'], 'master') }}:
