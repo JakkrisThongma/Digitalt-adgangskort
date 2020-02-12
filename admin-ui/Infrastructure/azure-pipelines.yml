@@ -28,7 +28,7 @@ variables:
   ${{ if ne( variables['Build.SourceBranchName'], 'master') }}:
      ConfigBuild: 'Debug'    
 
-  phases:
+phases:
   - phase: Infrastructure
     queue:
       name: 'Private VS2019'
