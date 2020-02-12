@@ -79,7 +79,7 @@ phases:
       inputs:
         pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
         artifactName: Infrastructure
-        artifactType: container
+        artifactType: Container
 
         
   - phase: Build
