@@ -85,7 +85,7 @@ phases:
   - phase: Build
     displayName: Project Build And Publish
     queue: 
-      name: 'ubuntu-1604'
+      name: 'Private VS2019'
       workspace:
         clean: outputs
     variables:
