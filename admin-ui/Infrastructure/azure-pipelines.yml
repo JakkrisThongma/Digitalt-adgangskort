@@ -10,7 +10,7 @@ trigger:
 
 
 variables: 
-  Terraform.backendServiceArm: 'bacheloroppgave-dev-gruppe5-sc'
+  Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
   Terraform.backendAzureRmResourceGroupName: 'stud-gruppe5-oppgave5-dwe-rg'
   Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
   Terraform.backendAzureRmContainerName: 'gruppe5'
