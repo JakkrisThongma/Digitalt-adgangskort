@@ -105,7 +105,7 @@ phases:
       inputs:
         command: 'custom'
         workingDir: 'admin-ui'
-        customCommand: 'run build'
+        customCommand: 'run prod'
 
     - task: CopyFiles@2
       displayName: Copy artifacts
