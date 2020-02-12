@@ -116,10 +116,10 @@ phases:
           !.vsts-ci.yml
           !**/.git/**
           !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/react-test/dist   
+        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/dist   
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/gruppe-5'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui'
         ArtifactName: 'admin-ui'
         publishLocation: 'Container'
 
