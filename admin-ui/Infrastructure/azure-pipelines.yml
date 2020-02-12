@@ -28,11 +28,10 @@ variables:
   ${{ if ne( variables['Build.SourceBranchName'], 'master') }}:
      ConfigBuild: 'Debug'    
 
-
   phases:
   - phase: Infrastructure
     queue:
-      name: 'ubuntu-1604'
+      name: 'Private VS2019'
     steps:
     - task: CopyFiles@2
       displayName: Copy artifacts
