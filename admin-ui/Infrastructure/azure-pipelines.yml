@@ -94,18 +94,14 @@ phases:
       IsPrerelease: True
     steps: 
 
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
-
-
     - task: Npm@1
+      displayName: Install Node modules
       inputs:
         command: 'install'
         workingDir: 'admin-ui'
 
     - task: Npm@1
+      displayName: Build the project   
       inputs:
         command: 'custom'
         workingDir: 'admin-ui'
