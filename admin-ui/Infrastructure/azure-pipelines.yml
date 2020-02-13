@@ -116,10 +116,20 @@ phases:
           !.vsts-ci.yml
           !**/.git/**
           !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/dist   
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.BinariesDirectory)/admin-ui/dist'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/admin-ui-$(Build.BuildId).zip'
+        replaceExistingArchive: true   
+
+
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui-$(Build.BuildId).zip'
         ArtifactName: 'admin-ui'
         publishLocation: 'Container'
 
