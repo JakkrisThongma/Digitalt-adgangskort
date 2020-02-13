@@ -110,7 +110,7 @@ phases:
     - task: CopyFiles@2
       displayName: Copy artifacts
       inputs:
-        SourceFolder: admin-ui
+        SourceFolder: admin-ui/dist
         contents: |
           **
           !.vsts-ci.yml
