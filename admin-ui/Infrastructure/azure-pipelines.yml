@@ -120,7 +120,7 @@ phases:
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/admin-ui'
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
         includeRootFolder: true
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
@@ -129,7 +129,7 @@ phases:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/*.zip'
         ArtifactName: 'admin-ui'
         publishLocation: 'Container'
 
