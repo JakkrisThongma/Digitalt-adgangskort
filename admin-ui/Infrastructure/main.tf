@@ -3,10 +3,12 @@ data "azurerm_client_config" "current" {}
 terraform {
   backend "azurerm" {}
 }
+/*
 resource "azurerm_resource_group" "gruppe-rsg" {
   name     = "${local.resource_group_name}"
   location = "${var.location}"
 }
+*/
 
 module "web_app" {
   source  = "innovationnorway/web-app/azurerm"
