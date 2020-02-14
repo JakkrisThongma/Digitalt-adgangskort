@@ -14,7 +14,7 @@ module "web_app" {
   source  = "innovationnorway/web-app/azurerm"
   version = "0.1.6"
 
-  resource_group_name = "${azurerm_resource_group.gruppe-rsg.name}"
+  resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
   web_app_name        = "${var.web_app_name}"
   environment         = "${var.environment}"
