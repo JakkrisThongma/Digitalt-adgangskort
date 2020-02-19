@@ -54,11 +54,11 @@ phases:
       inputs:
         workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
         commandOptions: '-no-color'
-        backendServiceArm: '$(Terraform.backendServiceArm)'
-        backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
-        backendAzureRmStorageAccountName: '$(Terraform.backendAzureRmStorageAccountName)'
-        backendAzureRmContainerName: '$(Terraform.backendAzureRmContainerName)'
-        backendAzureRmKey: '$(Terraform.backendAzureRmKey)'
+        backendServiceArm: 'bacheloroppgave-shared-services-sc'
+        backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
+        backendAzureRmStorageAccountName: 'bachlorstorage'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'build.tfstate'
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: Validate Terraform configuration
