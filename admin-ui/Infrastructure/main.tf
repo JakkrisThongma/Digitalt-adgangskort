@@ -2,9 +2,9 @@ data "azurerm_client_config" "current" {}
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "shared-bachlorgrupper"
-    storage_account_name = "testbachlor"
-    container_name       = "tfstate"
+    resource_group_name  = "stud-shared-dwe-rg"
+    storage_account_name = "studshareddwesa"
+    container_name       = "gruppe5"
     key                  = "gruppe5.tfstate"
   }
 }
