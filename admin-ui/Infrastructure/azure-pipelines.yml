@@ -15,10 +15,10 @@ trigger:
     - admin-ui/*
 
 variables: 
-  Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
-  Terraform.backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
-  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
-  Terraform.backendAzureRmContainerName: 'gruppe5'
+  Terraform.backendServiceArm: 'in.lab'
+  Terraform.backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
+  Terraform.backendAzureRmStorageAccountName: 'testbachlor'
+  Terraform.backendAzureRmContainerName: 'tfstate'
   Terraform.backendAzureRmKey: 'gruppe5.tfstate'
   Terraform.version: '0.12.12'
 
