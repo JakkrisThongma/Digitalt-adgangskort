@@ -1,7 +1,12 @@
 data "azurerm_client_config" "current" {}
 
 terraform {
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "shared-bachlorgrupper"
+    storage_account_name = "testbachlor"
+    container_name       = "tfstate"
+    key                  = "gruppe5.tfstate"
+  }
 }
 /*
 resource "azurerm_resource_group" "gruppe-rsg" {
