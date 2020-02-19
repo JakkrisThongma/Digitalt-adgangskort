@@ -18,7 +18,7 @@ variables:
   Terraform.backendServiceArm: 'in.lab'
   Terraform.backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
   Terraform.backendAzureRmStorageAccountName: 'testbachlor'
-  Terraform.backendAzureRmContainerName: 'gruppedemo-dev-rg'
+  Terraform.backendAzureRmContainerName: 'tfstate'
   Terraform.backendAzureRmKey: 'gruppe5.tfstate'
   Terraform.version: '0.12.12'
 
