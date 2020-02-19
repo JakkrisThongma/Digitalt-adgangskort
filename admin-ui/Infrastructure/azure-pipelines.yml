@@ -17,8 +17,8 @@ trigger:
 variables: 
   Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
   Terraform.backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
-  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
-  Terraform.backendAzureRmContainerName: 'gruppe5'
+  Terraform.backendAzureRmStorageAccountName: 'bachlorstorage'
+  Terraform.backendAzureRmContainerName: 'tfstate'
   Terraform.backendAzureRmKey: 'build.tfstate'
   Terraform.version: '0.12.12'
 
