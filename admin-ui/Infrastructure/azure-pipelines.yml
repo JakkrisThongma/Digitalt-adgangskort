@@ -54,9 +54,9 @@ phases:
       inputs:
         workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
         commandOptions: '-no-color'
-        backendServiceArm: 'bacheloroppgave-shared-services-sc'
-        backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
-        backendAzureRmStorageAccountName: 'bachlorstorage'
+        backendServiceArm: 'in.lab'
+        backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
+        backendAzureRmStorageAccountName: 'testbachlor'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'build.tfstate'
 
