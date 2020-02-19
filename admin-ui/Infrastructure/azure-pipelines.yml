@@ -17,9 +17,9 @@ trigger:
 variables: 
   Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
   Terraform.backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
-  Terraform.backendAzureRmStorageAccountName: 'bachlorstorage'
-  Terraform.backendAzureRmContainerName: 'tfstate'
-  Terraform.backendAzureRmKey: 'build.tfstate'
+  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
+  Terraform.backendAzureRmContainerName: 'gruppe5'
+  Terraform.backendAzureRmKey: 'gruppe5.tfstate'
   Terraform.version: '0.12.12'
 
   ${{ if eq( variables['Build.SourceBranchName'], 'master') }}:
@@ -54,11 +54,11 @@ phases:
       inputs:
         workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
         commandOptions: '-no-color'
-        backendServiceArm: 'in.lab'
-        backendAzureRmResourceGroupName: 'shared-bachlorgrupper'
-        backendAzureRmStorageAccountName: 'testbachlor'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'build.tfstate'
+        backendServiceArm: '$(Terraform.backendServiceArm)'
+        backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
+        backendAzureRmStorageAccountName: '$(Terraform.backendAzureRmStorageAccountName)'
+        backendAzureRmContainerName: '$(Terraform.backendAzureRmContainerName)'
+        backendAzureRmKey: '$(Terraform.backendAzureRmKey)'
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: Validate Terraform configuration

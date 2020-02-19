@@ -1,7 +1,12 @@
 data "azurerm_client_config" "current" {}
 
 terraform {
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "stud-shared-dwe-rg"
+    storage_account_name = "studshareddwesa"
+    container_name       = "gruppe5"
+    key                  = "gruppe5.tfstate"
+  }
 }
 /*
 resource "azurerm_resource_group" "gruppe-rsg" {
