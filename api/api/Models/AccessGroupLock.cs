@@ -7,7 +7,7 @@ namespace api.Models
 {
 	public class AccessGroupLock
 	{
-		public int AccessGroupID { get; set; }
+		public int AccessGroupId { get; set; }
 		public AccessGroup AccessGroup { get; set; }
 
 		public int LockId { get; set; }

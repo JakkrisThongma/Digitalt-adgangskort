@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models
 {
-	[Table("Ansatte")]
+	[Table("Employees")]
 	public class Employee
 	{
 		public int EmployeeId { get; set; }
