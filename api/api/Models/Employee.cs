@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,6 +13,6 @@ namespace api.Models
 		public string Lastname { get; set; }
 		public int DayOfBirth { get; set; }
 		public int PhoneNumber { get; set; }
-		public int MyProperty { get; set; }
+		public ICollection<EmployeeAccess> EmployeeAccesses { get; set; }
 	}
 }
