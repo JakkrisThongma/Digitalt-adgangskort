@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   footer: {
     position: "fixed",
     width: "100%",
-    bottom: theme.spacing(1)
+    bottom: 0
   },
   phantom: {
     display: "block",
