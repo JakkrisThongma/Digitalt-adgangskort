@@ -15,12 +15,12 @@ trigger:
     - admin-ui/*
 
 variables: 
-  Terraform.backendServiceArm: 'bacheloroppgave-shared-services-sc'
+  Terraform.backendServiceArm: 'bacheloroppgaver-shared-services-dev-sc'
   Terraform.backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
   Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
   Terraform.backendAzureRmContainerName: 'gruppe5'
   Terraform.backendAzureRmKey: 'gruppe5.tfstate'
-  Terraform.version: '0.12.12'
+  Terraform.version: '0.12.21'
 
   ${{ if eq( variables['Build.SourceBranchName'], 'master') }}:
      ConfigBuild: 'Release'
