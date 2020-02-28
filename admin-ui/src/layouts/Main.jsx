@@ -9,7 +9,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default
   },
   content: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.background.default
   },
   footer: {
     position: "fixed",
