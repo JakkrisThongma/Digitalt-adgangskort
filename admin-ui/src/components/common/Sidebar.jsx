@@ -9,7 +9,7 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
-import { Home, People, Lock, AccountTree } from "@material-ui/icons";
+import { Dashboard, People, Lock, AccountTree } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   list: {
@@ -24,7 +24,7 @@ const Sidebar = props => {
   const classes = useStyles();
   const { open, toggleDrawer } = props;
   const listItems = [
-    { text: "Home", link: "/home", icon: Home },
+    { text: "Dashboard", link: "/dashboard", icon: Dashboard },
     { text: "Users", link: "/users", icon: People },
     { text: "Locks", link: "/locks", icon: Lock },
     { text: "Access level", link: "/access-levels", icon: AccountTree }

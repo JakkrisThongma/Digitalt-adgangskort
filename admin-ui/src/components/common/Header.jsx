@@ -73,8 +73,8 @@ const Header = () => {
             Digital adgangskort
           </Typography>
           <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
-            <Button className={classes.navElement} href="/home">
-              Home
+            <Button className={classes.navElement} href="/dashboard">
+              Dashboard
             </Button>
             <Button className={classes.navElement} href="/users">
               Users

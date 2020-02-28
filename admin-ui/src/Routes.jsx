@@ -4,13 +4,24 @@ import { Switch, Redirect } from "react-router-dom";
 import { RouteWithLayout } from "./components/common";
 import Main from "./layouts/Main";
 
-import { Home, UserList, LockList, AccessLevelList, NotFound } from "./views";
+import {
+  Dashboard,
+  UserList,
+  LockList,
+  AccessLevelList,
+  NotFound
+} from "./views";
 
 const Routes = () => {
   return (
     <Switch>
-      <Redirect exact from="/" to="/home" />
-      <RouteWithLayout component={Home} exact layout={Main} path="/home" />
+      <Redirect exact from="/" to="/dashboard" />
+      <RouteWithLayout
+        component={Dashboard}
+        exact
+        layout={Main}
+        path="/dashboard"
+      />
       <RouteWithLayout component={UserList} exact layout={Main} path="/users" />
       <RouteWithLayout component={LockList} exact layout={Main} path="/locks" />
       <RouteWithLayout
