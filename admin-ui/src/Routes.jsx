@@ -9,6 +9,7 @@ import {
   UserList,
   LockList,
   AccessLevelList,
+  Login,
   NotFound
 } from "./views";
 
@@ -16,6 +17,7 @@ const Routes = () => {
   return (
     <Switch>
       <Redirect exact from="/" to="/dashboard" />
+      <RouteWithLayout component={Login} exact layout={Main} path="/login" />
       <RouteWithLayout
         component={Dashboard}
         exact
