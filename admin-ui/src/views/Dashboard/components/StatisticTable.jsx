@@ -14,7 +14,7 @@ import {
 const useStyles = makeStyles(theme => ({
   title: {
     padding: theme.spacing(1),
-    color: theme.palette.secondary.main
+    color: theme.palette.primary.main
   },
   table: {
     minWidth: 650

@@ -16,11 +16,11 @@ const useStyles = makeStyles(theme => ({
   },
   text: {
     padding: theme.spacing(2),
-    color: theme.palette.secondary.main
+    color: theme.palette.primary.main
   },
   avatar: {
     color: theme.primary,
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.primary.main
   }
 }));
 
