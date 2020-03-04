@@ -39,6 +39,41 @@ namespace api.Services
 				}
 			}
 
+			if (!context.AccessLevels.ToList().Any())
+			{
+				var accessLevels = new List<Models.AccessLevel>
+				{
+					new Models.AccessLevel
+					{
+						Title = "Administrasjon"
+					},
+					new Models.AccessLevel
+					{
+						Title = "Utvikler"
+					},
+					new Models.AccessLevel
+					{
+						Title = "Økonomi"
+					},
+					new Models.AccessLevel
+					{
+						Title = "Markedsføring"
+					},
+					new Models.AccessLevel
+					{
+						Title = "Vekter"
+					}
+				};
+
+				foreach (var accessLevel in accessLevels)
+				{
+					context.AccessLevels.Add(accessLevel);
+					context.SaveChanges();
+				}
+
+
+			}
+
 			if (!context.Locks.ToList().Any())
 			{
 				var locks = new List<Models.Lock>
