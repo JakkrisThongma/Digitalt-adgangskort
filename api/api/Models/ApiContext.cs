@@ -36,6 +36,7 @@ namespace api.Models
 
 		public DbSet<Lock> Locks { get; set; }
 		public DbSet<Employee> Employees { get; set; }
+		public DbSet<AccessLevel> AccessLevels { get; set; }
 		
 	}
 }
