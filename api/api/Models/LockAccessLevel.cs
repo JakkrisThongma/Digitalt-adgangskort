@@ -5,14 +5,12 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-	public class AccessGroupLock
+	public class LockAccessLevel
 	{
-		public int AccessGroupId { get; set; }
-		public AccessGroup AccessGroup { get; set; }
+		public int AccessLevelId { get; set; }
+		public AccessLevel AccessLevel { get; set; }
 
 		public int LockId { get; set; }
 		public Lock Lock { get; set; }
-		public ICollection<EmployeeAccess> EmployeeAccesses { get; set; }
-
 	}
 }

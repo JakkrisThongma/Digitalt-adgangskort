@@ -6,40 +6,36 @@ namespace api.Models
 	{
 		public ApiContext(DbContextOptions<ApiContext> options) : base(options)
 		{
-
+		
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<AccessGroupLock>()
-				.HasKey(agl => new {agl.AccessGroupId, agl.LockId});
-			modelBuilder.Entity<AccessGroupLock>()
-				.HasOne(agl => agl.AccessGroup)
-				.WithMany(ag => ag.AccessGroupLocks)
-				.HasForeignKey(ag => ag.AccessGroupId);
-			modelBuilder.Entity<AccessGroupLock>()
-				.HasOne(ag => ag.Lock)
-				.WithMany(l => l.AccessGroupLocks)
-				.HasForeignKey(l => l.LockId);
+			modelBuilder.Entity<EmployeeAccessLevel>()
+				.HasKey(employeeAccessLevel => new { employeeAccessLevel.AccessLevelId, employeeAccessLevel.EmployeeId});
+			modelBuilder.Entity<EmployeeAccessLevel>()
+				.HasOne(employee => employee.Employee)
+				.WithMany(employee => employee.EmployeeAccessLevels)
+				.HasForeignKey(employee => employee.EmployeeId);
+			modelBuilder.Entity<EmployeeAccessLevel>()
+				.HasOne(accessLevel => accessLevel.AccessLevel)
+				.WithMany(accessLevel => accessLevel.EmployeeAccessLevels)
+				.HasForeignKey(accessLevel => accessLevel.AccessLevelId);
 
-			modelBuilder.Entity<EmployeeAccess>()
-				.HasKey(ea => new {ea.EmployeeId, ea.AccessGroupId});
-			modelBuilder.Entity<EmployeeAccess>()
-				.HasOne(ea => ea.Employee)
-				.WithMany(ea => ea.EmployeeAccesses)
-				.HasForeignKey(ea => ea.EmployeeId);
-			modelBuilder.Entity<EmployeeAccess>()
-				.HasOne(ea => ea.AccessGroup)
-				.WithMany(ea => ea.EmployeeAccesses)
-				.HasForeignKey(ea => ea.AccessGroupId);
-
-
+			modelBuilder.Entity<LockAccessLevel>()
+				.HasKey(lockAccessLevel => new { lockAccessLevel.AccessLevelId, lockAccessLevel.LockId });
+			modelBuilder.Entity<LockAccessLevel>()
+				.HasOne(accessLevel => accessLevel.AccessLevel)
+				.WithMany(accessLevel => accessLevel.LockAccessLevels)
+				.HasForeignKey(accesslevel => accesslevel.AccessLevelId);
+			modelBuilder.Entity<LockAccessLevel>()
+				.HasOne(doorLock => doorLock.Lock)
+				.WithMany(doorLock => doorLock.LockAccessLevels)
+				.HasForeignKey(doorLock => doorLock.LockId);
 		}
 
 		public DbSet<Lock> Locks { get; set; }
 		public DbSet<Employee> Employees { get; set; }
-		public DbSet<EmployeeAccess> EmployeeAccesses { get; set; }
-		public DbSet<AccessGroup> AccessGroups { get; set; }
-		public DbSet<AccessGroupLock> AccessGroupLocks { get; set; }
+		
 	}
 }

@@ -10,6 +10,7 @@ namespace api.Services
 	{
 		public void Initialize(ApiContext context)
 		{
+			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 			if(!context.Employees.ToList().Any())
 			{
@@ -36,6 +37,29 @@ namespace api.Services
 					context.Employees.Add(employee);
 					context.SaveChanges();
 				}
+			}
+
+			if (!context.Locks.ToList().Any())
+			{
+				var locks = new List<Models.Lock>
+				{
+					new Models.Lock
+					{
+						LockName = "Inngang"
+					},
+					new Models.Lock
+					{
+						LockName = "Utgang"
+					}
+				};
+
+				foreach (var lock1 in locks)
+				{
+					context.Locks.Add(lock1);
+					context.SaveChanges();
+				}
+
+
 			}
 
 		}
