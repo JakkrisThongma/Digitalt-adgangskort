@@ -15,8 +15,12 @@ const useStyles = makeStyles(theme => ({
   grow: {
     flexGrow: 1
   },
+  appBar: {
+    backgroundColor: theme.palette.background.paper
+  },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
+    color: theme.palette.primary.main
   },
   navContainer: {
     display: "flex",
@@ -26,7 +30,8 @@ const useStyles = makeStyles(theme => ({
     margin: 15
   },
   title: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
+    color: theme.palette.text.primary
   },
   sectionDesktop: {
     display: "none",
@@ -57,13 +62,13 @@ const Header = () => {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <Sidebar open={open} toggleDrawer={toggleDrawer} />
 
           <IconButton
             edge="start"
-            className={classes.sectionMobile}
+            className={clsx(classes.sectionMobile, classes.menuButton)}
             color="inherit"
             aria-label="open drawer"
             onClick={toggleDrawer()}>
