@@ -22,16 +22,16 @@ export default {
   brickRed,
   lightPink,
   primary: {
-    contrastText: darkGray,
-    main: white,
-    dark: "#b2b2b2",
-    light: white
-  },
-  secondary: {
     contrastText: white,
     main: darkGray,
     dark: "#3a3c3e",
     light: "#75777b"
+  },
+  secondary: {
+    contrastText: darkGray,
+    main: white,
+    dark: "#b2b2b2",
+    light: white
   },
   success: {
     contrastText: white,
