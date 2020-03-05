@@ -23,18 +23,18 @@ namespace api.Models
 				.HasForeignKey(accessLevel => accessLevel.AccessLevelId);
 
 			modelBuilder.Entity<LockAccessLevel>()
-				.HasKey(lockAccessLevel => new { lockAccessLevel.AccessLevelId, lockAccessLevel.LockId });
+				.HasKey(lockAccessLevel => new { lockAccessLevel.AccessLevelId, lockAccessLevel.DoorLockId });
 			modelBuilder.Entity<LockAccessLevel>()
 				.HasOne(accessLevel => accessLevel.AccessLevel)
 				.WithMany(accessLevel => accessLevel.LockAccessLevels)
 				.HasForeignKey(accesslevel => accesslevel.AccessLevelId);
 			modelBuilder.Entity<LockAccessLevel>()
-				.HasOne(doorLock => doorLock.Lock)
+				.HasOne(doorLock => doorLock.DoorLock)
 				.WithMany(doorLock => doorLock.LockAccessLevels)
-				.HasForeignKey(doorLock => doorLock.LockId);
+				.HasForeignKey(doorLock => doorLock.DoorLockId);
 		}
 
-		public DbSet<Doorlock> Locks { get; set; }
+		public DbSet<DoorLock> DoorLocks { get; set; }
 		public DbSet<Employee> Employees { get; set; }
 		
 	}

@@ -39,15 +39,15 @@ namespace api.Services
 				}
 			}
 
-			if (!context.Locks.ToList().Any())
+			if (!context.DoorLocks.ToList().Any())
 			{
-				var locks = new List<Models.Doorlock>
+				var locks = new List<Models.DoorLock>
 				{
-					new Models.Doorlock
+					new Models.DoorLock
 					{
 						Title = "Inngang"
 					},
-					new Models.Doorlock
+					new Models.DoorLock
 					{
 						Title = "Utgang"
 					}
@@ -55,7 +55,7 @@ namespace api.Services
 
 				foreach (var lock1 in locks)
 				{
-					context.Locks.Add(lock1);
+					context.DoorLocks.Add(lock1);
 					context.SaveChanges();
 				}
 
