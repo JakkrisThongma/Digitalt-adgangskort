@@ -22,16 +22,16 @@ namespace api.Controllers
 
         // GET: api/Locks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Lock>>> GetLocks()
+        public async Task<ActionResult<IEnumerable<DoorLock>>> GetLocks()
         {
-            return await _context.Locks.ToListAsync();
+            return await _context.DoorLocks.ToListAsync();
         }
 
         // GET: api/Locks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Lock>> GetLock(int id)
+        public async Task<ActionResult<DoorLock>> GetLock(int id)
         {
-            var @lock = await _context.Locks.FindAsync(id);
+            var @lock = await _context.DoorLocks.FindAsync(id);
 
             if (@lock == null)
             {
@@ -45,14 +45,14 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLock(int id, Lock @lock)
+        public async Task<IActionResult> PutLock(int id, DoorLock doorLock)
         {
-            if (id != @lock.LockId)
+            if (id != doorLock.DoorLockId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(@lock).State = EntityState.Modified;
+            _context.Entry(doorLock).State = EntityState.Modified;
 
             try
             {
@@ -77,25 +77,25 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Lock>> PostLock(Lock @lock)
+        public async Task<ActionResult<DoorLock>> PostLock(DoorLock doorLock)
         {
-            _context.Locks.Add(@lock);
+            _context.DoorLocks.Add(doorLock);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLock", new { id = @lock.LockId }, @lock);
+            return CreatedAtAction("GetLock", new { id = doorLock.DoorLockId }, doorLock);
         }
 
         // DELETE: api/Locks/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Lock>> DeleteLock(int id)
+        public async Task<ActionResult<DoorLock>> DeleteLock(int id)
         {
-            var @lock = await _context.Locks.FindAsync(id);
+            var @lock = await _context.DoorLocks.FindAsync(id);
             if (@lock == null)
             {
                 return NotFound();
             }
 
-            _context.Locks.Remove(@lock);
+            _context.DoorLocks.Remove(@lock);
             await _context.SaveChangesAsync();
 
             return @lock;
@@ -103,7 +103,7 @@ namespace api.Controllers
 
         private bool LockExists(int id)
         {
-            return _context.Locks.Any(e => e.LockId == id);
+            return _context.DoorLocks.Any(e => e.DoorLockId == id);
         }
     }
 }
