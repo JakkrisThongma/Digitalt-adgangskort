@@ -74,23 +74,23 @@ namespace api.Services
 
 			}
 
-			if (!context.Locks.ToList().Any())
+			if (!context.DoorLocks.ToList().Any())
 			{
-				var locks = new List<Models.Doorlock>
+				var locks = new List<Models.DoorLock>
 				{
-					new Models.Doorlock
+					new Models.DoorLock
 					{
 						Title = "Inngang"
 					},
-					new Models.Doorlock
+					new Models.DoorLock
 					{
 						Title = "Utgang"
 					}
 				};
 
-				foreach (var lock1 in locks)
+				foreach (var doorLock in doorLocks)
 				{
-					context.Locks.Add(lock1);
+					context.DoorLocks.Add(doorLock);
 					context.SaveChanges();
 				}
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-	public class Doorlock
+	public class DoorLock
 	{
-		public int LockId { get; set; }
+		public int DoorLockId { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public ICollection<LockAccessLevel> LockAccessLevels { get; set; }
