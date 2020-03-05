@@ -6,7 +6,7 @@ import Main from "./layouts/Main";
 
 import {
   Dashboard,
-  UserList,
+  UsersList,
   LockList,
   AccessLevelList,
   Login,
@@ -24,7 +24,12 @@ const Routes = () => {
         layout={Main}
         path="/dashboard"
       />
-      <RouteWithLayout component={UserList} exact layout={Main} path="/users" />
+      <RouteWithLayout
+        component={UsersList}
+        exact
+        layout={Main}
+        path="/users"
+      />
       <RouteWithLayout component={LockList} exact layout={Main} path="/locks" />
       <RouteWithLayout
         component={AccessLevelList}
