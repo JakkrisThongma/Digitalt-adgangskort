@@ -13,6 +13,7 @@ namespace api.Models
 		public string Lastname { get; set; }
 		public int DayOfBirth { get; set; }
 		public int PhoneNumber { get; set; }
+		public string Email { get; set; }
 		public ICollection<EmployeeAccessLevel> EmployeeAccessLevels { get; set; }
 	}
 }
