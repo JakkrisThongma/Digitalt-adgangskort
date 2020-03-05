@@ -76,7 +76,7 @@ namespace api.Services
 
 			if (!context.DoorLocks.ToList().Any())
 			{
-				var locks = new List<Models.DoorLock>
+				var doorLocks = new List<Models.DoorLock>
 				{
 					new Models.DoorLock
 					{
