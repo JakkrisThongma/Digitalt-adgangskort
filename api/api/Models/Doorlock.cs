@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-	public class Lock
+	public class Doorlock
 	{
 		public int LockId { get; set; }
 		public string Title { get; set; }
