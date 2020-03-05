@@ -8,7 +8,7 @@ const darkGray = "#53565A";
 const quillGray = "#D9D9D6";
 const brickRed = "#AF272F";
 const lightPink = "#FFD2BB";
-const lima = "##6ABE0F";
+const lima = "#6ABE0F";
 
 export default {
   black,
