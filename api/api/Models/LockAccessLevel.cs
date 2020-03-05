@@ -11,6 +11,6 @@ namespace api.Models
 		public AccessLevel AccessLevel { get; set; }
 
 		public int LockId { get; set; }
-		public Lock Lock { get; set; }
+		public Doorlock Lock { get; set; }
 	}
 }

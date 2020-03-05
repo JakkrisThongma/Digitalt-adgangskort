@@ -76,15 +76,15 @@ namespace api.Services
 
 			if (!context.Locks.ToList().Any())
 			{
-				var locks = new List<Models.Lock>
+				var locks = new List<Models.Doorlock>
 				{
-					new Models.Lock
+					new Models.Doorlock
 					{
-						LockName = "Inngang"
+						Title = "Inngang"
 					},
-					new Models.Lock
+					new Models.Doorlock
 					{
-						LockName = "Utgang"
+						Title = "Utgang"
 					}
 				};
 

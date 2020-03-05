@@ -34,7 +34,7 @@ namespace api.Models
 				.HasForeignKey(doorLock => doorLock.LockId);
 		}
 
-		public DbSet<Lock> Locks { get; set; }
+		public DbSet<Doorlock> Locks { get; set; }
 		public DbSet<Employee> Employees { get; set; }
 		public DbSet<AccessLevel> AccessLevels { get; set; }
 		
