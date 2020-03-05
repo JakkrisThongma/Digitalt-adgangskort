@@ -45,11 +45,11 @@ namespace api.Services
 				{
 					new Models.Lock
 					{
-						LockName = "Inngang"
+						Title = "Inngang"
 					},
 					new Models.Lock
 					{
-						LockName = "Utgang"
+						Title = "Utgang"
 					}
 				};
 

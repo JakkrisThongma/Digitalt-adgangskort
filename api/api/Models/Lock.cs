@@ -9,7 +9,7 @@ namespace api.Models
 	public class Lock
 	{
 		public int LockId { get; set; }
-		public string LockName { get; set; }
+		public string Title { get; set; }
 		public string Description { get; set; }
 		public ICollection<LockAccessLevel> LockAccessLevels { get; set; }
 	}
