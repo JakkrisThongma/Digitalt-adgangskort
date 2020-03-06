@@ -28,7 +28,8 @@ const useStyles = makeStyles(theme => ({
 
   chip: {
     margin: theme.spacing(0.5)
-  }
+  },
+  button: { marginBottom: theme.spacing(2), minWidth: 80 }
 }));
 
 const AddUserDialog = props => {
@@ -139,12 +140,14 @@ const AddUserDialog = props => {
         </DialogContent>
         <DialogActions>
           <Button
+            className={classes.button}
             variant="contained"
             onClick={onAddUserCancelClick}
             color="primary">
             Cancel
           </Button>
           <Button
+            className={classes.button}
             variant="contained"
             onClick={onAddUserCancelClick}
             color="primary">
