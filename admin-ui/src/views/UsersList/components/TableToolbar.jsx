@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-
 import { Toolbar, Button, Typography, Tooltip } from "@material-ui/core";
 import {
   PersonAdd as PersonAddIcon,
@@ -29,7 +28,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const TableToolbar = props => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, onAddUserClick } = props;
 
   return (
     <Toolbar className={classes.root}>
@@ -69,7 +68,8 @@ const TableToolbar = props => {
           aria-label="add"
           variant="contained"
           color="primary"
-          className={classes.button}>
+          className={classes.button}
+          onClick={onAddUserClick}>
           <PersonAddIcon />
         </Button>
       </Tooltip>
@@ -78,7 +78,8 @@ const TableToolbar = props => {
 };
 
 TableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired
+  numSelected: PropTypes.number.isRequired,
+  onAddUserClick: PropTypes.func.isRequired
 };
 
 export default TableToolbar;

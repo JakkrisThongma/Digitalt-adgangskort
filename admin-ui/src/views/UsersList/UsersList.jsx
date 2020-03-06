@@ -11,7 +11,7 @@ import {
   Checkbox
 } from "@material-ui/core";
 
-import { TableToolbar, TableHeader } from "./components";
+import { TableToolbar, TableHeader, AddUserDialog } from "./components";
 
 function createData(id, firstname, lastname, email, mobile) {
   return { id, firstname, lastname, email, mobile };
@@ -102,9 +102,10 @@ const useStyles = makeStyles(theme => ({
 const UsersList = () => {
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
+  const [orderBy, setOrderBy] = React.useState("firstname");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
+  const [openAddUser, setOpenAddUser] = React.useState(false);
 
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -157,12 +158,23 @@ const UsersList = () => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  const handleAddUserClick = () => {
+    setOpenAddUser(true);
+  };
+  const handleAddUserCancelClick = () => {
+    setOpenAddUser(false);
+  };
+
   return (
     <div className={classes.root}>
       <h1>Users</h1>
 
       <Paper className={classes.paper}>
-        <TableToolbar numSelected={selected.length} />
+        <TableToolbar
+          numSelected={selected.length}
+          onAddUserClick={handleAddUserClick}
+          onAddUserCancelClick={handleAddUserCancelClick}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -232,6 +244,10 @@ const UsersList = () => {
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+        <AddUserDialog
+          isAddUserOpened={openAddUser}
+          onAddUserCancelClick={handleAddUserCancelClick}
         />
       </Paper>
     </div>
