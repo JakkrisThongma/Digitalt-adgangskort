@@ -24,14 +24,14 @@ namespace api.Services
 					{
 						Firstname = "Bao",
 						Lastname = "Nguyen",
-						DayOfBirth = 211091,
+						DayOfBirth = "211091",
 						PhoneNumber = 47355622
 					},
 					new Models.Employee
 					{
 						Firstname = "Jakkris",
 						Lastname = "Thongma",
-						DayOfBirth = 050695,
+						DayOfBirth = "050695",
 						PhoneNumber = 45024278
 					}
 				};
