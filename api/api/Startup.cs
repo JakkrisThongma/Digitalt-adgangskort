@@ -73,11 +73,16 @@ namespace api
 
 			app.UseRouting();
 
+			app.UseAuthentication();
+
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{
-				endpoints.MapControllers();
+				endpoints
+				.MapDefaultControllerRoute()
+				.RequireAuthorization();
+
 			});
 
 			using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
