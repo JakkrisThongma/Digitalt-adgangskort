@@ -73,7 +73,8 @@ module.exports = {
   resolve: {
     extensions: [".jsx", ".js"],
     alias: {
-      validation: path.resolve(__dirname, "../src/helpers/validation")
+      validation: path.resolve(__dirname, "../src/helpers/validation"),
+      "@": path.resolve("src")
     }
   }
 };
