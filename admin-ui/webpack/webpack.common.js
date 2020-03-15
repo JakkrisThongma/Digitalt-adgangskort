@@ -71,6 +71,9 @@ module.exports = {
     })
   ],
   resolve: {
-    extensions: [".jsx", ".js"]
+    extensions: [".jsx", ".js"],
+    alias: {
+      validation: path.resolve(__dirname, "../src/helpers/validation")
+    }
   }
 };
