@@ -3,11 +3,9 @@ import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
-
-import theme from "./theme";
-import Routes from "./Routes";
-
-import "./App.css";
+import { theme } from "./styles";
+import Routes from "./Router";
+import "@/styles/App.css";
 
 const browserHistory = createBrowserHistory();
 

@@ -11,7 +11,11 @@ import {
   Checkbox
 } from "@material-ui/core";
 
-import { TableToolbar, TableHeader, AddUserDialog } from "./components";
+import {
+  TableToolbar,
+  TableHeader,
+  AddUserDialog
+} from "@/components/usersList";
 
 function createData(id, firstname, lastname, email, mobile) {
   return { id, firstname, lastname, email, mobile };

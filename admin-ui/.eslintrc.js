@@ -22,9 +22,13 @@ module.exports = {
     ],
     quotes: [2, "double", { avoidEscape: true }],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    
-
-
+  
+  },
+  settings: {
+    'import/resolver': {
+      'webpack': { config: 'webpack/webpack.common.js'
+    }
+    }
   }
 };
 
