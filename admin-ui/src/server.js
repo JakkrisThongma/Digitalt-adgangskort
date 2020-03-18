@@ -6,13 +6,6 @@ const https = require("https");
 
 const app = express();
 
-if (process.env.NODE_ENV !== "production") {
-  console.error("NODE_ENV was not set to 'production'");
-  console.log("exit with statuscode '1'");
-
-  process.exit(1);
-}
-
 https
   .createServer(
     {

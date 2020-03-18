@@ -12,7 +12,7 @@
     "webpack-dev-server": "webpack-dev-server",
     "dev": "webpack-dev-server --config webpack/webpack.dev.js",
     "prod": "npm run clean && webpack -p --config webpack/webpack.prod.js",
-    "prod:serve": "NODE_ENV=production node src/server.js",
+    "prod:serve": "node src/server.js",
     "analyze": "npm run clean && webpack -p --config webpack/webpack.analyze.js",
     "compress": "npm run clean && webpack -p --config webpack/webpack.compress.js"
   },
