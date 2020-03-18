@@ -1,4 +1,5 @@
 ﻿using api.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +9,29 @@ namespace api.Services
 {
 	public class DatabaseInitialize : IDatabaseInitialize
 	{
+		[Obsolete]
 		public void Initialize(ApiContext context)
 		{
 			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 			if(!context.Employees.ToList().Any())
 			{
+				context.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Employees', RESEED, 1000)");
+
 				var employees = new List<Models.Employee>
 				{
 					new Models.Employee
 					{
 						Firstname = "Bao",
 						Lastname = "Nguyen",
-						DayOfBirth = 211091,
+						DayOfBirth = "211091",
 						PhoneNumber = 47355622
 					},
 					new Models.Employee
 					{
 						Firstname = "Jakkris",
 						Lastname = "Thongma",
-						DayOfBirth = 050695,
+						DayOfBirth = "050695",
 						PhoneNumber = 45024278
 					}
 				};

@@ -13,7 +13,8 @@ module.exports = merge(common, {
     compress: true,
     port: 9000,
     disableHostCheck: false,
-    open: "Google Chrome",
+    // open: "Google Chrome", // use for Chrome on MAC
+    open: "chrome", // use for Chrome on windows
     hot: true,
     historyApiFallback: true
   }
