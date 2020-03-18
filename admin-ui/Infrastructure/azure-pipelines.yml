@@ -110,7 +110,7 @@ phases:
     - task: CopyFiles@2
       displayName: Copy artifacts
       inputs:
-        SourceFolder: admin-ui/dist
+        SourceFolder: admin-ui
         contents: |
           **
           !.vsts-ci.yml
@@ -133,4 +133,9 @@ phases:
         ArtifactName: 'admin-ui'
         publishLocation: 'Container'
 
- 
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'bacheloroppgave-gruppe5-dev-sc'
+        appName: 'digitalAdgangskortAdminUI'
+        package: '$(System.DefaultWorkingDirectory)'
+        customWebConfig: '-Handler iisnode -NodeStartFile server.js -appType node'
