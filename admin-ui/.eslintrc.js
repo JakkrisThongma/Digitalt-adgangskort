@@ -11,7 +11,7 @@ module.exports = {
       {
         semi: true,
         trailingComma: "none",
-        singleQuote: true,
+        singleQuote: false,
         printWidth: 80,
         bracketSpacing: true,
         tabWidth: 2,
@@ -20,7 +20,15 @@ module.exports = {
         "react/jsx-max-props-per-line": [1, { "when": "always" }]
       }
     ],
-    quotes: [2, "single", { avoidEscape: true }]
+    quotes: [2, "double", { avoidEscape: true }],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+  
+  },
+  settings: {
+    'import/resolver': {
+      'webpack': { config: 'webpack/webpack.common.js'
+    }
+    }
   }
 };
 
