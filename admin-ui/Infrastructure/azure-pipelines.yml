@@ -132,10 +132,3 @@ phases:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui-$(Build.BuildId).zip'
         ArtifactName: 'admin-ui'
         publishLocation: 'Container'
-
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: 'bacheloroppgave-gruppe5-dev-sc'
-        appName: 'digitalAdgangskortAdminUI'
-        package: '$(System.DefaultWorkingDirectory)'
-        customWebConfig: '-Handler iisnode -NodeStartFile server.js -appType node'
