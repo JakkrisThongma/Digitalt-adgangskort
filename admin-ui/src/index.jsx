@@ -9,9 +9,7 @@ const DO_NOT_LOGIN = false;
 runWithAdal(
   authContext,
   () => {
-    require("./App");
+    ReactDOM.render(<App />, document.getElementById("root"));
   },
   DO_NOT_LOGIN
 );
-
-ReactDOM.render(<App />, document.getElementById("root"));
