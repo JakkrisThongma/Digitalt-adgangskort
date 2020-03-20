@@ -19,9 +19,9 @@ module "web_app" {
   source  = "innovationnorway/web-app/azurerm"
   version = "0.1.6"
 
-  runtime = {
-    name    = "node"
-    version = "12.14"
+ runtime = {
+    name    = "dotnetcore"
+    version = "2.2"
   }
 
   resource_group_name = "${var.resource_group_name}"
