@@ -1,13 +1,14 @@
 import { AuthenticationContext } from "react-adal";
 
 export const adalConfig = {
-  tenant: "c39d49f7-9eed-4307-b032-bb28f3cf9d79",
-  clientId: "91b8fdda-8936-463b-9940-5a49d875c229",
+  tenant: "3602e498-fd34-4a1e-a61b-b4639ceeaffd",
+  clientId: "93a5c726-983f-4e8c-a330-f1b34e3d6752",
   redirectUri: "https://localhost:44321/signin-oidc",
   endpoints: {
-    api: "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
+    api: "3602e498-fd34-4a1e-a61b-b4639ceeaffd"
   },
   cacheLocation: "sessionStorage"
 };
+
 export const authContext = new AuthenticationContext(adalConfig);
 export const getToken = () => authContext.getCachedToken(adalConfig.clientId);

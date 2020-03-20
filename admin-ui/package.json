@@ -6,6 +6,9 @@
   "author": "Gruppe-4",
   "license": "UNLICENSED",
   "private": true,
+  "engines": {
+    "node": "12.14"
+  },
   "scripts": {
     "clean": "rimraf dist",
     "webpack": "webpack",
