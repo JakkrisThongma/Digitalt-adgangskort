@@ -1,12 +1,12 @@
 import { AuthenticationContext, adalFetch, withAdalLogin } from "react-adal";
 
 export const adalConfig = {
-  tenant: "3602e498-fd34-4a1e-a61b-b4639ceeaffd",
-  clientId: "93a5c726-983f-4e8c-a330-f1b34e3d6752",
+  tenant: "c39d49f7-9eed-4307-b032-bb28f3cf9d79",
+  clientId: "91b8fdda-8936-463b-9940-5a49d875c229",
   redirectUri:
     "https://digitaladgangskortadminui-dev-web.azurewebsites.net/.auth/login/aad/callback",
   endpoints: {
-    api: "3602e498-fd34-4a1e-a61b-b4639ceeaffd"
+    api: "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
   },
   cacheLocation: "sessionStorage"
 };
