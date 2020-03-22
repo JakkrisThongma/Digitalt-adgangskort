@@ -1,0 +1,133 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+
+name: $(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyy-MM-dd).$(BuildID)
+trigger:
+  branches:
+    include: 
+    - develop
+    - master
+  paths:
+    include:
+    - admin-ui/*
+
+variables: 
+  Terraform.backendServiceArm: 'bacheloroppgaver-shared-services-dev-sc'
+  Terraform.backendAzureRmResourceGroupName: 'stud-shared-dwe-rg'
+  Terraform.backendAzureRmStorageAccountName: 'studshareddwesa'
+  Terraform.backendAzureRmContainerName: 'gruppe5'
+  Terraform.backendAzureRmKey: 'gruppe5.tfstate'
+  Terraform.version: '0.12.21'
+
+  ${{ if eq( variables['Build.SourceBranchName'], 'master') }}:
+     ConfigBuild: 'Release'
+
+  ${{ if ne( variables['Build.SourceBranchName'], 'master') }}:
+     ConfigBuild: 'Debug'    
+
+phases:
+  - phase: Infrastructure
+    queue:
+      name: 'Private VS2019'
+    steps:
+    - task: CopyFiles@2
+      displayName: Copy artifacts
+      inputs:
+        SourceFolder: admin-ui/Infrastructure
+        contents: |
+          **
+          !.vsts-ci.yml
+          !**/.git/**
+          !**/.terraform/**
+        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure    
+    
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+      displayName: 'Install Terraform version: 0.12.12'
+      inputs:
+        terraformVersion: '$(Terraform.Version)'
+        
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+      displayName: 'Terraform : azurerm init'
+      inputs:
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+        commandOptions: '-no-color'
+        backendServiceArm: '$(Terraform.backendServiceArm)'
+        backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
+        backendAzureRmStorageAccountName: '$(Terraform.backendAzureRmStorageAccountName)'
+        backendAzureRmContainerName: '$(Terraform.backendAzureRmContainerName)'
+        backendAzureRmKey: '$(Terraform.backendAzureRmKey)'
+
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+      displayName: Validate Terraform configuration
+      inputs:
+        command: validate
+        variables: |
+          environment=dev
+          release=release
+        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+      
+    - task: DeleteFiles@1
+      inputs:
+        sourceFolder: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+        Contents: '.terraform'
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish artifacts
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
+        artifactName: Infrastructure
+        artifactType: Container
+
+        
+  - phase: Build
+    displayName: Project Build And Publish
+    queue: 
+      name: 'Private VS2019'
+      workspace:
+        clean: outputs
+    variables:
+      BuildPlatform: 'any cpu'
+      BuildConfiguration: '$(ConfigBuild)'
+      IsPrerelease: True
+    steps: 
+
+    - task: Npm@1
+      displayName: Install Node modules
+      inputs:
+        command: 'install'
+        workingDir: 'admin-ui'
+
+    - task: Npm@1
+      displayName: Build the project   
+      inputs:
+        command: 'custom'
+        workingDir: 'admin-ui'
+        customCommand: 'run prod'
+
+    - task: CopyFiles@2
+      displayName: Copy artifacts
+      inputs:
+        SourceFolder: admin-ui/dist
+        contents: |
+          **
+          !.vsts-ci.yml
+          !**/.git/**
+          !**/.terraform/**
+        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/admin-ui'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact/admin-ui.zip'
+        replaceExistingArchive: true   
+
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact'
+        publishLocation: 'Container'
