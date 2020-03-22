@@ -123,11 +123,11 @@ phases:
         rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/admin-ui'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/admin-ui/admin-ui.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact/admin-ui.zip'
         replaceExistingArchive: true   
 
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/project'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact'
         publishLocation: 'Container'
