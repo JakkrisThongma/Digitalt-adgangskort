@@ -105,21 +105,21 @@ phases:
         command: 'restore'
         projects: '$(Build.SourcesDirectory)/api/api/api.csproj'
         nugetConfigPath: '$(Build.SourcesDirectory)/api/api/nuget.config'
-        arguments: '-r win-x64' 
+        arguments: '-r win-x64 -f netcoreapp3.1' 
 
     - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         command: build
         projects: '$(Build.SourcesDirectory)/api/api/api.csproj'
-        arguments: '--configuration $(BuildConfiguration) --no-restore'
+        arguments: '--configuration $(BuildConfiguration) --no-restore -f netcoreapp3.1'
 
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
         command: test
         projects: '**/*[Tt]est/*.csproj'
-        arguments: '--configuration $(BuildConfiguration) --no-restore'
+        arguments: '--configuration $(BuildConfiguration) --no-restore -f netcoreapp3.1'
 
     - task: DotNetCoreCLI@2
       displayName: Publish
