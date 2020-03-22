@@ -129,5 +129,5 @@ phases:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/project'
         publishLocation: 'Container'
