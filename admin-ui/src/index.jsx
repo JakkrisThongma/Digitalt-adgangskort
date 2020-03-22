@@ -5,6 +5,7 @@ import App from "./App";
 import "./web.config";
 import { authContext } from "./auth/adalConfig";
 
+/*
 const DO_NOT_LOGIN = false;
 runWithAdal(
   authContext,
@@ -13,3 +14,6 @@ runWithAdal(
   },
   DO_NOT_LOGIN
 );
+
+*/
+ReactDOM.render(<App />, document.getElementById("root"));
