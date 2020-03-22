@@ -11,10 +11,10 @@ module.exports = merge(common, {
   devServer: {
     contentBase: BUILD_DIR,
     compress: true,
-    port: 9000,
+    port: 44321,
     disableHostCheck: false,
-    // open: "Google Chrome", // use for Chrome on MAC
-    open: "chrome", // use for Chrome on windows
+    open: "Google Chrome", // use for Chrome on MAC
+    // open: "chrome", // use for Chrome on windows
     hot: true,
     historyApiFallback: true
   }
