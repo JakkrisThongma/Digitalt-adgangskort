@@ -103,7 +103,7 @@ phases:
       displayName: restore    
       inputs:
         command: 'restore'
-        projects: '**/*.csproj'
+        projects: '$(Build.SourcesDirectory)/api/api/api.csproj'
         nugetConfigPath: '$(Build.SourcesDirectory)/api/api/nuget.config'
         arguments: '-r win-x64' 
 
@@ -111,7 +111,7 @@ phases:
       displayName: Build
       inputs:
         command: build
-        projects: '**/*.csproj'
+        projects: '$(Build.SourcesDirectory)/api/api/api.csproj'
         arguments: '--configuration $(BuildConfiguration) --no-restore'
 
     - task: DotNetCoreCLI@2
