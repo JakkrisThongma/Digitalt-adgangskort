@@ -6,10 +6,15 @@ import {
   CardContent,
   Typography,
   CardActions,
-  Button
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Lock as LockIcon } from "@material-ui/icons";
+import {
+  Lock as LockIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon
+} from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -49,12 +54,16 @@ const Lock = props => {
         </Grid>
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary">
-          Edit
-        </Button>
-        <Button size="small" color="primary">
-          Delete
-        </Button>
+        <Tooltip title="Edit">
+          <IconButton aria-label="edit" color="primary">
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton aria-label="delete" color="primary">
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </CardActions>
     </Card>
   );
