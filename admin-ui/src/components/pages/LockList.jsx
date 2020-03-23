@@ -9,17 +9,17 @@ import PaginationItem from "@material-ui/lab/PaginationItem";
 const LockList = () => {
   const locksList = [
     {
-      title: "Lock1",
+      title: "Lock 1",
       active: true,
       date: "20.1.2020"
     },
     {
-      title: "Lock2",
+      title: "Lock 2",
       active: false,
       date: "20.1.2020"
     },
     {
-      title: "Lock3",
+      title: "Lock 3",
       active: true,
       date: "20.1.2020"
     }
@@ -28,7 +28,6 @@ const LockList = () => {
   const [locksPerPage] = useState(2);
   const totalLocks = locksList.length;
   const pageNumbers = Math.ceil(totalLocks / locksPerPage);
-  // Get current posts
   const indexOfLastLock = currentPage * locksPerPage;
   const indexOfFirstLock = indexOfLastLock - locksPerPage;
   const currentLocks = locksList.slice(indexOfFirstLock, indexOfLastLock);
@@ -41,29 +40,32 @@ const LockList = () => {
         </Grid>
       ))}
 
-      <MemoryRouter initialEntries={["/locks"]} initialIndex={0}>
-        <Route>
-          {({ location }) => {
-            const query = new URLSearchParams(location.search);
-            const page = parseInt(query.get("page"), 10) || 1;
-            console.log(location);
-            return (
-              <Pagination
-                page={page}
-                count={pageNumbers}
-                renderItem={item => (
-                  <PaginationItem
-                    component={Link}
-                    onClick={setCurrentPage(page)}
-                    to={`/locks${item.page === 1 ? "" : `?page=${item.page}`}`}
-                    {...item}
-                  />
-                )}
-              />
-            );
-          }}
-        </Route>
-      </MemoryRouter>
+      <Grid item md={12} xs={12} justifyContent="center" alignSelf="flex-end">
+        <MemoryRouter initialEntries={["/locks"]} initialIndex={0}>
+          <Route>
+            {({ location }) => {
+              const query = new URLSearchParams(location.search);
+              const page = parseInt(query.get("page"), 10) || 1;
+              return (
+                <Pagination
+                  page={page}
+                  count={pageNumbers}
+                  renderItem={item => (
+                    <PaginationItem
+                      component={Link}
+                      onClick={setCurrentPage(page)}
+                      to={`/locks${
+                        item.page === 1 ? "" : `?page=${item.page}`
+                      }`}
+                      {...item}
+                    />
+                  )}
+                />
+              );
+            }}
+          </Route>
+        </MemoryRouter>
+      </Grid>
     </Grid>
   );
 };
