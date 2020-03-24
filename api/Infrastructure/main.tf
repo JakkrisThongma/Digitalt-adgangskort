@@ -44,7 +44,9 @@ resource "azurerm_sql_firewall_rule" "sql_firewall" {
 resource "azurerm_sql_active_directory_administrator" "sql_admin" {
   server_name         = "${azurerm_sql_server.sql_server.name}"
   resource_group_name = "${var.resource_group_name}"
-  login               = "${var.ad_admin_login_name}"
+  login               = "${module.web_app.identity_principal_id}"
+  tenant_id           = "${module.web_app.identity_tenant_id}"
+  object_id           = "${module.web_app.identity_principal_id}"
 
 }
 
