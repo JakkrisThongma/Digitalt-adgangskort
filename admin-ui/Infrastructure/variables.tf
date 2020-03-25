@@ -109,6 +109,14 @@ variable "ad_admin_tenant_id" {
   description = "Id to the Azure AD tenant used for SSO. "
 }
 
+variable "tenant_id" {
+  description = "Id to the Azure AD tenant used for SSO. "
+}
+
+variable "object_id" {
+  description = "Id to the user whom should be admin."
+}
+
 variable "ad_admin_object_id" {
   description = "Id to the user whom should be admin."
 }
