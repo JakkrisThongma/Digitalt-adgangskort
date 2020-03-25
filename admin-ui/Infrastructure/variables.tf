@@ -13,7 +13,10 @@ variable "web_app_name" {
   default = "demo"
   description = "The name for the function app. Without environment naming."
 }
-
+variable "web_app2_name" {
+  default = "demo2"
+  description = "The name for the function app. Without environment naming."
+}
 variable "ui_web_app_name" {
   default = "ui"
   description = "The name for the ui app. Without environment naming."
