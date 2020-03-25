@@ -8,10 +8,18 @@ variable "location" {
   default     = "westeurope"
   description = "The azure datacenter location where the resources should be created."
 }
-
 variable "web_app_name" {
   default = "demo"
   description = "The name for the app. Without environment naming."
+}
+
+variable "ui_web_app_name" {
+  default = "ui"
+  description = "The name for the ui app. Without environment naming."
+}
+variable "api_web_app_name" {
+  default = "api"
+  description = "The name for the api app. Without environment naming."
 }
 
 variable "sku_tier" {
@@ -105,19 +113,11 @@ variable "ad_admin_login_name" {
   description = "Name of the login for sql admin loging in from Azure AD. "
 }
 
-variable "ad_admin_tenant_id" {
-  description = "Id to the Azure AD tenant used for SSO. "
-}
-
 variable "tenant_id" {
   description = "Id to the Azure AD tenant used for SSO. "
 }
 
 variable "object_id" {
-  description = "Id to the user whom should be admin."
-}
-
-variable "ad_admin_object_id" {
   description = "Id to the user whom should be admin."
 }
 
