@@ -65,6 +65,8 @@ resource "azurerm_sql_active_directory_administrator" "sql_admin" {
   login               = "${var.ad_admin_login_name}"
   ad_admin_tenant_id  = "${module.api_web_app.identity_tenant_id}"
   ad_admin_object_id  = "${module.api_web_app.identity_principal_id}"
+  tenant_id           = "${module.api_web_app.identity_tenant_id}"
+  object_id           = "${module.api_web_app.identity_principal_id}"
 }
 
 resource "azurerm_sql_database" "sql_database" {
