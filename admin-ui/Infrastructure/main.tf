@@ -11,7 +11,7 @@ module "ui_web_app" {
 
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  ui_web_app_name     = "${var.ui_web_app_name}"
+  web_app_name        = "${var.ui_web_app_name}"
   environment         = "${var.environment}"
   release             = "${var.release}"
 
@@ -28,7 +28,7 @@ module "api_web_app" {
 
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  api_web_app_name    = "${var.api_web_app_name}"
+  web_app_name        = "${var.api_web_app_name}"
   environment         = "${var.environment}"
   release             = "${var.release}"
 

@@ -9,13 +9,9 @@ variable "location" {
   description = "The azure datacenter location where the resources should be created."
 }
 
-variable "ui_web_app_name" {
-  default = "ui"
-  description = "The name for the ui app. Without environment naming."
-}
-variable "api_web_app_name" {
-  default = "api"
-  description = "The name for the api app. Without environment naming."
+variable "web_app_name" {
+  default = "demo"
+  description = "The name for the app. Without environment naming."
 }
 
 variable "sku_tier" {
