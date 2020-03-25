@@ -79,8 +79,8 @@ phases:
         artifactType: Container
 
         
-  - phase: Build React App
-    displayName: Project Build And Publish
+  - phase: Build-react-app
+    displayName: React Project Build And Publish
     queue: 
       name: 'Private VS2019'
       workspace:
@@ -130,8 +130,8 @@ phases:
         publishLocation: 'Container'
 
 
-  - phase: Build Dotnet App
-    displayName: Project Build And Publish
+  - phase: Build-dotnet-app
+    displayName: Dotnet Project Build And Publish
     queue: 
       name: 'Private VS2019'
       workspace:
