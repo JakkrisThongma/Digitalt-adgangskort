@@ -22,7 +22,7 @@ module "web_app" {
   tags = "${var.tags}"
 }
 
-module "web_app" {
+module "web_app2" {
   source  = "innovationnorway/web-app/azurerm"
   version = "0.1.6"
 
