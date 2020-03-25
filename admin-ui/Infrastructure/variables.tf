@@ -13,6 +13,10 @@ variable "web_app_name" {
   default = "demo"
   description = "The name for the function app. Without environment naming."
 }
+variable "web_app2_name" {
+  default = "demo2"
+  description = "The name for the function app. Without environment naming."
+}
 
 variable "sku_tier" {
   description = "Which tier the app service plan will have."
