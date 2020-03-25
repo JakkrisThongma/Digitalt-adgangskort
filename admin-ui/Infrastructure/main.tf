@@ -11,7 +11,7 @@ module "ui_web_app" {
 
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  web_app_name        = "${var.ui_web_app_name}"
+  ui_web_app_name     = "${var.ui_web_app_name}"
   environment         = "${var.environment}"
   release             = "${var.release}"
 
@@ -28,7 +28,7 @@ module "api_web_app" {
 
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  web_app_name        = "${var.api_web_app_name}"
+  api_web_app_name    = "${var.api_web_app_name}"
   environment         = "${var.environment}"
   release             = "${var.release}"
 
@@ -63,8 +63,8 @@ resource "azurerm_sql_active_directory_administrator" "sql_admin" {
   server_name         = "${azurerm_sql_server.sql_server.name}"
   resource_group_name = "${var.resource_group_name}"
   login               = "${var.ad_admin_login_name}"
-  tenant_id           = "${module.api_web_app.identity_tenant_id}"
-  object_id           = "${module.api_web_app.identity_principal_id}"
+  ad_admin_tenant_id  = "${module.api_web_app.identity_tenant_id}"
+  ad_admin_object_id  = "${module.api_web_app.identity_principal_id}"
 }
 
 resource "azurerm_sql_database" "sql_database" {
