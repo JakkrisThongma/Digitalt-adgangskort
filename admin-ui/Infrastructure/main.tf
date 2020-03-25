@@ -28,7 +28,7 @@ module "api_web_app" {
 
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  web_app2_name        = "${var.api_web_app_name}"
+  web_app_name        = "${var.api_web_app_name}"
   environment         = "${var.environment}"
   release             = "${var.release}"
 
