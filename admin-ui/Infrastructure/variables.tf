@@ -81,6 +81,7 @@ variable "allow_azure_ip_access" {
 }
 
 variable "server_name" {
+  default = "Onboarding"
   description = "Name of the server. "
 }
 
