@@ -109,11 +109,6 @@ variable "admin_login_name" {
   description = "Login name for the sql server administrator. If not set the default login name will be 'kitten83'."
 }
 
-variable "ad_admin_login_name" {
-  default     = "kitten82"
-  description = "Name of the login for sql admin loging in from Azure AD. "
-}
-
 variable "tenant_id" {
   description = "Id to the Azure AD tenant used for SSO. "
 }
