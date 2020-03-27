@@ -39,16 +39,6 @@ module "api_web_app" {
   tags = "${var.tags}"
 }
 
-output "tenant_id" {
-  value = "${module.api_web_app.identity_tenant_id}"
-}
-
-output "object_id" {
-  value = "${module.api_web_app.identity_principal_id}"
-}
-
-
-
 resource "azurerm_sql_server" "sql_server" {
   name                         = "${var.server_name}-${var.environment}-sql"
   resource_group_name          = "${var.resource_group_name}"
@@ -68,7 +58,13 @@ resource "azurerm_sql_firewall_rule" "sql_firewall" {
   end_ip_address      = "0.0.0.0"
 }
 
-
+resource "azurerm_sql_active_directory_administrator" "sql_admin" {
+  server_name         = "${azurerm_sql_server.sql_server.name}"
+  resource_group_name = "${var.resource_group_name}"
+  login               = "${var.ad_admin_login_name}"
+  tenant_id           = "${module.api_web_app.identity_tenant_id}"
+  object_id           = "${module.api_web_app.identity_principal_id}"
+}
 
 resource "azurerm_sql_database" "sql_database" {
   name                = "${var.database_name}"
