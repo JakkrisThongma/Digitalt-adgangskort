@@ -81,6 +81,7 @@ variable "allow_azure_ip_access" {
 }
 
 variable "server_name" {
+  default = "Onboarding"
   description = "Name of the server. "
 }
 
@@ -106,11 +107,6 @@ variable "database_requested_service_objective_name" {
 variable "admin_login_name" {
   default     = "kitten83"
   description = "Login name for the sql server administrator. If not set the default login name will be 'kitten83'."
-}
-
-variable "ad_admin_login_name" {
-  default     = "kitten82"
-  description = "Name of the login for sql admin loging in from Azure AD. "
 }
 
 variable "tenant_id" {
