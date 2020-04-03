@@ -52,6 +52,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(config)$/,
+        loader: "file-loader?name=[name].[ext]"
       }
     ]
   },
