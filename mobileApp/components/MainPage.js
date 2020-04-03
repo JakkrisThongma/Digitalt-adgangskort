@@ -1,54 +1,60 @@
 import React, { Component } from 'react';
-import {Spinner, Label, Form, Item,Input, Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
+import { Container,Content, Button, Text } from 'native-base';
 import NfcManager, {NfcTech, NfcEvents} from 'react-native-nfc-manager';
 import CustomModal from './CustomModal';
-
+import { StyleSheet} from 'react-native'
 
 export default class MainPage extends Component {
-  SampleFunction1(){
- 
-    console.log('Hello') 
-    
-  }
-
   constructor(props){
     super(props)
     this.state = {
+      scanning:true,
       isModalVisible:false,
-      isSpinnerVisible: true,
       success: false,
+      error: false
     }
     
   } 
-
-  changeModalVisibility = (bool) =>{
-    if(bool == true)
-    {
-      this.setState({isModalVisible: bool});
-    }
-    else{
-      setTimeout(() => {
-        this.setState({isModalVisible: bool});
-        this._cleanUp();
-        }, 1500);
-      
-    } 
+  showModal = () =>{
+    this.setState({isModalVisible: true});
   }
 
-  cancel =() =>{
+  hideModal = () =>{
+    setTimeout(() => {
+      this.setState({isModalVisible: false});
+      this._cleanUp();
+      }, 3000);
+  }
+
+  cancelScan =() =>{
     this.setState({isModalVisible: false})
     this._cleanUp();
   }
 
-  
+  grantAccess= () =>{
+    this.setState({
+      success: true,
+      scanning: false
+    })
+  }
+
+  accesDenied = () =>{
+    this.setState({
+      error: true,
+      scanning: false
+    })
+  }
+
   reset = () =>{
     setTimeout(() => {
       this.setState({
         success:false,
-        isSpinnerVisible: true
+        error:false,
+        scanning: true
       }); 
-      }, 1550);
+      }, 3050);
   }
+  
 
   componentDidMount() {
     NfcManager.start();
@@ -57,21 +63,70 @@ export default class MainPage extends Component {
   componentWillUnmount() {
     this._cleanUp;
   }
- 
- 
+
+// NFC METHODS
+  _cleanUp = () => {
+    NfcManager.cancelTechnologyRequest().catch(() => 0);
+  }
+
+  Scan = async () => {
+    
+    try {
+      //Show modal when the scan starts00
+      this.showModal()
+
+
+      let tech = Platform.OS === 'ios' ? NfcTech.MifareIOS : NfcTech.NfcA;
+      let resp = await NfcManager.requestTechnology(tech, {
+        alertMessage: 'Ready to do some custom Mifare cmd!'
+      });
+      console.log(resp);
+
+      // the NFC uid can be found in tag.id
+      let tag = await NfcManager.getTag();
+      console.log(tag.id);
+
+      if (Platform.OS === 'ios') {
+        resp = await NfcManager.sendMifareCommandIOS([0x30, 0x00]);
+      } else {
+        resp = await NfcManager.transceive([0x30, 0x00]);
+      }
+      console.log(resp);
+
+      this._cleanUp();
+
+      if(tag.id === '0437939A796381')
+      {
+        this.grantAccess();
+      }else{
+        this.accesDenied();
+      }
+      
+      this.hideModal();
+      this.reset();
+      
+      
+    } catch (ex) {
+      if(ex !== 'cancelled')
+      {
+        console.log('ex', ex);
+      }
+      this._cleanUp();
+    }
+  }
 
   render() {
     return (
       <Container>
-        <Content contentContainerStyle= {{justifyContent: 'center', backgroundColor: '#C6D6E3', flex:1}}>
-          <Text style = {{alignSelf: 'center'}}>Velkommen bruker</Text>
-          <Button primary style = {{alignSelf: 'center', justifyContent: "center", width: 150, marginTop: 35 }}  onPress={()=>this.Scan()}>
+        <Content contentContainerStyle= {styles.container}>
+          <Text style = {styles.text}>Velkommen bruker</Text>
+          <Button primary style = {styles.button}  onPress={()=>this.Scan()}>
             <Text>Scan dør</Text>
           </Button>
           {
           this.state.isModalVisible
           ?
-            <CustomModal changeModalVisibility={this.changeModalVisibility} isSpinnerVisible ={this.state.isSpinnerVisible} success ={this.state.success} cancel ={this.cancel}/>
+            <CustomModal scanning ={this.state.scanning} success ={this.state.success} error = {this.state.error} cancelScan ={this.cancelScan}/>
             :
             null
           }
@@ -81,51 +136,21 @@ export default class MainPage extends Component {
     
     );
   }
-
-  _cleanUp = () => {
-    NfcManager.cancelTechnologyRequest().catch(() => 0);
-  }
-
-  Scan = async () => {
-    
-    try {
-      this.changeModalVisibility(true)
-      let tech = Platform.OS === 'ios' ? NfcTech.MifareIOS : NfcTech.NfcA;
-      let resp = await NfcManager.requestTechnology(tech, {
-        alertMessage: 'Ready to do some custom Mifare cmd!'
-      });
-      console.warn(resp);
-
-      // the NFC uid can be found in tag.id
-      let tag = await NfcManager.getTag();
-      console.warn(tag.id);
-
-      if (Platform.OS === 'ios') {
-        resp = await NfcManager.sendMifareCommandIOS([0x30, 0x00]);
-      } else {
-        resp = await NfcManager.transceive([0x30, 0x00]);
-      }
-      console.warn(resp);
-
-      this._cleanUp();
-
-
-      this.setState({
-        success: true,
-        isSpinnerVisible: false
-      })
-      
-
-      this.changeModalVisibility(false);
-      this.reset();
-      
-      
-    } catch (ex) {
-      if(ex !== 'cancelled')
-      {
-        console.warn('ex', ex);
-      }
-      this._cleanUp();
-    }
-  }
 }
+
+const styles = StyleSheet.create({
+  container:{
+    justifyContent: 'center', 
+    backgroundColor: '#C6D6E3', 
+    flex:1
+  },
+
+  text: {
+    alignSelf: 'center'
+  },
+
+  button:{
+    alignSelf: 'center', justifyContent: "center", width: '35%', bottom: '40%', position: 'absolute'
+  }
+
+})
