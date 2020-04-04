@@ -2,8 +2,8 @@ import { AuthenticationContext, adalFetch, withAdalLogin } from "react-adal";
 
 export const adalConfig = {
   tenant: "3602e498-fd34-4a1e-a61b-b4639ceeaffd",
-  clientId: "93a5c726-983f-4e8c-a330-f1b34e3d6752",
-  redirectUri: "https://localhost:44321/",
+  clientId: "61548776-8c50-40bc-9d95-23b1323ea7ff",
+  redirectUri: "http://localhost:44321/",
   endpoints: {
     api: "3602e498-fd34-4a1e-a61b-b4639ceeaffd"
   },
