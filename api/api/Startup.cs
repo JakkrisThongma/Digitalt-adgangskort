@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
+using System.Runtime.InteropServices;
 
 namespace api
 {
@@ -56,9 +57,19 @@ namespace api
 			})
 			.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-			services.AddDbContext<ApiContext>(opt =>
-				opt.UseSqlServer(Configuration.GetConnectionString("LockAccessDB")));
-			services.AddControllers();
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				services.AddDbContext<ApiContext>(opt =>
+						opt.UseSqlServer(Configuration.GetConnectionString("LockAccessDB")));
+				services.AddControllers();
+			}
+			else
+			{
+				services.AddDbContext<ApiContext>(opt =>
+		opt.UseSqlServer(Configuration.GetConnectionString("MacLocalDB")));
+				services.AddControllers();
+			}
+		
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
