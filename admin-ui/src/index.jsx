@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import runWithAdal from "react-adal";
+import { runWithAdal } from "react-adal";
 import App from "./App";
 import "./web.config";
 import { authContext, getToken } from "./auth/adalConfig";
