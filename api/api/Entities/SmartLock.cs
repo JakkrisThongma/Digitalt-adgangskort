@@ -20,7 +20,7 @@ namespace api.Entities
         public string Description { get; set; }
 
         public string ManufactureId { get; set; }
-        public List<SmartLockGroup> SmartLockGroups { get; set; }
-        public List<SmartLockUser> SmartLockUsers { get; set; }
+        public ICollection<SmartLockGroup> SmartLockGroups { get; set; }
+        public ICollection<SmartLockUser> SmartLockUsers { get; set; }
     }
 }
