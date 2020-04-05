@@ -15,6 +15,6 @@ namespace api.Entities
 
         [Key] public Guid Id { get; set; }
 
-        public List<SmartLockUser> SmartLockUsers { get; set; }
+        public ICollection<SmartLockUser> SmartLockUsers { get; set; }
     }
 }
