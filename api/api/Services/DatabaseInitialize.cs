@@ -1,106 +1,104 @@
-﻿using api.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
+using api.Entities;
 
 namespace api.Services
 {
-	public class DatabaseInitialize : IDatabaseInitialize
-	{
-		[Obsolete]
-		public void Initialize(ApiContext context)
-		{
-			context.Database.EnsureDeleted();
-			context.Database.EnsureCreated();
-			if(!context.Employees.ToList().Any())
-			{
-				context.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Employees', RESEED, 1000)");
+    public class DatabaseInitialize : IDatabaseInitialize
+    {
+        [Obsolete]
+        public void Initialize(ApiContext context)
+        {
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
 
-				var employees = new List<Models.Employee>
-				{
-					new Models.Employee
-					{
-						Firstname = "Bao",
-						Lastname = "Nguyen",
-						DayOfBirth = "211091",
-						PhoneNumber = 47355622
-					},
-					new Models.Employee
-					{
-						Firstname = "Jakkris",
-						Lastname = "Thongma",
-						DayOfBirth = "050695",
-						PhoneNumber = 45024278
-					}
-				};
-
-				foreach (var employee in employees)
-				{
-					context.Employees.Add(employee);
-					context.SaveChanges();
-				}
-			}
-
-			if (!context.AccessLevels.ToList().Any())
-			{
-				var accessLevels = new List<Models.AccessLevel>
-				{
-					new Models.AccessLevel
-					{
-						Title = "Administrasjon"
-					},
-					new Models.AccessLevel
-					{
-						Title = "Utvikler"
-					},
-					new Models.AccessLevel
-					{
-						Title = "Økonomi"
-					},
-					new Models.AccessLevel
-					{
-						Title = "Markedsføring"
-					},
-					new Models.AccessLevel
-					{
-						Title = "Vekter"
-					}
-				};
-
-				foreach (var accessLevel in accessLevels)
-				{
-					context.AccessLevels.Add(accessLevel);
-					context.SaveChanges();
-				}
+            var user1 =
+                new User
+                {
+                    Id = Guid.NewGuid()
+                };
+            var user2 = new User
+            {
+                Id = Guid.NewGuid()
+            };
 
 
-			}
-
-			if (!context.DoorLocks.ToList().Any())
-			{
-				var doorLocks = new List<Models.DoorLock>
-				{
-					new Models.DoorLock
-					{
-						Title = "Inngang"
-					},
-					new Models.DoorLock
-					{
-						Title = "Utgang"
-					}
-				};
-
-				foreach (var doorLock in doorLocks)
-				{
-					context.DoorLocks.Add(doorLock);
-					context.SaveChanges();
-				}
+            var group1 =
+                new Group
+                {
+                    Id = Guid.NewGuid()
+                };
+            var group2 = new Group
+            {
+                Id = Guid.NewGuid()
+            };
+            var group3 = new Group
+            {
+                Id = Guid.NewGuid()
+            };
 
 
-			}
+            var smartLock1 = new SmartLock
+            {
+                Id = Guid.NewGuid(),
+                Title = "Inngang",
+                Description = "Tilgang til Alle ansatte",
+                ManufactureId = "abcd1234"
+            };
+            var smartLock2 = new SmartLock
+            {
+                Id = Guid.NewGuid(),
+                Title = "Utgang",
+                Description = "Tilgang til Alle ansatte",
+                ManufactureId = "qweasd123"
 
-		}
-	}
+
+            };
+
+            if (!context.Users.ToList().Any())
+            {
+                context.Users.AddRange(user1, user2);
+                context.SaveChanges();
+            }
+
+            if (!context.Groups.ToList().Any())
+            {
+                context.Groups.AddRange(group1, group2, group3);
+                context.SaveChanges();
+            }
+
+            if (!context.SmartLocks.ToList().Any())
+            {
+                context.SmartLocks.AddRange(smartLock1, smartLock2);
+                context.SaveChanges();
+            }
+
+            context.AddRange(
+                new SmartLockGroup
+                {
+                    GroupId = group1.Id,
+                    SmartLockId = smartLock1.Id
+                },
+                new SmartLockGroup
+                {
+                    GroupId = group2.Id,
+                    SmartLockId = smartLock1.Id
+                });
+
+            context.AddRange(
+                new SmartLockUser
+                {
+                    UserId = user1.Id,
+                    SmartLockId = smartLock1.Id
+                },
+                new SmartLockUser
+                {
+                    UserId = user2.Id,
+                    SmartLockId = smartLock1.Id
+                });
+
+
+            context.SaveChanges();
+        }
+    }
 }
