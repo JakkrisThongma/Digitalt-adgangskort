@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Entities;
+using Microsoft.EntityFrameworkCore;
 using User = api.Entities.User;
 
 namespace api.Repositories
@@ -16,19 +17,19 @@ namespace api.Repositories
             _context = context;
         }
 
-        public  IEnumerable<User> GetUsers()
+        public async Task<IEnumerable<User>> GetUsers()
         {
-            return  _context.Users.ToList();
+            return await _context.Users.ToListAsync();
         }
 
-        public User GetUser(Guid userId)
+        public async Task<User> GetUser(Guid userId)
         {
             if (userId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(userId));
             }
             
-            return _context.Users.FirstOrDefault(u => u.Id == userId);;
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);;
         }
 
         public void UpdateUser(User user)
@@ -47,7 +48,7 @@ namespace api.Repositories
         }
 
 
-        public void DeleteUser(User user)
+        public  void DeleteUser(User user)
         {
             if (user == null)
             {
@@ -57,20 +58,20 @@ namespace api.Repositories
             _context.Users.Remove(user);
         }
 
-        public bool UserExists(Guid userId)
+        public async Task<bool> UserExists(Guid userId)
         {
             if (userId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            return _context.Users.Any(u => u.Id == userId);
+            return await _context.Users.AnyAsync(u => u.Id == userId);
         }
 
 
-        public bool Save()
+        public async Task<bool>  Save()
         {
-            return (_context.SaveChanges() >= 0);
+            return (await _context.SaveChangesAsync() > 0);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace api.Controllers
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
 
-            var userFromRepo = _userRepository.GetUsers();
+            var userFromRepo = await _userRepository.GetUsers();
             var usersFromAzureAd = await _azureAdRepository.GetUsers(client);
 
             var a = _mapper.Map<IEnumerable<UserDto>>(userFromRepo);
@@ -51,9 +51,9 @@ namespace api.Controllers
 
         // GET: api/Users/5
         [HttpGet("{userId}")]
-        public ActionResult<User> GetUser(Guid userId)
+        public async Task<ActionResult<User>> GetUser(Guid userId)
         {
-            var userFromRepo = _userRepository.GetUser(userId);
+            var userFromRepo = await _userRepository.GetUser(userId);
             if (userFromRepo == null) return NotFound();
             
 
@@ -64,12 +64,12 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{userId}")]
-        public IActionResult UpdateUser(Guid userId, User user)
+        public async Task<IActionResult> UpdateUser(Guid userId, User user)
         {
             if (userId != user.Id) return BadRequest();
 
             _userRepository.UpdateUser(user);
-            _userRepository.Save();
+            await _userRepository.Save();
 
             return NoContent();
         }
@@ -78,11 +78,11 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public ActionResult<User> CreateUser([FromBody] User user)
+        public async Task<ActionResult<User>> CreateUser([FromBody] User user)
         {
             var userEntity = _mapper.Map<User>(user);
             _userRepository.AddUser(userEntity);
-            _userRepository.Save();
+            await _userRepository.Save();
 
             return CreatedAtAction("GetUser", new {userId = user.Id}, User);
         }
@@ -90,17 +90,16 @@ namespace api.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{userId}")]
-        public ActionResult<User> DeleteUser(Guid userId)
+        public async Task<ActionResult<User>> DeleteUser(Guid userId)
         {
-            var userFromRepo = _userRepository.GetUser(userId);
+            var userFromRepo = await _userRepository.GetUser(userId);
 
             if (userFromRepo == null)
             {
                 return NotFound();
             }
-
             _userRepository.DeleteUser(userFromRepo);
-            _userRepository.Save();
+            await _userRepository.Save();
 
             return NoContent();
         }
