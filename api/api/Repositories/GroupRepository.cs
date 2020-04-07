@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using api.Entities;
 using System.Linq;
-
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
@@ -15,19 +16,19 @@ namespace api.Repositories
             _context = context;
         }
 
-        public IEnumerable<Group> GetGroups()
+        public async Task<IEnumerable<Group>> GetGroups()
         {
-            return _context.Groups.ToList();
+            return await _context.Groups.ToListAsync();
         }
 
-        public Group GetGroup(Guid groupId)
+        public async Task<Group> GetGroup(Guid groupId)
         {
             if (groupId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
             
-            return _context.Groups.FirstOrDefault(g => g.Id == groupId);
+            return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         }
 
         public void UpdateGroup(Group groupToUpdate)
@@ -54,20 +55,20 @@ namespace api.Repositories
             _context.Groups.Remove(groupToDelete);
         }
 
-        public bool GroupExists(Guid groupId)
+        public async Task<bool> GroupExists(Guid groupId)
         {
             if (groupId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
 
-            return _context.Groups.Any(g => g.Id == groupId);
+            return await _context.Groups.AnyAsync(g => g.Id == groupId);
         }
 
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            return (_context.SaveChanges() >= 0);
+            return await (_context.SaveChangesAsync()) >= 1;
         }
     }
 }

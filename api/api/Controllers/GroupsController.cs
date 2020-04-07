@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Entities;
+using api.Models;
+using api.Repositories;
+using api.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace api.Controllers
 {
@@ -12,51 +17,57 @@ namespace api.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        private readonly ApiContext _context;
+        private readonly IGroupRepository _groupRepository;
+        private readonly IAzureAdRepository _azureAdRepository;
+        private readonly IMapper _mapper;
 
-        public GroupsController(ApiContext context)
+        public GroupsController(IGroupRepository groupRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
         {
-            _context = context;
+            _groupRepository = groupRepository ??
+                              throw new ArgumentNullException(nameof(groupRepository));
+            _azureAdRepository = azureAdRepository ??
+                                 throw new ArgumentNullException(nameof(azureAdRepository));
+            _mapper = mapper ??
+                      throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Groups
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
         {
-            return await _context.Groups.ToListAsync();
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+            var groupFromRepo = await _groupRepository.GetGroups();
+            var usersFromAzureAd = await _azureAdRepository.GetGroups(client);
+
+            var a = _mapper.Map<IEnumerable<GroupDto>>(groupFromRepo);
+            var b = _mapper.Map<IEnumerable<GroupDto>>(usersFromAzureAd);
+
+            return Ok(JsonConvert.SerializeObject(new { fromDb = a, fromAzure = b }));
         }
 
         // GET: api/Groups/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Group>> GetGroup(Guid id)
         {
-            var Group = await _context.Groups.FindAsync(id);
+            var groupFromRepo = await _groupRepository.GetGroup(id);
 
-            if (Group == null) return NotFound();
+            if (groupFromRepo == null)
+                return NotFound();
 
-            return Group;
+            return Ok(_mapper.Map<GroupDto>(groupFromRepo));
         }
 
         // PUT: api/Groups/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGroup(Guid id, Group Group)
+        [HttpPut("{GroupId}")]
+        public async Task<IActionResult> UpdateGroup(Guid groupId, Group group)
         {
-            if (id != Group.Id) return BadRequest();
+            if (groupId != group.Id) return BadRequest();
 
-            _context.Entry(Group).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GroupExists(id))
-                    return NotFound();
-                throw;
-            }
+            _groupRepository.UpdateGroup(group);
+            await _groupRepository.Save();
 
             return NoContent();
         }
@@ -65,30 +76,29 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(Group Group)
+        public async Task<ActionResult<Group>> CreateGroup([FromBody]Group group)
         {
-            _context.Groups.Add(Group);
-            await _context.SaveChangesAsync();
+            var groupEntity = _mapper.Map<Group>(group);
+            _groupRepository.AddGroup(groupEntity);
+            await _groupRepository.Save();
 
-            return CreatedAtAction("GetGroup", new {id = Group.Id}, Group);
+            return CreatedAtAction("GetGroup", new { groupId = group.Id }, group);
         }
 
         // DELETE: api/Groups/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Group>> DeleteGroup(Guid id)
+        public async Task<ActionResult<Group>> DeleteGroup(Guid groupId)
         {
-            var Group = await _context.Groups.FindAsync(id);
-            if (Group == null) return NotFound();
+            var groupFromRepo = _groupRepository.GetGroup(groupId);
+            
+            if (groupFromRepo == null) return NotFound();
 
-            _context.Groups.Remove(Group);
-            await _context.SaveChangesAsync();
+             _groupRepository.DeleteGroup(groupFromRepo);
+            await _groupRepository.Save();
 
-            return Group;
+            return NoContent();
         }
 
-        private bool GroupExists(Guid id)
-        {
-            return _context.Groups.Any(e => e.Id.Equals(id));
-        }
+
     }
 }
