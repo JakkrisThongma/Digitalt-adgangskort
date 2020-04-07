@@ -16,6 +16,9 @@ namespace api.Models
         public string Mail { get; set; }
         public string JobTitle { get; set; }
         public string OfficeLocation { get; set; }
+        
+        public string PhotoBase64String { get; set; }
+
 
     }
 }
