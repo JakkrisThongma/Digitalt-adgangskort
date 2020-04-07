@@ -12,7 +12,7 @@ namespace api.Repositories
         public void UpdateGroup(Group groupToUpdate);
         public void AddGroup(Group groupToAdd);
         //public void DeleteGroup(Group groupToDelete);
-        void DeleteGroup(Task<Group> groupFromRepo);
+        void DeleteGroup(Group groupFromRepo);
         public Task<bool> GroupExists(Guid groupId);
         public Task<bool> Save();
     }

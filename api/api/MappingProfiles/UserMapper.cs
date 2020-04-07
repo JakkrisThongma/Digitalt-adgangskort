@@ -18,8 +18,6 @@ namespace api.MappingProfiles
             
             CreateMap<Entities.User, Models.UserDto>();
             CreateMap<Models.UserDto, Entities.User>();
-            
-         
         }
     }
 }

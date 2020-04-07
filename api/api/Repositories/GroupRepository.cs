@@ -68,7 +68,7 @@ namespace api.Repositories
 
         public async Task<bool> Save()
         {
-            return await (_context.SaveChangesAsync()) >= 1;
+            return await (_context.SaveChangesAsync()) > 0;
         }
     }
 }

@@ -89,7 +89,7 @@ namespace api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Group>> DeleteGroup(Guid groupId)
         {
-            var groupFromRepo = _groupRepository.GetGroup(groupId);
+            var groupFromRepo = await _groupRepository.GetGroup(groupId);
             
             if (groupFromRepo == null) return NotFound();
 
