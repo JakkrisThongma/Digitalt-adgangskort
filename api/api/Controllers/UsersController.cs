@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using api.Entities;
+using api.Models;
+using api.Repositories;
+using api.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph;
+using Newtonsoft.Json;
+using User = api.Entities.User;
 
 namespace api.Controllers
 {
@@ -13,51 +18,58 @@ namespace api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ApiContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IAzureAdRepository _azureAdRepository;
+        private readonly IMapper _mapper;
 
-        public UsersController(ApiContext context)
+
+        public UsersController(IUserRepository userRepository, IAzureAdRepository azureAdRepository,IMapper mapper)
         {
-            _context = context;
+            _userRepository = userRepository ??
+                              throw new ArgumentNullException(nameof(userRepository));
+            _azureAdRepository = azureAdRepository ??
+                                 throw new ArgumentNullException(nameof(azureAdRepository));
+            _mapper = mapper ??
+                      throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+            var userFromRepo = _userRepository.GetUsers();
+            var usersFromAzureAd = await _azureAdRepository.GetUsers(client);
+
+            var a = _mapper.Map<IEnumerable<UserDto>>(userFromRepo);
+            var b = _mapper.Map<IEnumerable<UserDto>>(usersFromAzureAd);
+            // var merged = _mapper.Map(b,a );
+            //return Ok(JsonConvert.SerializeObject(merged));
+            return Ok(JsonConvert.SerializeObject(new { fromDb = a, fromAzure=b}));
         }
 
         // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        [HttpGet("{userId}")]
+        public ActionResult<User> GetUser(Guid userId)
         {
-            var User = await _context.Users.FindAsync(id);
+            var userFromRepo = _userRepository.GetUser(userId);
+            if (userFromRepo == null) return NotFound();
+            
 
-            if (User == null) return NotFound();
-
-            return User;
+            return Ok(_mapper.Map<UserDto>(userFromRepo));
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        [HttpPut("{userId}")]
+        public IActionResult UpdateUser(Guid userId, User user)
         {
-            if (id != user.Id) return BadRequest();
+            if (userId != user.Id) return BadRequest();
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                    return NotFound();
-                throw;
-            }
+            _userRepository.UpdateUser(user);
+            _userRepository.Save();
 
             return NoContent();
         }
@@ -66,30 +78,31 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser([FromBody] User user)
+        public ActionResult<User> CreateUser([FromBody] User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var userEntity = _mapper.Map<User>(user);
+            _userRepository.AddUser(userEntity);
+            _userRepository.Save();
 
-            return CreatedAtAction("GetUser", new {id = user.Id}, User);
+            return CreatedAtAction("GetUser", new {userId = user.Id}, User);
         }
+
 
         // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(Guid id)
+        [HttpDelete("{userId}")]
+        public ActionResult<User> DeleteUser(Guid userId)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
+            var userFromRepo = _userRepository.GetUser(userId);
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            if (userFromRepo == null)
+            {
+                return NotFound();
+            }
 
-            return user;
-        }
+            _userRepository.DeleteUser(userFromRepo);
+            _userRepository.Save();
 
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id.Equals(id));
+            return NoContent();
         }
     }
 }
