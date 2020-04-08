@@ -35,8 +35,9 @@ namespace api.Controllers
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetLocks()
         {
             var smartLockFromRepo = await _smartLockRepository.GetSmartLocks();
+            var smartlocks = _mapper.Map<IEnumerable<SmartLockDto>>(smartLockFromRepo);
 
-            return Ok(smartLockFromRepo);
+            return Ok(smartlocks);
         }
 
         // GET: api/Locks/5
@@ -46,8 +47,9 @@ namespace api.Controllers
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(id);
 
             if (smartLockFromRepo == null) return NotFound();
+            var smartlock = _mapper.Map<SmartLockDto>(smartLockFromRepo);
 
-            return Ok(JsonConvert.SerializeObject(smartLockFromRepo));
+            return Ok(smartlock);
         }
 
         // PUT: api/Locks/5
@@ -57,10 +59,10 @@ namespace api.Controllers
         public async Task<IActionResult> UpdateLock(Guid smartLockId, SmartLockDto smartLock)
         {
             if (!await _smartLockRepository.SmartLockExists(smartLockId)) return BadRequest();
-            var userEntity = _mapper.Map<SmartLock>(smartLock);
-            userEntity.Id = smartLockId;
-            userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _smartLockRepository.UpdateSmartLock(userEntity);
+            var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
+            smartLockEntity.Id = smartLockId;
+            smartLockEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _smartLockRepository.UpdateSmartLock(smartLockEntity);
             await _smartLockRepository.Save();
 
             return NoContent();
