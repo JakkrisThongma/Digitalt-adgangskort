@@ -15,46 +15,56 @@ namespace api.Controllers
     public class SmartLocksController : ControllerBase
     {
         private readonly ISmartLockRepository _smartLockRepository;
-        private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
-        public SmartLocksController(ISmartLockRepository smartLockRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
+        public SmartLocksController(ISmartLockRepository smartLockRepository, IMapper mapper)
         {
             _smartLockRepository = smartLockRepository ??
                               throw new ArgumentNullException(nameof(smartLockRepository));
-            _azureAdRepository = azureAdRepository ??
-                                 throw new ArgumentNullException(nameof(azureAdRepository));
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Locks
+        // GET: api/smart-locks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetLocks()
+        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLocks()
         {
-            var smartLockFromRepo = await _smartLockRepository.GetSmartLocks();
-            var smartlocks = _mapper.Map<IEnumerable<SmartLockDto>>(smartLockFromRepo);
+            var smartLocksFromRepo = await _smartLockRepository.GetSmartLocks();
+            var smartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(smartLocksFromRepo);
 
-            return Ok(smartlocks);
+            return Ok(smartLocksDto);
         }
 
-        // GET: api/Locks/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SmartLockDto>> GetLock(Guid id)
+        // GET: api/smart-locks/5
+        [HttpGet("{smartLockId}")]
+        public async Task<ActionResult<SmartLockDto>> GetSmartLock(Guid smartLockId)
         {
-            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(id);
+            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
 
             if (smartLockFromRepo == null) return NotFound();
-            var smartlock = _mapper.Map<SmartLockDto>(smartLockFromRepo);
+            var smartLock = _mapper.Map<SmartLockDto>(smartLockFromRepo);
 
-            return Ok(smartlock);
+            return Ok(smartLock);
+        }
+        
+        // POST: api/smart-locks
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPost]
+        public async Task<ActionResult> CreateSmartLock(SmartLockCreationDto smartLock)
+        {
+            var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
+            _smartLockRepository.AddSmartLock(smartLockEntity);
+            await _smartLockRepository.Save();
+            
+            return CreatedAtAction("GetSmartLock", new { id = smartLock.Id }, smartLock);
         }
 
-        // PUT: api/Locks/5
+        // PUT: api/smart-locks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{smartLockId}")]
-        public async Task<IActionResult> UpdateLock(Guid smartLockId, SmartLockDto smartLock)
+        public async Task<IActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
         {
             if (!await _smartLockRepository.SmartLockExists(smartLockId)) return BadRequest();
             var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
@@ -66,21 +76,9 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // POST: api/Locks
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        //[HttpPost]
-        //public async Task<ActionResult<SmartLock>> PostLock(SmartLock smartLock)
-        //{
-        //    _context.SmartLocks.Add(smartLock);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetLock", new { id = smartLock.Id }, smartLock);
-        //}
-
-        // DELETE: api/Locks/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<SmartLockDto>> DeleteLock(Guid smartLockId)
+        // DELETE: api/smart-locks/5
+        [HttpDelete("{smartLockId}")]
+        public async Task<ActionResult> DeleteSmartLock(Guid smartLockId)
         {
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
 
