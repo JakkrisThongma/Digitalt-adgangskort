@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using api.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
@@ -14,25 +16,26 @@ namespace api.Repositories
             _context = context;
         }
         
-        public IEnumerable<SmartLock> GetSmartLocks()
+        public async Task<IEnumerable<SmartLock>> GetSmartLocks()
         {
-            return _context.SmartLocks.ToList().ToList();
+            return await _context.SmartLocks.ToListAsync();
         }
 
-        public SmartLock GetSmartLock(Guid smartLockId)
+        public async Task<SmartLock> GetSmartLock(Guid smartLockId)
         {
             if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }
 
-            return _context.SmartLocks.FirstOrDefault(sl => sl.Id == smartLockId);
+            return await _context.SmartLocks.FirstOrDefaultAsync(sl => sl.Id == smartLockId);
             
         }
 
         public void UpdateSmartLock(SmartLock smartLock)
         {
-            throw new NotImplementedException();
+            _context.Entry(smartLock).State = EntityState.Modified;
+
         }
 
         public void AddSmartLock(SmartLock smartLock)
@@ -55,19 +58,19 @@ namespace api.Repositories
             _context.SmartLocks.Remove(smartLock);
         }
 
-        public bool SmartLockExists(Guid smartLockId)
+        public async Task<bool> SmartLockExists(Guid smartLockId)
         {
             if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }
 
-            return _context.SmartLocks.Any(sl => sl.Id == smartLockId);
+            return await _context.SmartLocks.AnyAsync(sl => sl.Id == smartLockId);
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            return (_context.SaveChanges() >= 0);
+            return await (_context.SaveChangesAsync()) > 0;
         }
     }
 }

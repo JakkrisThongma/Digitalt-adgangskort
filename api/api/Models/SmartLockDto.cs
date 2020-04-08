@@ -10,6 +10,9 @@ namespace api.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string ManufactureId { get; set; }
-        
+        public string Status { get; set; }
+        public DateTimeOffset CreationDate { get; set; }
+        public DateTimeOffset LastModificationDate { get; set; }
+
     }
 }
