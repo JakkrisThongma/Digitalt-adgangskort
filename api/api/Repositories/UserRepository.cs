@@ -19,6 +19,7 @@ namespace api.Repositories
 
         public async Task<IEnumerable<User>> GetUsers()
         {
+            
             return await _context.Users.ToListAsync();
         }
 
@@ -34,6 +35,8 @@ namespace api.Repositories
 
         public void UpdateUser(User user)
         {
+            _context.Entry(user).State = EntityState.Modified;
+
         }
 
 
