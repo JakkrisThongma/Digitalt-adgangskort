@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace api.Entities
 {
@@ -7,7 +8,7 @@ namespace api.Entities
         public ApiContext(DbContextOptions<ApiContext> options) : base(options)
         {
         }
-
+        
         public DbSet<SmartLock> SmartLocks { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -40,5 +41,19 @@ namespace api.Entities
                 .WithMany(u => u.SmartLockUsers)
                 .HasForeignKey(lu => lu.UserId);
         }
+        public static readonly ILoggerFactory MyLoggerFactory
+            = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter((category, level) =>
+                        category == DbLoggerCategory.Database.Command.Name
+                        && level == LogLevel.Information)
+                    .AddConsole();
+            });
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder
+                .UseLoggerFactory(MyLoggerFactory);
+
     }
 }
