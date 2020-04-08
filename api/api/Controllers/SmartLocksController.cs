@@ -32,16 +32,16 @@ namespace api.Controllers
 
         // GET: api/Locks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SmartLock>>> GetLocks()
+        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetLocks()
         {
             var smartLockFromRepo = await _smartLockRepository.GetSmartLocks();
 
-            return Ok(JsonConvert.SerializeObject(smartLockFromRepo));
+            return Ok(smartLockFromRepo);
         }
 
         // GET: api/Locks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<SmartLock>> GetLock(Guid id)
+        public async Task<ActionResult<SmartLockDto>> GetLock(Guid id)
         {
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(id);
 
@@ -53,12 +53,14 @@ namespace api.Controllers
         // PUT: api/Locks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLock(Guid smartLockId, SmartLock smartLock)
+        [HttpPut("{smartLockId}")]
+        public async Task<IActionResult> UpdateLock(Guid smartLockId, SmartLockDto smartLock)
         {
-            if (smartLockId != smartLock.Id) return BadRequest();
-
-            _smartLockRepository.UpdateSmartLock(smartLock);
+            if (!await _smartLockRepository.SmartLockExists(smartLockId)) return BadRequest();
+            var userEntity = _mapper.Map<SmartLock>(smartLock);
+            userEntity.Id = smartLockId;
+            userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _smartLockRepository.UpdateSmartLock(userEntity);
             await _smartLockRepository.Save();
 
             return NoContent();
@@ -78,7 +80,7 @@ namespace api.Controllers
 
         // DELETE: api/Locks/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<SmartLock>> DeleteLock(Guid smartLockId)
+        public async Task<ActionResult<SmartLockDto>> DeleteLock(Guid smartLockId)
         {
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
 

@@ -37,14 +37,15 @@ namespace api.Services
                     Id = Guid.Parse("e1f2df93-23b6-45ec-9e2f-a845fcd25cff"),
                     Status = Status.Inactive
             };
-    
+
 
             var smartLock1 = new SmartLock
             {
                 Id = Guid.NewGuid(),
                 Title = "Inngang",
                 Description = "Tilgang til Alle ansatte",
-                ManufactureId = "abcd1234"
+                ManufactureId = "abcd1234",
+                Status = Status.Active
             };
             var smartLock2 = new SmartLock
             {

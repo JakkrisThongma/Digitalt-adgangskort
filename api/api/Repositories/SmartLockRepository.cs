@@ -34,7 +34,8 @@ namespace api.Repositories
 
         public void UpdateSmartLock(SmartLock smartLock)
         {
-            throw new NotImplementedException();
+            _context.Entry(smartLock).State = EntityState.Modified;
+
         }
 
         public void AddSmartLock(SmartLock smartLock)
