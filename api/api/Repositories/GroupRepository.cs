@@ -31,8 +31,9 @@ namespace api.Repositories
             return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         }
 
-        public void UpdateGroup(Group groupToUpdate)
+        public void UpdateGroup(Group group)
         {
+            _context.Entry(group).State = EntityState.Modified;
         }
 
         public void AddGroup(Group groupToAdd)

@@ -33,40 +33,51 @@ namespace api.Controllers
 
         // GET: api/Groups
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Group>>> GetGroups()
+        public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
 
-            var groupFromRepo = await _groupRepository.GetGroups();
-            var usersFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var groupsFromRepo = await _groupRepository.GetGroups();
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
 
-            var a = _mapper.Map<IEnumerable<GroupDto>>(groupFromRepo);
-            var b = _mapper.Map<IEnumerable<GroupDto>>(usersFromAzureAd);
+            var mergedGroups = (from groupFromRepo in groupsFromRepo
+                               from dbUserFromAzureAd in allGroupsFromAzureAd
+                               where groupFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
+                               let dtoFromDb = _mapper.Map<GroupDto>(groupFromRepo)
+                               select _mapper.Map(dbUserFromAzureAd, dtoFromDb));
 
-            return Ok(JsonConvert.SerializeObject(new { fromDb = a, fromAzure = b }));
+            return Ok(mergedGroups);
         }
 
         // GET: api/Groups/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Group>> GetGroup(Guid id)
+        [HttpGet("{groupId}")]
+        public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
         {
-            var groupFromRepo = await _groupRepository.GetGroup(id);
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+            var groupFromRepo = await _groupRepository.GetGroup(groupId);
 
             if (groupFromRepo == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<GroupDto>(groupFromRepo));
+            var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
+
+            var dtoFromDb = _mapper.Map<GroupDto>(groupFromRepo);
+
+            return _mapper.Map(groupFromAzureAd, dtoFromDb);
         }
 
         // PUT: api/Groups/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{GroupId}")]
-        public async Task<IActionResult> UpdateGroup(Guid groupId, Group group)
+        [HttpPut("{groupId}")]
+        public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
         {
-            if (groupId != group.Id) return BadRequest();
-
-            _groupRepository.UpdateGroup(group);
+            if (!await _groupRepository.GroupExists(groupId)) return BadRequest();
+            var groupEntity = _mapper.Map<Group>(group);
+            groupEntity.Id = groupId;
+            groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _groupRepository.UpdateGroup(groupEntity);
             await _groupRepository.Save();
 
             return NoContent();
@@ -76,7 +87,7 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Group>> CreateGroup([FromBody]Group group)
+        public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
         {
             var groupEntity = _mapper.Map<Group>(group);
             _groupRepository.AddGroup(groupEntity);
@@ -86,12 +97,13 @@ namespace api.Controllers
         }
 
         // DELETE: api/Groups/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{groupId}")]
         public async Task<ActionResult<Group>> DeleteGroup(Guid groupId)
         {
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
             
-            if (groupFromRepo == null) return NotFound();
+            if (groupFromRepo == null) 
+                return NotFound();
 
              _groupRepository.DeleteGroup(groupFromRepo);
             await _groupRepository.Save();
