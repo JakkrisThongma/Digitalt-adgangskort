@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using api.Entities;
+using api.Types;
 
 namespace api.Services
 {
@@ -15,28 +16,28 @@ namespace api.Services
             var user1 =
                 new User
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.Parse("b0568c49-a276-4eeb-9000-6555c0bc3801"),
+                    Status = Status.Active
+                    
                 };
             var user2 = new User
             {
-                Id = Guid.NewGuid()
+                Id = Guid.Parse("d003b41f-4e39-4bc7-9dee-2f873dbed582"),
+                Status = Status.Inactive
             };
 
 
             var group1 =
                 new Group
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.Parse("8b4b5344-9050-4fd0-858b-5b93125341c9")
+                    
                 };
             var group2 = new Group
             {
-                Id = Guid.NewGuid()
+                Id = Guid.Parse("e1f2df93-23b6-45ec-9e2f-a845fcd25cff")
             };
-            var group3 = new Group
-            {
-                Id = Guid.NewGuid()
-            };
-
+    
 
             var smartLock1 = new SmartLock
             {
@@ -63,7 +64,7 @@ namespace api.Services
 
             if (!context.Groups.ToList().Any())
             {
-                context.Groups.AddRange(group1, group2, group3);
+                context.Groups.AddRange(group1, group2);
                 context.SaveChanges();
             }
 

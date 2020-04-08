@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using api.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,14 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication;
 using System.Runtime.InteropServices;
 using api.Configuration;
 using api.Entities;
+using api.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
@@ -97,7 +94,12 @@ namespace api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityService, AzureAdIdentityService>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             
+            services.AddScoped<IAzureAdRepository, AzureAdRepository>();
+            services.AddScoped<ISmartLockRepository, SmartLockRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddDbContext<ApiContext>(opt =>
