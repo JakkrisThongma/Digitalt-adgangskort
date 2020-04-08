@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using api.Models;
 using api.Repositories;
@@ -67,6 +68,32 @@ namespace api.Controllers
             return _mapper.Map(userFromAzureAd, dtoFromDb);
         }
 
+        // POST: api/Users
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPost]
+        public async Task<ActionResult> CreateUser([FromBody] UserCreationDto user)
+        {
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            try
+            {
+                await _azureAdRepository.GetUser(client, user.Id.ToString());
+            }
+            catch (ServiceException e)
+            {
+                if (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return BadRequest("User was not found on Azure AD");
+                }
+            }
+            
+            var userEntity = _mapper.Map<User>(user);
+            _userRepository.AddUser(userEntity);
+            await _userRepository.Save();
+
+            return CreatedAtAction("GetUser", new {userId = user.Id}, user);
+        }
+
         // PUT: api/Users/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -82,20 +109,6 @@ namespace api.Controllers
 
             return NoContent();
         }
-
-        // POST: api/Users
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreationDto user)
-        {
-            var userEntity = _mapper.Map<User>(user);
-            _userRepository.AddUser(userEntity);
-            await _userRepository.Save();
-
-            return CreatedAtAction("GetUser", new {userId = user.Id}, user);
-        }
-
 
         // DELETE: api/Users/5
         [HttpDelete("{userId}")]
