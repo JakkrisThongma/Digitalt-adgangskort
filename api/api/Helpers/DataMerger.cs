@@ -47,5 +47,16 @@ namespace api.Helpers
             return mergedGroups;
         }
         
+        public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo, 
+            IEnumerable<Microsoft.Graph.Group> allGroupsFromAzureAd, IMapper  mapper)
+        {
+            var mergedGroups = (from groupFromRepo in groupsFromRepo
+                from dbGroupFromAzureAd in allGroupsFromAzureAd
+                where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
+                let dtoFromDb = mapper.Map<GroupDto>(groupFromRepo)
+                select mapper.Map(dbGroupFromAzureAd, dtoFromDb));
+
+            return mergedGroups;
+        }
     }
 }
