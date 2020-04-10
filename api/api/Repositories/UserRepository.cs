@@ -61,6 +61,20 @@ namespace api.Repositories
             _context.Users.Remove(user);
         }
 
+        public async Task<IEnumerable<SmartLock>> GetUserSmartLocks(Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var userWithSmartLocks = await _context.Users
+                .Include(u => u.SmartLockUsers)
+                .ThenInclude(slu => slu.SmartLock).FirstOrDefaultAsync(u => u.Id == userId);
+
+            return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock).ToList();
+        }
+        
         public async Task<bool> UserExists(Guid userId)
         {
             if (userId == Guid.Empty)

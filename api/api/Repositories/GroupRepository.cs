@@ -55,6 +55,20 @@ namespace api.Repositories
 
             _context.Groups.Remove(groupToDelete);
         }
+        
+        public async Task<IEnumerable<SmartLock>> GetGroupSmartLocks(Guid groupId)
+        {
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            var groupWithSmartLocks = await _context.Groups
+                .Include(g => g.SmartLockGroups)
+                .ThenInclude(slg => slg.SmartLock).FirstOrDefaultAsync(g => g.Id == groupId);
+
+            return groupWithSmartLocks.SmartLockGroups.Select(slu => slu.SmartLock).ToList();
+        }
 
         public async Task<bool> GroupExists(Guid groupId)
         {

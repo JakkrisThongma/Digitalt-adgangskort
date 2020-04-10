@@ -120,6 +120,36 @@ namespace api.Controllers
             }
         }
 
+        [HttpGet("users/{userId}/groups")]
+        public async Task<IActionResult> GetUserGroups(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+                {
+                    return BadRequest();
+                }
+
+                // Initialize the GraphServiceClient.
+                var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+                // Load user profile.
+                var userGroups = await _azureAdRepository.GetUserGroupsIds(client, userId);
+
+                return Ok(userGroups);
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+        }
 
         [HttpGet("groups/")]
         public async Task<IActionResult> GetGroups()

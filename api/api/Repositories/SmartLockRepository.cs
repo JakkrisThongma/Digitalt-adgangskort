@@ -15,7 +15,7 @@ namespace api.Repositories
         {
             _context = context;
         }
-        
+
         public async Task<IEnumerable<SmartLock>> GetSmartLocks()
         {
             return await _context.SmartLocks.ToListAsync();
@@ -29,13 +29,11 @@ namespace api.Repositories
             }
 
             return await _context.SmartLocks.FirstOrDefaultAsync(sl => sl.Id == smartLockId);
-            
         }
 
         public void UpdateSmartLock(SmartLock smartLock)
         {
             _context.Entry(smartLock).State = EntityState.Modified;
-
         }
 
         public void AddSmartLock(SmartLock smartLock)
@@ -58,6 +56,75 @@ namespace api.Repositories
             _context.SmartLocks.Remove(smartLock);
         }
 
+
+        public async Task<IEnumerable<User>> GetSmartLockUsers(Guid smartLockId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            var smartLockWithUsers = await _context.SmartLocks
+                .Include(s => s.SmartLockUsers)
+                .ThenInclude(slu => slu.User).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+
+            return smartLockWithUsers.SmartLockUsers.Select(slu => slu.User).ToList();
+        }
+
+        public void AddSmartLockUser(Guid smartLockId, Guid userId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+            
+            _context.ChangeTracker.DetectChanges();
+            var smartLock = _context.Add(new SmartLockUser
+            {
+                UserId = userId,
+                SmartLockId = smartLockId
+            });
+        }
+        
+        public async Task<IEnumerable<Group>> GetSmartLockGroups(Guid smartLockId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            var smartLockWitGroups = await _context.SmartLocks
+                .Include(s => s.SmartLockGroups)
+                .ThenInclude(slu => slu.Group).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+
+            return smartLockWitGroups.SmartLockGroups.Select(slu => slu.Group).ToList();
+        }
+        
+        public void AddSmartLockGroup(Guid smartLockId, Guid groupId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+            
+            var smartLock = _context.Add(new SmartLockGroup()
+            {
+                GroupId = groupId,
+                SmartLockId = smartLockId
+            });
+        }
+
+        
         public async Task<bool> SmartLockExists(Guid smartLockId)
         {
             if (smartLockId == Guid.Empty)
@@ -66,6 +133,38 @@ namespace api.Repositories
             }
 
             return await _context.SmartLocks.AnyAsync(sl => sl.Id == smartLockId);
+        }
+
+        public async Task<bool> SmartLockUserExists(Guid smartLockId, Guid userId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+            return await _context.SmartLockUsers.
+                AnyAsync(slu => slu.SmartLockId == smartLockId && slu.UserId == userId);
+            
+        }
+        
+        public async Task<bool> SmartLockGroupExists(Guid smartLockId, Guid groupId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+            return await _context.SmartLockGroups.
+                AnyAsync(slg => slg.SmartLockId == smartLockId && slg.GroupId == groupId);
+            
         }
 
         public async Task<bool> Save()

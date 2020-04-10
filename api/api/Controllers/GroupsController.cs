@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using api.Helpers;
 using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Graph;
-using Newtonsoft.Json;
 using Group = api.Entities.Group;
 
 namespace api.Controllers
 {
+    [Produces("application/json")]
     [Route("api/groups")]
     [ApiController]
     public class GroupsController : ControllerBase
@@ -37,17 +36,14 @@ namespace api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
         {
+            var allGroupsFromRepo = await _groupRepository.GetGroups();
+            
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
-
-            var groupsFromRepo = await _groupRepository.GetGroups();
             var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
-
-            var mergedGroups = (from groupFromRepo in groupsFromRepo
-                from dbGroupFromAzureAd in allGroupsFromAzureAd
-                where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
-                let dtoFromDb = _mapper.Map<GroupDto>(groupFromRepo)
-                select _mapper.Map(dbGroupFromAzureAd, dtoFromDb));
-
+            
+            var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo, 
+                allGroupsFromAzureAd, _mapper);
+            
             return Ok(mergedGroups);
         }
 
@@ -55,18 +51,17 @@ namespace api.Controllers
         [HttpGet("{groupId}")]
         public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
-
             if (groupFromRepo == null)
                 return NotFound();
 
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
 
-            var dtoGroupFromDb = _mapper.Map<GroupDto>(groupFromRepo);
+            var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo, 
+                groupFromAzureAd, _mapper);
 
-            return _mapper.Map(groupFromAzureAd, dtoGroupFromDb);
+            return mergedGroup;
         }
 
         // POST: api/groups
@@ -124,6 +119,19 @@ namespace api.Controllers
             await _groupRepository.Save();
 
             return NoContent();
+        }
+        
+        // GET: api/groups/5/smart-locks
+        [HttpGet("{groupId}/smart-locks")]
+        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid groupId)
+        {
+            var allGroupSmartLocksFromRepo = await _groupRepository.GetGroupSmartLocks(groupId);
+
+            if (!await _groupRepository.GroupExists(groupId) ) return BadRequest();
+            if (allGroupSmartLocksFromRepo == null) return NotFound();
+            var groupSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allGroupSmartLocksFromRepo);
+            return Ok(groupSmartLocksDto);
+
         }
     }
 }
