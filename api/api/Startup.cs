@@ -16,6 +16,8 @@ using api.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace api
 {
@@ -54,8 +56,18 @@ namespace api
                 options.AddPolicy("admin",
                     policy => policy.RequireClaim("groups", "8b4b5344-9050-4fd0-858b-5b93125341c9"));
             });
+
+            services.AddControllers()
+                .AddNewtonsoftJson(
+                options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    
+                    options.SerializerSettings.ContractResolver =
+                        new CamelCasePropertyNamesContractResolver();
+                });
+                
             
-            services.AddControllers();
             
             services.AddSwaggerGen(c =>
             {
@@ -104,13 +116,11 @@ namespace api
             {
                 services.AddDbContext<ApiContext>(opt =>
                     opt.UseSqlServer(Configuration.GetConnectionString("LockAccessDB")));
-                services.AddControllers();
             }
             else
             {
                 services.AddDbContext<ApiContext>(opt =>
                     opt.UseSqlServer(Configuration.GetConnectionString("MacLocalDB")));
-                services.AddControllers();
             }
         }
 
