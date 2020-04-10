@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Entities
 {
-    [Table("SmartLockUser")]
+    [Table("SmartLockUsers")]
     public class SmartLockUser
     {
         public Guid UserId { get; set; }

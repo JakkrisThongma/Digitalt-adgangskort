@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Entities
 {
-    [Table("SmartLockGroup")]
+    [Table("SmartLockGroups")]
     public class SmartLockGroup
     {
         public Guid GroupId { get; set; }
