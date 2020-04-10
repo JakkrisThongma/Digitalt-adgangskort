@@ -11,7 +11,11 @@ namespace api.Entities
         
         public DbSet<SmartLock> SmartLocks { get; set; }
         public DbSet<User> Users { get; set; }
+        
+        public DbSet<SmartLockUser> SmartLockUsers { get; set; }
         public DbSet<Group> Groups { get; set; }
+        
+        public DbSet<SmartLockGroup> SmartLockGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +33,7 @@ namespace api.Entities
                 .HasForeignKey(lg => lg.GroupId);
 
             modelBuilder.Entity<SmartLockUser>()
-                .HasKey(lg => new {LockId = lg.SmartLockId, lg.UserId});
+                .HasKey(lu => new {LockId = lu.SmartLockId, lu.UserId});
 
             modelBuilder.Entity<SmartLockUser>()
                 .HasOne(lu => lu.SmartLock)
