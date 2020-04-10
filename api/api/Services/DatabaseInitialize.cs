@@ -24,6 +24,11 @@ namespace api.Services
                 Id = Guid.Parse("d003b41f-4e39-4bc7-9dee-2f873dbed582"),
                 Status = Status.Inactive
             };
+            var user3 = new User
+            {
+                Id = Guid.Parse("1ba5bd99-412a-4bcb-9f8b-73bcc1df1195"),
+                Status = Status.Suspended
+            };
 
 
             var group1 = new Group
@@ -34,8 +39,8 @@ namespace api.Services
 
             var group2 = new Group
             {
-                    Id = Guid.Parse("e1f2df93-23b6-45ec-9e2f-a845fcd25cff"),
-                    Status = Status.Inactive
+                Id = Guid.Parse("e1f2df93-23b6-45ec-9e2f-a845fcd25cff"),
+                Status = Status.Inactive
             };
 
 
@@ -53,12 +58,19 @@ namespace api.Services
                 Title = "Utgang",
                 Description = "Tilgang til Alle ansatte",
                 ManufactureId = "qweasd123"
-                
             };
+            var smartLock3 = new SmartLock
+            {
+                Id = Guid.Parse("ad2f8c1a-3590-4b93-b5f8-4fae365ec8ef"),
+                Title = "Kantina",
+                Description = "Tilgang til Alle ansatte",
+                ManufactureId = "qweasd123"
+            };
+
 
             if (!context.Users.ToList().Any())
             {
-                context.Users.AddRange(user1, user2);
+                context.Users.AddRange(user1, user2, user3);
                 context.SaveChanges();
             }
 
@@ -70,7 +82,7 @@ namespace api.Services
 
             if (!context.SmartLocks.ToList().Any())
             {
-                context.SmartLocks.AddRange(smartLock1, smartLock2);
+                context.SmartLocks.AddRange(smartLock1, smartLock2, smartLock3);
                 context.SaveChanges();
             }
 
@@ -84,6 +96,10 @@ namespace api.Services
                 {
                     GroupId = group2.Id,
                     SmartLockId = smartLock1.Id
+                }, new SmartLockGroup
+                {
+                    GroupId = group1.Id,
+                    SmartLockId = smartLock3.Id
                 });
 
             context.AddRange(
