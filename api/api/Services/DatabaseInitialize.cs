@@ -41,7 +41,7 @@ namespace api.Services
 
             var smartLock1 = new SmartLock
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.Parse("C18CCE7C-8E0C-4CA3-989F-9B60FE323A1B"),
                 Title = "Inngang",
                 Description = "Tilgang til Alle ansatte",
                 ManufactureId = "abcd1234",
@@ -49,12 +49,11 @@ namespace api.Services
             };
             var smartLock2 = new SmartLock
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.Parse("e7d2c9dd-cc16-4bce-a908-019d98619417"),
                 Title = "Utgang",
                 Description = "Tilgang til Alle ansatte",
                 ManufactureId = "qweasd123"
-
-
+                
             };
 
             if (!context.Users.ToList().Any())
