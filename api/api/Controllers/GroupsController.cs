@@ -96,7 +96,8 @@ namespace api.Controllers
         [HttpPut("{groupId}")]
         public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
         {
-            if (!await _groupRepository.GroupExists(groupId)) return BadRequest();
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return BadRequest();
             var groupEntity = _mapper.Map<Group>(group);
             groupEntity.Id = groupId;
             groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
@@ -125,9 +126,9 @@ namespace api.Controllers
         [HttpGet("{groupId}/smart-locks")]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid groupId)
         {
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return BadRequest();
             var allGroupSmartLocksFromRepo = await _groupRepository.GetGroupSmartLocks(groupId);
-
-            if (!await _groupRepository.GroupExists(groupId) ) return BadRequest();
             if (allGroupSmartLocksFromRepo == null) return NotFound();
             var groupSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allGroupSmartLocksFromRepo);
             return Ok(groupSmartLocksDto);
