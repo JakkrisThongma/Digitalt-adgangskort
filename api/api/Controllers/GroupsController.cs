@@ -37,13 +37,13 @@ namespace api.Controllers
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
-            
+
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
-            
-            var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo, 
+
+            var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
                 allGroupsFromAzureAd, _mapper);
-            
+
             return Ok(mergedGroups);
         }
 
@@ -51,14 +51,15 @@ namespace api.Controllers
         [HttpGet("{groupId}")]
         public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
         {
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
+
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
-            if (groupFromRepo == null)
-                return NotFound();
 
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
 
-            var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo, 
+            var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo,
                 groupFromAzureAd, _mapper);
 
             return mergedGroup;
@@ -83,6 +84,9 @@ namespace api.Controllers
                 }
             }
 
+            var groupExists = await _groupRepository.GroupExists(group.Id);
+            if (groupExists) return Conflict("Group already exists");
+
             var groupEntity = _mapper.Map<Group>(group);
             _groupRepository.AddGroup(groupEntity);
             await _groupRepository.Save();
@@ -97,7 +101,8 @@ namespace api.Controllers
         public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return BadRequest();
+            if (!groupExists) return NotFound();
+
             var groupEntity = _mapper.Map<Group>(group);
             groupEntity.Id = groupId;
             groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
@@ -111,28 +116,29 @@ namespace api.Controllers
         [HttpDelete("{groupId}")]
         public async Task<ActionResult> DeleteGroup(Guid groupId)
         {
-            var groupFromRepo = await _groupRepository.GetGroup(groupId);
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
 
-            if (groupFromRepo == null)
-                return NotFound();
+            var groupFromRepo = await _groupRepository.GetGroup(groupId);
 
             _groupRepository.DeleteGroup(groupFromRepo);
             await _groupRepository.Save();
 
             return NoContent();
         }
-        
+
         // GET: api/groups/5/smart-locks
         [HttpGet("{groupId}/smart-locks")]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid groupId)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return BadRequest();
-            var allGroupSmartLocksFromRepo = await _groupRepository.GetGroupSmartLocks(groupId);
-            if (allGroupSmartLocksFromRepo == null) return NotFound();
-            var groupSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allGroupSmartLocksFromRepo);
-            return Ok(groupSmartLocksDto);
+            if (!groupExists) return NotFound();
 
+            var allGroupSmartLocksFromRepo = await _groupRepository.GetGroupSmartLocks(groupId);
+
+            var groupSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allGroupSmartLocksFromRepo);
+
+            return Ok(groupSmartLocksDto);
         }
     }
 }

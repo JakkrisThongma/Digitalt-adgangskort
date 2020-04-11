@@ -27,7 +27,7 @@ namespace api.Repositories
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
-            
+
             return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         }
 
@@ -55,7 +55,7 @@ namespace api.Repositories
 
             _context.Groups.Remove(groupToDelete);
         }
-        
+
         public async Task<IEnumerable<SmartLock>> GetGroupSmartLocks(Guid groupId)
         {
             if (groupId == Guid.Empty)
@@ -70,6 +70,52 @@ namespace api.Repositories
             return groupWithSmartLocks.SmartLockGroups.Select(slu => slu.SmartLock).ToList();
         }
 
+        public async Task<List<string>> GetGroupSmartLocksIdList(Guid groupId)
+        {
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            try
+            {
+                var groupWithSmartLocks = await _context.Groups
+                    .Include(g => g.SmartLockGroups)
+                    .ThenInclude(slg => slg.SmartLock).FirstOrDefaultAsync(g => g.Id == groupId);
+                var groupSmartLocks = groupWithSmartLocks.SmartLockGroups.Select(slu => slu.SmartLockId.ToString())
+                    .ToList();
+                return groupSmartLocks;
+            }
+            catch (Exception e)
+            {
+                return new List<string>();
+            }
+            
+        }
+
+        public async Task<List<string>> GetGroupsSmartLocksIdList(List<string> groupsIdList)
+        {
+            if (groupsIdList == null)
+            {
+                throw new ArgumentNullException(nameof(groupsIdList));
+            }
+
+            var allGroupsLocksIdList = new List<string>();
+            foreach (var groupId in groupsIdList)
+            {
+                var groupSmartLocksIdList = await GetGroupSmartLocksIdList(Guid.Parse(groupId));
+                foreach (var lockId in groupSmartLocksIdList)
+                {
+                    if (!allGroupsLocksIdList.Contains(lockId))
+                    {
+                        allGroupsLocksIdList.Add(lockId);
+                    }
+                }
+            }
+
+            return allGroupsLocksIdList;
+        }
+        
         public async Task<bool> GroupExists(Guid groupId)
         {
             if (groupId == Guid.Empty)
@@ -79,7 +125,6 @@ namespace api.Repositories
 
             return await _context.Groups.AnyAsync(g => g.Id == groupId);
         }
-
 
         public async Task<bool> Save()
         {

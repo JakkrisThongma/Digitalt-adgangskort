@@ -66,7 +66,6 @@ namespace api.Repositories
             return userList;
         }
         
-
         public async Task<Group> GetGroup(GraphServiceClient client, string groupId)
         {
             if (client == null)
@@ -81,8 +80,7 @@ namespace api.Repositories
 
             return group;
         }
-
-
+        
         public async Task<IGroupMembersCollectionWithReferencesPage> GetGroupMembers(GraphServiceClient client,
             string groupId)
         {
@@ -101,15 +99,16 @@ namespace api.Repositories
             
             return members;
         }
-
-
+        
         public async Task<IGraphServiceGroupsCollectionPage> GetGroups(GraphServiceClient client)
         {
             if (client == null)
             {
                 throw new ArgumentNullException(nameof(client));
             }
-            var groupList = await client.Groups.Request().GetAsync();
+            var groupList = await client.Groups.Request()
+                .Filter("securityEnabled eq true")
+                .GetAsync();
             return groupList;
         }
     }

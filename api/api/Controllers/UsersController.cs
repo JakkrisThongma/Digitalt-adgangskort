@@ -63,8 +63,10 @@ namespace api.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserDto>> GetUser(Guid userId)
         {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
             var userFromRepo = await _userRepository.GetUser(userId);
-            if (userFromRepo == null) NotFound();
 
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var userFromAzureAd = await _azureAdRepository.GetUser(client, userId.ToString());
@@ -94,6 +96,9 @@ namespace api.Controllers
                 }
             }
 
+            var userExists = await _userRepository.UserExists(user.Id);
+            if (userExists) return Conflict("User already exists");
+
             var userEntity = _mapper.Map<User>(user);
             _userRepository.AddUser(userEntity);
             await _userRepository.Save();
@@ -108,7 +113,8 @@ namespace api.Controllers
         public async Task<IActionResult> UpdateUser(Guid userId, UserModificationDto user)
         {
             var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return BadRequest();
+            if (!userExists) return NotFound();
+
             var userEntity = _mapper.Map<User>(user);
             userEntity.Id = userId;
             userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
@@ -122,12 +128,10 @@ namespace api.Controllers
         [HttpDelete("{userId}")]
         public async Task<ActionResult> DeleteUser(Guid userId)
         {
-            var userFromRepo = await _userRepository.GetUser(userId);
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
 
-            if (userFromRepo == null)
-            {
-                return NotFound();
-            }
+            var userFromRepo = await _userRepository.GetUser(userId);
 
             _userRepository.DeleteUser(userFromRepo);
             await _userRepository.Save();
@@ -139,6 +143,9 @@ namespace api.Controllers
         [HttpGet("{userId}/groups")]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups(Guid userId)
         {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
             var allGroupsFromRepo = await _groupRepository.GetGroups();
 
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
@@ -165,39 +172,26 @@ namespace api.Controllers
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid userId)
         {
             var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return BadRequest();
+            if (!userExists) return NotFound();
 
-            var allUserSmartLocksFromRepo = await _userRepository.GetUserSmartLocks(userId);
-            var allUserLocksIds = allUserSmartLocksFromRepo.Select(l => l.Id.ToString()).ToList();
-            
+            var userSmartLocksIdListFromRepo = await _userRepository.GetUserSmartLocksIdList(userId);
+
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var userGroupsIdsFromAzureAd = await _azureAdRepository
+            var userGroupsIdListFromAzureAd = await _azureAdRepository
                 .GetUserGroupsIds(client, userId.ToString());
 
-            foreach (var groupId in userGroupsIdsFromAzureAd)
-            {
-                var smartLocks = await _groupRepository.GetGroupSmartLocks(Guid.Parse(groupId));
-                var allLocksIds = smartLocks.Select(l => l.Id.ToString()).ToList();
-                foreach (var lockId in allLocksIds)
-                {
-                    if (!allUserLocksIds.Contains(lockId))
-                    {
-                        allUserLocksIds.Add(lockId);
-                    }
-                }
-            }
+            var userGroupsSmartLocksIdList =
+                await _groupRepository.GetGroupsSmartLocksIdList(userGroupsIdListFromAzureAd);
 
-            var x = await _smartLockRepository.GetSmartLocks();
+            var mergedUserSmartLocksIdList =
+                DataMerger.MergeLists(userSmartLocksIdListFromRepo, userGroupsSmartLocksIdList);
 
-            var y = x.Where(smartLock =>
-            {
-                return allUserLocksIds
-                    .Contains(smartLock.Id.ToString());
-            }).ToList();
 
-            if (y.Count == 0) return NotFound();
+            var allUserSmartLocks = await _smartLockRepository.GetSmartLocks(mergedUserSmartLocksIdList);
 
-            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(y);
+            if (!allUserSmartLocks.Any()) return NotFound();
+
+            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allUserSmartLocks);
 
             return Ok(userSmartLocksDto);
         }

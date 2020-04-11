@@ -8,6 +8,7 @@ namespace api.Repositories
     public interface ISmartLockRepository
     {
         public Task<IEnumerable<SmartLock>> GetSmartLocks();
+        public Task<IEnumerable<SmartLock>> GetSmartLocks(List<string> smartLocksIdList);
         public Task<SmartLock> GetSmartLock(Guid smartLockId);
         public void UpdateSmartLock(SmartLock smartLock);
         public void AddSmartLock(SmartLock smartLock);
@@ -15,10 +16,11 @@ namespace api.Repositories
         public Task<IEnumerable<User>>GetSmartLockUsers(Guid smartLockId);
         public Task<IEnumerable<Group>> GetSmartLockGroups(Guid smartLockId);
         public void AddSmartLockUser(Guid smartLockId, Guid userId);
+        public void DeleteSmartLockUser(Guid smartLockId, Guid userId);
         public Task<bool> SmartLockUserExists(Guid smartLockId, Guid userId);
         public void AddSmartLockGroup(Guid smartLockId, Guid groupId);
+        public void DeleteSmartLockGroup(Guid smartLockId, Guid groupId);
         public Task<bool> SmartLockGroupExists(Guid smartLockId, Guid groupId);
-
         public Task<bool> SmartLockExists(Guid smartLockId);
         public Task<bool> Save();
     }

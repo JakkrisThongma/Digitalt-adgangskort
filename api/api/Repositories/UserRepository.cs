@@ -38,8 +38,7 @@ namespace api.Repositories
             _context.Entry(user).State = EntityState.Modified;
 
         }
-
-
+        
         public void AddUser(User user)
         {
             if (user == null)
@@ -49,8 +48,7 @@ namespace api.Repositories
 
             _context.Users.Add(user);
         }
-
-
+        
         public  void DeleteUser(User user)
         {
             if (user == null)
@@ -61,7 +59,7 @@ namespace api.Repositories
             _context.Users.Remove(user);
         }
 
-        public async Task<IEnumerable<SmartLock>> GetUserSmartLocks(Guid userId)
+        public async Task<List<string>> GetUserSmartLocksIdList(Guid userId)
         {
             if (userId == Guid.Empty)
             {
@@ -72,7 +70,7 @@ namespace api.Repositories
                 .Include(u => u.SmartLockUsers)
                 .ThenInclude(slu => slu.SmartLock).FirstOrDefaultAsync(u => u.Id == userId);
 
-            return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock).ToList();
+            return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLockId.ToString()).ToList();
         }
         
         public async Task<bool> UserExists(Guid userId)
@@ -84,7 +82,6 @@ namespace api.Repositories
 
             return await _context.Users.AnyAsync(u => u.Id == userId);
         }
-
 
         public async Task<bool>  Save()
         {

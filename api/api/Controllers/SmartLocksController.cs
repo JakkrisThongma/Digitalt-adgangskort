@@ -21,15 +21,23 @@ namespace api.Controllers
     public class SmartLocksController : ControllerBase
     {
         private readonly ISmartLockRepository _smartLockRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IGroupRepository _groupRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<SmartLocksController> _logger;
 
         public SmartLocksController(ISmartLockRepository smartLockRepository,
-            IAzureAdRepository azureAdRepository, IMapper mapper, ILogger<SmartLocksController> logger)
+            IUserRepository userRepository, IGroupRepository groupRepository,
+            IAzureAdRepository azureAdRepository, IMapper mapper,
+            ILogger<SmartLocksController> logger)
         {
             _smartLockRepository = smartLockRepository ??
                                    throw new ArgumentNullException(nameof(smartLockRepository));
+            _userRepository = userRepository ??
+                              throw new ArgumentNullException(nameof(userRepository));
+            _groupRepository = groupRepository ??
+                               throw new ArgumentNullException(nameof(groupRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(azureAdRepository));
             _mapper = mapper ??
@@ -54,6 +62,9 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateSmartLock(SmartLockCreationDto smartLock)
         {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLock.Id);
+            if (smartLockExists) return Conflict("Smart lock already exists");
+
             var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
             _smartLockRepository.AddSmartLock(smartLockEntity);
             await _smartLockRepository.Save();
@@ -65,9 +76,11 @@ namespace api.Controllers
         [HttpGet("{smartLockId}")]
         public async Task<ActionResult<SmartLockDto>> GetSmartLock(Guid smartLockId)
         {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
 
-            if (smartLockFromRepo == null) return NotFound();
             var smartLock = _mapper.Map<SmartLockDto>(smartLockFromRepo);
 
             return Ok(smartLock);
@@ -80,7 +93,8 @@ namespace api.Controllers
         public async Task<IActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
-            if (!smartLockExists) return BadRequest();
+            if (!smartLockExists) return NotFound();
+
             var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
             smartLockEntity.Id = smartLockId;
             smartLockEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
@@ -94,14 +108,33 @@ namespace api.Controllers
         [HttpDelete("{smartLockId}")]
         public async Task<ActionResult> DeleteSmartLock(Guid smartLockId)
         {
-            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
 
-            if (smartLockFromRepo == null) return NotFound();
+            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
 
             _smartLockRepository.DeleteSmartLock(smartLockFromRepo);
             await _smartLockRepository.Save();
 
             return NoContent();
+        }
+
+        // GET: api/smart-locks/5
+        [HttpGet("{smartLockId}/5/users")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetSmartLockUsers(Guid smartLockId)
+        {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+
+            var allSmartLockUsersFromRepo = await _smartLockRepository.GetSmartLockUsers(smartLockId);
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
+
+            var mergedSmartLockUsers = DataMerger.MergeUsersWithAzureData(
+                allSmartLockUsersFromRepo, allUsersFromAzureAd, _mapper);
+
+            return Ok(mergedSmartLockUsers);
         }
 
         // Post: api/smart-locks/5/users
@@ -123,30 +156,53 @@ namespace api.Controllers
                 }
             }
 
-            if (await _smartLockRepository.SmartLockUserExists(smartLockId, smartLockUser.UserId))
+            var userExists = await _smartLockRepository.SmartLockUserExists(smartLockId, smartLockUser.UserId);
+            if (userExists)
             {
-                _logger.LogWarning("User exists already");
-                return BadRequest("User exists already");
+                _logger.LogWarning("User already exists");
+                return Conflict("User already exists");
             }
 
             _smartLockRepository.AddSmartLockUser(smartLockId, smartLockUser.UserId);
             await _smartLockRepository.Save();
 
+            return CreatedAtAction("GetSmartLockUsers", new {id = smartLockId}, smartLockUser);
+        }
+        
+        // DELETE: api/smart-locks/5/users/1
+        [HttpDelete("{smartLockId}/users/{userId}")]
+        public async Task<ActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
+        {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            var userExists = await _userRepository.UserExists(userId);
+
+            if (!smartLockExists || !userExists) return NotFound();
+
+            var smartLockUserExists = await _smartLockRepository.SmartLockUserExists(smartLockId, userId);
+            
+            if (!smartLockUserExists) return NotFound();
+
+            _smartLockRepository.DeleteSmartLockUser(smartLockId, userId);
+
+            await _smartLockRepository.Save();
+
             return NoContent();
         }
 
-        // GET: api/smart-locks/5
-        [HttpGet("{smartLockId}/5/users")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetSmartLockUsers(Guid smartLockId)
+        // GET: api/smart-locks/5/groups
+        [HttpGet("{smartLockId}/groups")]
+        public async Task<ActionResult<IEnumerable<GroupDto>>> GetSmartLockGroups(Guid smartLockId)
         {
-            var allSmartLockUsersFromRepo = await _smartLockRepository.GetSmartLockUsers(smartLockId);
-            if (allSmartLockUsersFromRepo == null) return NotFound();
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+
+            var allSmartLockGroupsFromRepo = await _smartLockRepository.GetSmartLockGroups(smartLockId);
 
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
 
-            var mergedSmartLockUsers = DataMerger.MergeUsersWithAzureData(
-                allSmartLockUsersFromRepo, allUsersFromAzureAd, _mapper);
+            var mergedSmartLockUsers = DataMerger.MergeGroupsWithAzureData(
+                allSmartLockGroupsFromRepo, allGroupsFromAzureAd, _mapper);
 
             return Ok(mergedSmartLockUsers);
         }
@@ -172,37 +228,46 @@ namespace api.Controllers
 
             if (await _smartLockRepository.SmartLockGroupExists(smartLockId, smartLockGroup.GroupId))
             {
-                _logger.LogWarning("Group exists already");
-                return BadRequest("Group exists already");
+                _logger.LogWarning("Group already exists");
+                return BadRequest("Group already exists");
             }
 
             _smartLockRepository.AddSmartLockGroup(smartLockId, smartLockGroup.GroupId);
             await _smartLockRepository.Save();
 
-            return NoContent();
+            return CreatedAtAction("GetSmartLockGroups", new {id = smartLockId}, smartLockGroup);
         }
-
-        // GET: api/smart-locks/5/groups
-        [HttpGet("{smartLockId}/groups")]
-        public async Task<ActionResult<IEnumerable<GroupDto>>> GetSmartLockGroups(Guid smartLockId)
+        
+        // DELETE: api/smart-locks/5/groups/1
+        [HttpDelete("{smartLockId}/groups/{groupId}")]
+        public async Task<ActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
-            var allSmartLockGroupsFromRepo = await _smartLockRepository.GetSmartLockGroups(smartLockId);
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            var groupExists = await _groupRepository.GroupExists(groupId);
 
-            if (allSmartLockGroupsFromRepo == null) return NotFound();
+            if (!smartLockExists || !groupExists) return NotFound();
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var smartLockGroupExists = await _smartLockRepository.SmartLockGroupExists(smartLockId, groupId);
+            
+            if (!smartLockGroupExists) return NotFound();
 
-            var mergedSmartLockUsers = DataMerger.MergeGroupsWithAzureData(
-                allSmartLockGroupsFromRepo, allGroupsFromAzureAd, _mapper);
+            _smartLockRepository.DeleteSmartLockGroup(smartLockId, groupId);
 
-            return Ok(mergedSmartLockUsers);
+            await _smartLockRepository.Save();
+
+            return NoContent();
         }
 
         // Post: api/smart-locks/get-access
         [HttpPost("get-access")]
         public async Task<ActionResult<IEnumerable<UserDto>>> OpenSmartLock(SmartLockUserAccessDto smartLockUser)
         {
+            var userExists = await _userRepository.UserExists(smartLockUser.UserId);
+            if (!userExists) return NotFound();
+
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockUser.smartLockId);
+            if (!smartLockExists) return NotFound();
+
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
@@ -225,10 +290,8 @@ namespace api.Controllers
                 return Ok(new {accessAuthorized = true});
             }
 
-
             var userGroupsIdsFromAzureAd = await _azureAdRepository
                 .GetUserGroupsIds(client, smartLockUser.UserId.ToString());
-
 
             foreach (var groupId in userGroupsIdsFromAzureAd)
             {
@@ -240,9 +303,7 @@ namespace api.Controllers
                 }
             }
 
-
             return Ok(new {accessAuthorized = false});
-   
         }
     }
 }
