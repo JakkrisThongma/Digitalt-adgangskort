@@ -10,18 +10,14 @@ namespace api.Models
         public Guid Id { get; set; }
         public string GivenName { get; set; } 
         public string Surname { get; set; }
-        
         public string UserPrincipalName { get; set; }
-
         public string MobilePhone { get; set; }
         public string Mail { get; set; }
         public string JobTitle { get; set; }
         public string OfficeLocation { get; set; }
-        
         public string Status { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-        public DateTimeOffset LastModificationDate { get; set; }
-        
+        public DateTimeOffset? LastModificationDate { get; set; }
         public string PhotoBase64String { get; set; }
 
 
