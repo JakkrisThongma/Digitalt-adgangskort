@@ -92,12 +92,31 @@ namespace api.Repositories
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            _context.ChangeTracker.DetectChanges();
-            var smartLock = _context.Add(new SmartLockUser
+            var smartLockUser = new SmartLockUser
             {
                 UserId = userId,
                 SmartLockId = smartLockId
-            });
+            };
+            _context.Add(smartLockUser);
+        }
+        
+        public async Task<SmartLockUser> GetSmartLockUser(Guid smartLockId, Guid userId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+            
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var smartLockWitUsers = await _context.SmartLocks
+                .Include(s => s.SmartLockUsers)
+                .ThenInclude(slu => slu.User).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+
+            return smartLockWitUsers.SmartLockUsers.FirstOrDefault(slu => slu.UserId == userId);
         }
 
         public void DeleteSmartLockUser(Guid smartLockId, Guid userId)
@@ -125,9 +144,9 @@ namespace api.Repositories
 
             var smartLockWitGroups = await _context.SmartLocks
                 .Include(s => s.SmartLockGroups)
-                .ThenInclude(slu => slu.Group).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+                .ThenInclude(slg => slg.Group).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
 
-            return smartLockWitGroups.SmartLockGroups.Select(slu => slu.Group).ToList();
+            return smartLockWitGroups.SmartLockGroups.Select(slg => slg.Group).ToList();
         }
 
         public void AddSmartLockGroup(Guid smartLockId, Guid groupId)
@@ -142,11 +161,31 @@ namespace api.Repositories
                 throw new ArgumentNullException(nameof(groupId));
             }
 
-            var smartLock = _context.Add(new SmartLockGroup()
+            var smartLockGroup = new SmartLockGroup()
             {
                 GroupId = groupId,
                 SmartLockId = smartLockId
-            });
+            };
+            _context.Add(smartLockGroup);
+        }
+        
+        public async Task<SmartLockGroup> GetSmartLockGroup(Guid smartLockId, Guid groupId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+            
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            var smartLockWitGroups = await _context.SmartLocks
+                .Include(s => s.SmartLockGroups)
+                .ThenInclude(slg => slg.Group).FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+
+            return smartLockWitGroups.SmartLockGroups.FirstOrDefault(slg => slg.GroupId == groupId);
         }
 
         public void DeleteSmartLockGroup(Guid smartLockId, Guid groupId)

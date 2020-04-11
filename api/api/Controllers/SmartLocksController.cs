@@ -69,7 +69,7 @@ namespace api.Controllers
             _smartLockRepository.AddSmartLock(smartLockEntity);
             await _smartLockRepository.Save();
 
-            return CreatedAtAction("GetSmartLock", new {id = smartLock.Id}, smartLock);
+            return CreatedAtAction("GetSmartLock", new {smartLockId = smartLock.Id}, smartLock);
         }
 
         // GET: api/smart-locks/5
@@ -166,20 +166,42 @@ namespace api.Controllers
             _smartLockRepository.AddSmartLockUser(smartLockId, smartLockUser.UserId);
             await _smartLockRepository.Save();
 
-            return CreatedAtAction("GetSmartLockUsers", new {id = smartLockId}, smartLockUser);
+            return CreatedAtAction("GetSmartLockUser", new {smartLockId = smartLockId, userId = smartLockUser.UserId },
+                smartLockUser);
         }
-        
+
+        // GET: api/smart-locks/5/users/1
+        [HttpGet("{smartLockId}/users/{userId}")]
+        public async Task<ActionResult> GetSmartLockUser(Guid smartLockId, Guid userId)
+        {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
+            var smartLockUserExists = await _smartLockRepository.SmartLockUserExists(smartLockId, userId);
+            if (!smartLockUserExists) return NotFound();
+
+            var smartLockUserFromRepo = await _smartLockRepository.GetSmartLockUser(smartLockId, userId);
+
+            var smartLockUserFromRepoDto = _mapper.Map<SmartLockUserDto>(smartLockUserFromRepo);
+
+            return Ok(smartLockUserFromRepoDto);
+        }
+
         // DELETE: api/smart-locks/5/users/1
         [HttpDelete("{smartLockId}/users/{userId}")]
         public async Task<ActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
-            var userExists = await _userRepository.UserExists(userId);
+            if (!smartLockExists) return NotFound();
 
-            if (!smartLockExists || !userExists) return NotFound();
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
 
             var smartLockUserExists = await _smartLockRepository.SmartLockUserExists(smartLockId, userId);
-            
+
             if (!smartLockUserExists) return NotFound();
 
             _smartLockRepository.DeleteSmartLockUser(smartLockId, userId);
@@ -235,20 +257,42 @@ namespace api.Controllers
             _smartLockRepository.AddSmartLockGroup(smartLockId, smartLockGroup.GroupId);
             await _smartLockRepository.Save();
 
-            return CreatedAtAction("GetSmartLockGroups", new {id = smartLockId}, smartLockGroup);
+            return CreatedAtAction("GetSmartLockGroup", new {smartLockId = smartLockId, groupId = smartLockGroup.GroupId},
+                smartLockGroup);
         }
-        
+
+        // GET: api/smart-locks/5/groups/1
+        [HttpGet("{smartLockId}/groups/{groupId}")]
+        public async Task<ActionResult> GetSmartLockGroup(Guid smartLockId, Guid groupId)
+        {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+            
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
+
+            var smartLockGroupExists = await _smartLockRepository.SmartLockGroupExists(smartLockId, groupId);
+            if (!smartLockGroupExists) return NotFound();
+
+            var smartLockGroup = await _smartLockRepository.GetSmartLockGroup(smartLockId, groupId);
+
+            var smartLockGroupFromRepoDto = _mapper.Map<SmartLockGroupDto>(smartLockGroup);
+
+            return Ok(smartLockGroupFromRepoDto);
+        }
+
         // DELETE: api/smart-locks/5/groups/1
         [HttpDelete("{smartLockId}/groups/{groupId}")]
         public async Task<ActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
-            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!smartLockExists) return NotFound();
 
-            if (!smartLockExists || !groupExists) return NotFound();
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
 
             var smartLockGroupExists = await _smartLockRepository.SmartLockGroupExists(smartLockId, groupId);
-            
+
             if (!smartLockGroupExists) return NotFound();
 
             _smartLockRepository.DeleteSmartLockGroup(smartLockId, groupId);
