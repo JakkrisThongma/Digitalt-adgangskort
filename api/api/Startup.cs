@@ -65,9 +65,11 @@ namespace api
                     
                     options.SerializerSettings.ContractResolver =
                         new CamelCasePropertyNamesContractResolver();
+
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
-                
-            
+
+            services.AddHealthChecks();
             
             services.AddSwaggerGen(c =>
             {
@@ -168,6 +170,7 @@ namespace api
                 endpoints
                     .MapDefaultControllerRoute()
                     .RequireAuthorization();
+                endpoints.MapHealthChecks("/api/health");
             });
 
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
