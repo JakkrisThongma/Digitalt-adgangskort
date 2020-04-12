@@ -8,6 +8,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
@@ -90,7 +91,7 @@ namespace api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{smartLockId}")]
-        public async Task<IActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
+        public async Task<ActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -99,6 +100,33 @@ namespace api.Controllers
             smartLockEntity.Id = smartLockId;
             smartLockEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
             _smartLockRepository.UpdateSmartLock(smartLockEntity);
+            await _smartLockRepository.Save();
+
+            return NoContent();
+        }
+        
+        [HttpPatch("{smartLockId}")]
+        public async Task<ActionResult> UpdateSmartLockPartially(Guid smartLockId,
+            [FromBody] JsonPatchDocument<SmartLockModificationDto> patchDoc)
+        {
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
+            if (!smartLockExists) return NotFound();
+
+            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
+            
+            var smartLockToPatch = _mapper.Map<SmartLockModificationDto>(smartLockFromRepo);
+            // add validation
+            patchDoc.ApplyTo(smartLockToPatch, ModelState);
+
+            if (!TryValidateModel(smartLockToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(smartLockToPatch, smartLockFromRepo);
+            
+            smartLockFromRepo.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _smartLockRepository.UpdateSmartLock(smartLockFromRepo);
             await _smartLockRepository.Save();
 
             return NoContent();
