@@ -12,7 +12,9 @@ namespace api.Repositories
         public Task<User> GetUser(GraphServiceClient client, string userId);
         
         public Task<Stream> GetUserPhoto(GraphServiceClient client, string userId);
-        
+
+        public Task<List<string>> GetUserGroupsIds(GraphServiceClient client, string userId);
+
         public Task<IGraphServiceUsersCollectionPage> GetUsers(GraphServiceClient client);
         
         public Task<Group> GetGroup(GraphServiceClient client, string groupId);

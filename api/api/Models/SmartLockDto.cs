@@ -12,7 +12,7 @@ namespace api.Models
         public string ManufactureId { get; set; }
         public string Status { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-        public DateTimeOffset LastModificationDate { get; set; }
+        public DateTimeOffset? LastModificationDate { get; set; }
 
     }
 }

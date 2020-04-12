@@ -19,7 +19,7 @@ namespace api.Entities
         public Guid Id { get; set; }
         public Status Status { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-        public DateTimeOffset LastModificationDate { get; set; }
+        public DateTimeOffset? LastModificationDate { get; set; }
         public ICollection<SmartLockGroup> SmartLockGroups { get; set; }
     }
 }

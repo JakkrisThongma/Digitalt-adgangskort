@@ -11,8 +11,10 @@ namespace api.Repositories
         public Task<Group> GetGroup(Guid groupId);
         public void UpdateGroup(Group groupToUpdate);
         public void AddGroup(Group groupToAdd);
-        //public void DeleteGroup(Group groupToDelete);
         void DeleteGroup(Group groupFromRepo);
+        public Task<List<string>> GetGroupSmartLocksIdList(Guid groupId);
+        public Task<IEnumerable<SmartLock>> GetGroupSmartLocks(Guid groupId);
+        public Task<List<string>> GetGroupsSmartLocksIdList(List<string> groupsIdList);
         public Task<bool> GroupExists(Guid groupId);
         public Task<bool> Save();
     }

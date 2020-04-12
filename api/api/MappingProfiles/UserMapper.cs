@@ -12,7 +12,7 @@ namespace api.MappingProfiles
             CreateMap<Entities.User, Microsoft.Graph.User>();
             CreateMap<Entities.User, Models.UserDto>();
             
-            
+            CreateMap<Microsoft.Graph.User, Models.AzureAdUserDto>();
             CreateMap<Microsoft.Graph.User, Models.UserDto>();
             CreateMap<Microsoft.Graph.User, Entities.User>();
          

@@ -47,7 +47,7 @@ namespace api.Controllers
                 // Load users profiles.
                 var userList = await _azureAdRepository.GetUsers(client);
 
-                return Ok(_mapper.Map<IEnumerable<UserDto>>(userList));
+                return Ok(_mapper.Map<IEnumerable<AzureAdUserDto>>(userList));
             }
             catch (ServiceException ex)
             {
@@ -79,7 +79,7 @@ namespace api.Controllers
                 // Load user profile.
                 var user = await _azureAdRepository.GetUser(client, userId);
 
-                return Ok(_mapper.Map<UserDto>(user));
+                return Ok(_mapper.Map<AzureAdUserDto>(user));
             }
             catch (ServiceException ex)
             {
@@ -120,6 +120,36 @@ namespace api.Controllers
             }
         }
 
+        [HttpGet("users/{userId}/groups")]
+        public async Task<IActionResult> GetUserGroups(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+                {
+                    return BadRequest();
+                }
+
+                // Initialize the GraphServiceClient.
+                var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+                // Load user profile.
+                var userGroups = await _azureAdRepository.GetUserGroupsIds(client, userId);
+
+                return Ok(userGroups);
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+        }
 
         [HttpGet("groups/")]
         public async Task<IActionResult> GetGroups()
@@ -132,7 +162,7 @@ namespace api.Controllers
                 // Load groups profiles.
                 var groupList = await _azureAdRepository.GetGroups(client);
 
-                return Ok(_mapper.Map<IEnumerable<GroupDto>>(groupList));
+                return Ok(_mapper.Map<IEnumerable<AzureAdGroupDto>>(groupList));
             }
             catch (ServiceException ex)
             {
@@ -159,7 +189,7 @@ namespace api.Controllers
                 // Load group profile.
                 var group = await _azureAdRepository.GetGroup(client, groupId);
 
-                return Ok(_mapper.Map<GroupDto>(group));
+                return Ok(_mapper.Map<AzureAdGroupDto>(group));
             }
             catch (ServiceException ex)
             {
@@ -185,7 +215,7 @@ namespace api.Controllers
                 // Load group profile.
                 var members = await _azureAdRepository.GetGroupMembers(client, groupId);
 
-                return Ok(_mapper.Map<IEnumerable<UserDto>>(members));
+                return Ok(_mapper.Map<IEnumerable<AzureAdUserDto>>(members));
             }
             catch (ServiceException ex)
             {

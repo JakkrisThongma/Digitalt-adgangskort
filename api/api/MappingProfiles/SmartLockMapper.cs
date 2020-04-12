@@ -1,9 +1,6 @@
 ﻿using api.Types;
 using AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace api.MappingProfiles
 {
@@ -16,7 +13,10 @@ namespace api.MappingProfiles
             CreateMap<Models.SmartLockDto, Entities.SmartLock>();
             CreateMap<Models.SmartLockCreationDto, Entities.SmartLock>();
             CreateMap<Models.SmartLockModificationDto, Entities.SmartLock>();
-
+            
+            CreateMap<Entities.SmartLockUser, Models.SmartLockUserDto>();
+            CreateMap<Entities.SmartLockGroup, Models.SmartLockGroupDto>();
+            
             CreateMap<Status, string>().ConvertUsing(src => src.ToString().ToLower());
             CreateMap<string, Status>().ConvertUsing(src => (Status)Enum.Parse(typeof(Status), src, true));
         }

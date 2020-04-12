@@ -12,6 +12,7 @@ namespace api.Repositories
         public void UpdateUser(User user);
         public void AddUser(User user);
         public void DeleteUser(User user);
+        public Task<List<string>> GetUserSmartLocksIdList(Guid userId);
         public Task<bool> UserExists(Guid userId);
         public Task<bool>  Save();
     }

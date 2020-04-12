@@ -3,72 +3,81 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using api.Entities;
+using api.Helpers;
 using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
-using Newtonsoft.Json;
+using Group = Microsoft.Graph.Group;
 using User = api.Entities.User;
 
 namespace api.Controllers
 {
+    [Produces("application/json")]
     //[Authorize("admin")]
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IGroupRepository _groupRepository;
+        private readonly ISmartLockRepository _smartLockRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
 
-        public UsersController(IUserRepository userRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IGroupRepository groupRepository,
+            IAzureAdRepository azureAdRepository, ISmartLockRepository smartLockRepository, IMapper mapper)
         {
             _userRepository = userRepository ??
                               throw new ArgumentNullException(nameof(userRepository));
+            _groupRepository = groupRepository ??
+                               throw new ArgumentNullException(nameof(groupRepository));
+            _smartLockRepository = smartLockRepository ??
+                                   throw new ArgumentNullException(nameof(smartLockRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(_azureAdRepository));
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Users
+        // GET: api/users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var allUsersFromRepo = await _userRepository.GetUsers();
 
-            var usersFromRepo = await _userRepository.GetUsers();
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
-            
-            var mergedUsers = (from userFromRepo in usersFromRepo
-                from dbUserFromAzureAd in allUsersFromAzureAd 
-                where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id) 
-                let dtoFromDb = _mapper.Map<UserDto>(userFromRepo) 
-                select _mapper.Map(dbUserFromAzureAd, dtoFromDb));
+
+            var mergedUsers = DataMerger.MergeUsersWithAzureData(allUsersFromRepo,
+                allUsersFromAzureAd, _mapper);
 
             return Ok(mergedUsers);
         }
 
-        // GET: api/Users/5
+        // GET: api/users/5
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserDto>> GetUser(Guid userId)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
 
             var userFromRepo = await _userRepository.GetUser(userId);
-            if (userFromRepo == null) return NotFound();
 
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var userFromAzureAd = await _azureAdRepository.GetUser(client, userId.ToString());
 
-            var dtoFromDb = _mapper.Map<UserDto>(userFromRepo);
-             
-            return _mapper.Map(userFromAzureAd, dtoFromDb);
+            var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
+
+            return Ok(mergedUser);
+            ;
         }
 
-        // POST: api/Users
+        // POST: api/users
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
@@ -86,7 +95,10 @@ namespace api.Controllers
                     return BadRequest("User was not found on Azure AD");
                 }
             }
-            
+
+            var userExists = await _userRepository.UserExists(user.Id);
+            if (userExists) return Conflict("User already exists");
+
             var userEntity = _mapper.Map<User>(user);
             _userRepository.AddUser(userEntity);
             await _userRepository.Save();
@@ -94,13 +106,15 @@ namespace api.Controllers
             return CreatedAtAction("GetUser", new {userId = user.Id}, user);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/users/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, UserModificationDto user)
         {
-            if (!await _userRepository.UserExists(userId) ) return BadRequest();
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
             var userEntity = _mapper.Map<User>(user);
             userEntity.Id = userId;
             userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
@@ -110,20 +124,76 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/users/5
         [HttpDelete("{userId}")]
         public async Task<ActionResult> DeleteUser(Guid userId)
         {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
             var userFromRepo = await _userRepository.GetUser(userId);
 
-            if (userFromRepo == null)
-            {
-                return NotFound();
-            }
             _userRepository.DeleteUser(userFromRepo);
             await _userRepository.Save();
 
             return NoContent();
+        }
+
+        //GET: api/users/5/groups
+        [HttpGet("{userId}/groups")]
+        public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups(Guid userId)
+        {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
+            var allGroupsFromRepo = await _groupRepository.GetGroups();
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userGroupsIdsFromAzureAd = await _azureAdRepository
+                .GetUserGroupsIds(client, userId.ToString());
+
+            var userGroupsFromAzureAd = new List<Group>();
+
+            foreach (var groupId in userGroupsIdsFromAzureAd)
+            {
+                var group = await _azureAdRepository
+                    .GetGroup(client, groupId.ToString());
+                userGroupsFromAzureAd.Add(group);
+            }
+
+            var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
+                userGroupsFromAzureAd, _mapper);
+
+            return Ok(mergedGroups);
+        }
+
+        // GET: api/users/5/smart-locks
+        [HttpGet("{userId}/smart-locks")]
+        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid userId)
+        {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
+            var userSmartLocksIdListFromRepo = await _userRepository.GetUserSmartLocksIdList(userId);
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userGroupsIdListFromAzureAd = await _azureAdRepository
+                .GetUserGroupsIds(client, userId.ToString());
+
+            var userGroupsSmartLocksIdList =
+                await _groupRepository.GetGroupsSmartLocksIdList(userGroupsIdListFromAzureAd);
+
+            var mergedUserSmartLocksIdList =
+                DataMerger.MergeLists(userSmartLocksIdListFromRepo, userGroupsSmartLocksIdList);
+
+
+            var allUserSmartLocks = await _smartLockRepository.GetSmartLocks(mergedUserSmartLocksIdList);
+
+            if (!allUserSmartLocks.Any()) return NotFound();
+
+            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allUserSmartLocks);
+
+            return Ok(userSmartLocksDto);
         }
     }
 }

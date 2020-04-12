@@ -11,6 +11,7 @@ namespace api.MappingProfiles
             CreateMap<Entities.Group, Microsoft.Graph.Group>();
             CreateMap<Entities.Group, Models.GroupDto>();
             
+            CreateMap<Microsoft.Graph.Group, Models.AzureAdGroupDto>();
             CreateMap<Microsoft.Graph.Group, Models.GroupDto>();
             CreateMap<Microsoft.Graph.Group, Entities.Group>();
             

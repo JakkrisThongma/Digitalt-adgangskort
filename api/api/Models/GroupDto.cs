@@ -11,6 +11,6 @@ namespace api.Models
         public string Description { get; set; }
         public string Status { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-        public DateTimeOffset LastModificationDate { get; set; }
+        public DateTimeOffset? LastModificationDate { get; set; }
     }
 }
