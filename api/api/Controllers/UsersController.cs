@@ -9,6 +9,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Group = Microsoft.Graph.Group;
@@ -46,6 +47,8 @@ namespace api.Controllers
 
         // GET: api/users
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
             var allUsersFromRepo = await _userRepository.GetUsers();
@@ -61,6 +64,9 @@ namespace api.Controllers
 
         // GET: api/users/5
         [HttpGet("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> GetUser(Guid userId)
         {
             var userExists = await _userRepository.UserExists(userId);
@@ -74,14 +80,16 @@ namespace api.Controllers
             var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
 
             return Ok(mergedUser);
-            ;
         }
 
         // POST: api/users
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult> CreateUser([FromBody] UserCreationDto user)
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreationDto user)
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
@@ -92,7 +100,7 @@ namespace api.Controllers
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return BadRequest("User was not found on Azure AD");
+                    return ValidationProblem("User was not found on Azure AD");
                 }
             }
 
@@ -102,14 +110,17 @@ namespace api.Controllers
             var userEntity = _mapper.Map<User>(user);
             _userRepository.AddUser(userEntity);
             await _userRepository.Save();
-
-            return CreatedAtAction("GetUser", new {userId = user.Id}, user);
+            var userDto = _mapper.Map<UserDto>(userEntity);
+            
+            return CreatedAtAction("GetUser", new {userId = userDto.Id}, userDto);
         }
 
         // PUT: api/users/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{userId}")]
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUser(Guid userId, UserModificationDto user)
         {
             var userExists = await _userRepository.UserExists(userId);
@@ -126,7 +137,10 @@ namespace api.Controllers
 
         // DELETE: api/users/5
         [HttpDelete("{userId}")]
-        public async Task<ActionResult> DeleteUser(Guid userId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteUser(Guid userId)
         {
             var userExists = await _userRepository.UserExists(userId);
             if (!userExists) return NotFound();
@@ -141,6 +155,9 @@ namespace api.Controllers
 
         //GET: api/users/5/groups
         [HttpGet("{userId}/groups")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups(Guid userId)
         {
             var userExists = await _userRepository.UserExists(userId);
@@ -169,6 +186,9 @@ namespace api.Controllers
 
         // GET: api/users/5/smart-locks
         [HttpGet("{userId}/smart-locks")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid userId)
         {
             var userExists = await _userRepository.UserExists(userId);

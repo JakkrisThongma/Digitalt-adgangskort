@@ -17,6 +17,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace api
@@ -67,6 +68,8 @@ namespace api
                         new CamelCasePropertyNamesContractResolver();
 
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+
                 });
 
             services.AddHealthChecks();
@@ -104,7 +107,7 @@ namespace api
                     }
                 });
             });
-
+            services.AddSwaggerGenNewtonsoftSupport();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityService, AzureAdIdentityService>();
@@ -155,6 +158,11 @@ namespace api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Digital Access Card API V1");
                 c.RoutePrefix = string.Empty;
+
+                c.DefaultModelExpandDepth(2);
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                c.EnableDeepLinking();
+                c.DisplayOperationId();
             });
             
             app.UseHttpsRedirection();

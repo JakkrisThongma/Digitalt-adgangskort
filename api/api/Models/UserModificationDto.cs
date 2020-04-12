@@ -1,10 +1,11 @@
 using System;
+using api.Types;
 
 namespace api.Models
 {
     public class UserModificationDto
     {
-        public string Status { get; set; }
+        public Status Status { get; set; }
         
     }
 }

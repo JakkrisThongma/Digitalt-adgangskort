@@ -7,6 +7,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Group = api.Entities.Group;
@@ -34,6 +35,8 @@ namespace api.Controllers
 
         // GET: api/groups
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
@@ -49,6 +52,9 @@ namespace api.Controllers
 
         // GET: api/groups/5
         [HttpGet("{groupId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
@@ -66,10 +72,13 @@ namespace api.Controllers
         }
 
         // POST: api/groups
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult> CreateGroup([FromBody] GroupCreationDto group)
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
@@ -80,7 +89,7 @@ namespace api.Controllers
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return BadRequest("Group was not found on Azure AD");
+                    return ValidationProblem("Group was not found on Azure AD");
                 }
             }
 
@@ -88,16 +97,20 @@ namespace api.Controllers
             if (groupExists) return Conflict("Group already exists");
 
             var groupEntity = _mapper.Map<Group>(group);
+            
             _groupRepository.AddGroup(groupEntity);
             await _groupRepository.Save();
+            var groupDto = _mapper.Map<GroupDto>(groupEntity);
 
-            return CreatedAtAction("GetGroup", new {groupId = group.Id}, group);
+            return CreatedAtAction("GetGroup", new {groupId = groupDto.Id}, groupDto);
         }
 
         // PUT: api/groups/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{groupId}")]
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
@@ -114,7 +127,10 @@ namespace api.Controllers
 
         // DELETE: api/groups/5
         [HttpDelete("{groupId}")]
-        public async Task<ActionResult> DeleteGroup(Guid groupId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteGroup(Guid groupId)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
             if (!groupExists) return NotFound();
@@ -129,6 +145,9 @@ namespace api.Controllers
 
         // GET: api/groups/5/smart-locks
         [HttpGet("{groupId}/smart-locks")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid groupId)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);

@@ -8,10 +8,12 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Status = api.Types.Status;
 
 
 namespace api.Controllers
@@ -49,6 +51,8 @@ namespace api.Controllers
 
         // GET: api/smart-locks
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLocks()
         {
             var smartLocksFromRepo = await _smartLockRepository.GetSmartLocks();
@@ -58,23 +62,26 @@ namespace api.Controllers
         }
 
         // POST: api/smart-locks
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult> CreateSmartLock(SmartLockCreationDto smartLock)
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<SmartLockDto>> CreateSmartLock(SmartLockCreationDto smartLock)
         {
-            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLock.Id);
-            if (smartLockExists) return Conflict("Smart lock already exists");
-
             var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
             _smartLockRepository.AddSmartLock(smartLockEntity);
             await _smartLockRepository.Save();
+            var smartLockDto = _mapper.Map<SmartLockDto>(smartLockEntity);
 
-            return CreatedAtAction("GetSmartLock", new {smartLockId = smartLock.Id}, smartLock);
+            return CreatedAtAction("GetSmartLock", new {smartLockId = smartLockDto.Id}, smartLockDto);
         }
 
         // GET: api/smart-locks/5
         [HttpGet("{smartLockId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> GetSmartLock(Guid smartLockId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
@@ -88,10 +95,12 @@ namespace api.Controllers
         }
 
         // PUT: api/smart-locks/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{smartLockId}")]
-        public async Task<ActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -106,7 +115,11 @@ namespace api.Controllers
         }
         
         [HttpPatch("{smartLockId}")]
-        public async Task<ActionResult> UpdateSmartLockPartially(Guid smartLockId,
+        [Consumes("application/json-patch+json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateSmartLockPartially(Guid smartLockId,
             [FromBody] JsonPatchDocument<SmartLockModificationDto> patchDoc)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
@@ -134,7 +147,10 @@ namespace api.Controllers
 
         // DELETE: api/smart-locks/5
         [HttpDelete("{smartLockId}")]
-        public async Task<ActionResult> DeleteSmartLock(Guid smartLockId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteSmartLock(Guid smartLockId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -149,6 +165,9 @@ namespace api.Controllers
 
         // GET: api/smart-locks/5
         [HttpGet("{smartLockId}/5/users")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetSmartLockUsers(Guid smartLockId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
@@ -167,6 +186,10 @@ namespace api.Controllers
 
         // Post: api/smart-locks/5/users
         [HttpPost("{smartLockId}/users")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> AddSmartLockUser(Guid smartLockId,
             SmartLockUserCreationDto smartLockUser)
         {
@@ -180,7 +203,7 @@ namespace api.Controllers
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("User was not found on Azure AD");
-                    return BadRequest("User was not found on Azure AD");
+                    return ValidationProblem("User was not found on Azure AD");
                 }
             }
 
@@ -200,7 +223,10 @@ namespace api.Controllers
 
         // GET: api/smart-locks/5/users/1
         [HttpGet("{smartLockId}/users/{userId}")]
-        public async Task<ActionResult> GetSmartLockUser(Guid smartLockId, Guid userId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<SmartLockUserDto>> GetSmartLockUser(Guid smartLockId, Guid userId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -220,7 +246,10 @@ namespace api.Controllers
 
         // DELETE: api/smart-locks/5/users/1
         [HttpDelete("{smartLockId}/users/{userId}")]
-        public async Task<ActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -241,6 +270,9 @@ namespace api.Controllers
 
         // GET: api/smart-locks/5/groups
         [HttpGet("{smartLockId}/groups")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetSmartLockGroups(Guid smartLockId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
@@ -259,7 +291,11 @@ namespace api.Controllers
 
         // Post: api/smart-locks/5/groups
         [HttpPost("{smartLockId}/groups")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> AddSmartLockUser(Guid smartLockId,
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<SmartLockGroupDto>> AddSmartLockGroup(Guid smartLockId,
             SmartLockGroupCreationDto smartLockGroup)
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
@@ -271,15 +307,15 @@ namespace api.Controllers
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    _logger.LogWarning("GroupId was not found on Azure AD");
-                    return BadRequest("GroupId was not found on Azure AD");
+                    _logger.LogWarning("Group  was not found on Azure AD");
+                    return ValidationProblem("Group  was not found on Azure AD");
                 }
             }
 
             if (await _smartLockRepository.SmartLockGroupExists(smartLockId, smartLockGroup.GroupId))
             {
                 _logger.LogWarning("Group already exists");
-                return BadRequest("Group already exists");
+                return Conflict("Group already exists");
             }
 
             _smartLockRepository.AddSmartLockGroup(smartLockId, smartLockGroup.GroupId);
@@ -291,7 +327,10 @@ namespace api.Controllers
 
         // GET: api/smart-locks/5/groups/1
         [HttpGet("{smartLockId}/groups/{groupId}")]
-        public async Task<ActionResult> GetSmartLockGroup(Guid smartLockId, Guid groupId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<SmartLockGroupDto>> GetSmartLockGroup(Guid smartLockId, Guid groupId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -311,7 +350,10 @@ namespace api.Controllers
 
         // DELETE: api/smart-locks/5/groups/1
         [HttpDelete("{smartLockId}/groups/{groupId}")]
-        public async Task<ActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
@@ -332,12 +374,16 @@ namespace api.Controllers
 
         // Post: api/smart-locks/get-access
         [HttpPost("get-access")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> OpenSmartLock(SmartLockUserAccessDto smartLockUser)
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AccessDto>> OpenSmartLock(SmartLockUserAccessDto smartLockUser)
         {
             var userExists = await _userRepository.UserExists(smartLockUser.UserId);
             if (!userExists) return NotFound();
 
-            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockUser.smartLockId);
+            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
             if (!smartLockExists) return NotFound();
 
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
@@ -350,16 +396,41 @@ namespace api.Controllers
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("User was not found on Azure AD");
-                    return BadRequest("User was not found on Azure AD");
+                    return ValidationProblem("User was not found on Azure AD");
                 }
             }
 
             var smartLockUserExists =
-                await _smartLockRepository.SmartLockUserExists(smartLockUser.smartLockId, smartLockUser.UserId);
+                await _smartLockRepository.SmartLockUserExists(smartLockUser.SmartLockId, smartLockUser.UserId);
 
             if (smartLockUserExists)
             {
-                return Ok(new {accessAuthorized = true});
+                var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
+                if (smartLock.Status != Status.Active)
+                {
+                    return Ok(new AccessDto
+                    {
+                        AccessAuthorized = false,
+                        Info = "The lock is in inactive state. Try again later"
+                    });
+                }
+                var user = await _userRepository.GetUser(smartLockUser.UserId);
+
+                if (user.Status != Status.Active)
+                {
+                    return Ok(new AccessDto
+                    {
+                        AccessAuthorized = false, 
+                        Info = "The user is in inactive state. Try again later"
+                    });
+                }
+                
+                return Ok(new AccessDto
+                {
+                    AccessAuthorized = true,
+                    Info = $"Access is permitted for user {user.Id}"
+                });
+
             }
 
             var userGroupsIdsFromAzureAd = await _azureAdRepository
@@ -368,14 +439,42 @@ namespace api.Controllers
             foreach (var groupId in userGroupsIdsFromAzureAd)
             {
                 var smartLockGroupExists =
-                    await _smartLockRepository.SmartLockGroupExists(smartLockUser.smartLockId, Guid.Parse(groupId));
+                    await _smartLockRepository.SmartLockGroupExists(smartLockUser.SmartLockId, Guid.Parse(groupId));
                 if (smartLockGroupExists)
                 {
-                    return Ok(new {accessAuthorized = true});
+                    var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
+                    if (smartLock.Status != Status.Active)
+                    {
+                        return Ok(new AccessDto
+                        {
+                            AccessAuthorized = false,
+                            Info = "The lock is in inactive state. Try again later"
+                        });
+                    }
+                    var group = await _groupRepository.GetGroup(Guid.Parse(groupId));
+
+                    if (group.Status != Status.Active)
+                    {
+                        return Ok(new AccessDto
+                        {
+                            AccessAuthorized = false, 
+                            Info = "The group is in inactive state. Try again later"
+                        });
+                    }
+                
+                    return Ok(new AccessDto
+                    {
+                        AccessAuthorized = true,
+                        Info = $"Access is permitted for group {group.Id}"
+                    });
                 }
             }
 
-            return Ok(new {accessAuthorized = false});
+            return Ok(new AccessDto
+            {
+                AccessAuthorized = false,
+                Info = "Access is not permitted"
+            });
         }
     }
 }

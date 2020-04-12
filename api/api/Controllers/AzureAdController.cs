@@ -14,6 +14,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 
@@ -36,7 +37,10 @@ namespace api.Controllers
 
 
         [HttpGet("users/")]
-        public async Task<IActionResult> GetUsers()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetUsers()
         {
             var users = new List<UserDto>();
             try
@@ -64,7 +68,10 @@ namespace api.Controllers
 
 
         [HttpGet("users/{userId}", Name = RouteNames.UserById)]
-        public async Task<IActionResult> GetUser(string userId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AzureAdUserDto>> GetUser(string userId)
         {
             try
             {
@@ -95,7 +102,10 @@ namespace api.Controllers
         }
 
         [HttpGet("users/{userId}/photo", Name = RouteNames.PhotoByUserId)]
-        public async Task<IActionResult> GetUserPhoto(string userId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> GetUserPhoto(string userId)
         {
             try
             {
@@ -121,7 +131,10 @@ namespace api.Controllers
         }
 
         [HttpGet("users/{userId}/groups")]
-        public async Task<IActionResult> GetUserGroups(string userId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<String>>> GetUserGroups(string userId)
         {
             try
             {
@@ -152,7 +165,10 @@ namespace api.Controllers
         }
 
         [HttpGet("groups/")]
-        public async Task<IActionResult> GetGroups()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<AzureAdGroupDto>>> GetGroups()
         {
             try
             {
@@ -179,7 +195,10 @@ namespace api.Controllers
 
 
         [HttpGet("groups/{groupId}", Name = RouteNames.GroupById)]
-        public async Task<IActionResult> GetGroup(string groupId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AzureAdGroupDto>> GetGroup(string groupId)
         {
             try
             {
@@ -205,7 +224,10 @@ namespace api.Controllers
         }
 
         [HttpGet("groups/{groupId}/members", Name = RouteNames.GroupMembersByGroupId)]
-        public async Task<IActionResult> GetGroupMembers(string groupId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetGroupMembers(string groupId)
         {
             try
             {
