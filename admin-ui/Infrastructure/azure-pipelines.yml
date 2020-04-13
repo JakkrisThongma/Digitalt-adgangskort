@@ -8,11 +8,8 @@ name: $(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyy-MM-dd).$(Buil
 trigger:
   branches:
     include: 
-    - develop
+    #- develop
     - master
-  paths:
-    include:
-    - admin-ui/*
 
 variables: 
   Terraform.backendServiceArm: 'bacheloroppgaver-shared-services-dev-sc'
