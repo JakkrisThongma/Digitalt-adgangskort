@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Container,Content, Button, Text } from 'native-base';
+import { Container,Content, Button, Text, Icon } from 'native-base';
 import NfcManager, {NfcTech, NfcEvents} from 'react-native-nfc-manager';
 import CustomModal from './CustomModal';
-import { StyleSheet} from 'react-native'
+import { StyleSheet, TouchableOpacity, Image, View} from 'react-native'
 
 export default class MainPage extends Component {
   constructor(props){
@@ -13,7 +13,41 @@ export default class MainPage extends Component {
       success: false,
       error: false
     }
-    
+
+    /*
+    <Button
+            style={{
+            alignSelf: 'center', 
+
+            width: '35%', 
+            bottom: '40%', 
+            position: 'absolute',
+
+
+              borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              width:200,
+              height:200,
+              backgroundColor:'red',
+              borderRadius:100,
+            }}>
+          <Image style={{
+              borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              width:200,
+              height:200,
+              backgroundColor:'red',
+              borderRadius:100,
+            }}
+          
+          source={require('./coursehero-free-unlock.jpg')}
+          />
+          </Button>
+    */
   } 
   showModal = () =>{
     this.setState({isModalVisible: true});
@@ -120,8 +154,10 @@ export default class MainPage extends Component {
       <Container>
         <Content contentContainerStyle= {styles.container}>
           <Text style = {styles.text}>Velkommen bruker</Text>
-          <Button primary style = {styles.button}  onPress={()=>this.Scan()}>
-            <Text>Scan dør</Text>
+          
+          <Button  primary style = {styles.button}  onPress={()=>this.Scan()}>
+            <Icon name = 'unlock'/>
+            <Text>Lås opp dør</Text>
           </Button>
           {
           this.state.isModalVisible
@@ -150,7 +186,11 @@ const styles = StyleSheet.create({
   },
 
   button:{
-    alignSelf: 'center', justifyContent: "center", width: '35%', bottom: '40%', position: 'absolute'
+    alignSelf: 'center', 
+    justifyContent: "center", 
+    width: '35%', 
+    bottom: '40%', 
+    position: 'absolute'
   }
 
 })

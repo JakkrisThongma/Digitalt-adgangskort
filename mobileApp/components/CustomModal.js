@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, Modal, StyleSheet } from 'react-native';
-import {Spinner, Button} from 'native-base';
+import { View, Modal, StyleSheet } from 'react-native';
+import {Spinner,Text, Button} from 'native-base';
 import LottieView from 'lottie-react-native';
 
 

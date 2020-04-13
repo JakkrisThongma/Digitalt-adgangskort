@@ -4,9 +4,9 @@ import {List,ListItem,InputGroup,Label, Form, Item,Input, Container, Header, Tit
 import { authorize } from 'react-native-app-auth';
 
 const config = {
-  issuer: 'https://login.microsoftonline.com/c39d49f7-9eed-4307-b032-bb28f3cf9d79',
-  clientId: '91b8fdda-8936-463b-9940-5a49d875c229',
-  redirectUrl: 'https://digitaladgangskortadminui-dev-web.azurewebsites.net/.auth/login/aad/callback',
+  issuer: 'https://login.microsoftonline.com/3602e498-fd34-4a1e-a61b-b4639ceeaffd',
+  clientId: '93a5c726-983f-4e8c-a330-f1b34e3d6752',
+  redirectUrl: 'msauth://com.mobileapp/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D',
 };
 
 
@@ -15,14 +15,22 @@ export default class Login extends Component {
   //this.props.navigation.navigate('MainPage');
       //this.props.navigation.replace('MainPage')
       async componentDidMount() {
+        console.log("Før trycatch")
         try {
-          const result = await authorize(config);
+          const result =await authorize(config);
           // result includes accessToken, accessTokenExpirationDate and refreshToken
-          console.log(result)
+          console.log("før result")
+          console.log(JSON.stringify(result))
+          
+          console.log("etter result")
+          
         } catch (error) {
           console.log(error);
         }
+        console.log("etter trycatch")
       }
+
+      
   render() {
     return (
       <Container>
