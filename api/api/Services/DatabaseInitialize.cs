@@ -22,28 +22,28 @@ namespace api.Services
             var user2 = new User
             {
                 Id = Guid.Parse("47f9a467-8755-4f0f-90a8-293c2ce26941"),
-                Status = Status.Inactive
+                Status = Status.Active
             };
             var user3 = new User
             {
                 Id = Guid.Parse("b37e26ba-a5f6-4089-a8cf-d1431415f924"),
-                Status = Status.Suspended
+                Status = Status.Active
             };
             var user4 = new User
             {
                 Id = Guid.Parse("cde7bd38-15ea-46e6-b7eb-e15f79e87c6a"),
-                Status = Status.Suspended
+                Status = Status.Active
             };
             var user5 = new User
             {
                 Id = Guid.Parse("2af19c79-665a-4ad2-bbed-09c381fb30ad"),
-                Status = Status.Suspended
+                Status = Status.Active
             };
             
             var user6 = new User
             {
                 Id = Guid.Parse("b0568c49-a276-4eeb-9000-6555c0bc3801"),
-                Status = Status.Suspended
+                Status = Status.Active
             };
 
 
@@ -56,19 +56,19 @@ namespace api.Services
             var group2 = new Group
             {
                 Id = Guid.Parse("1933c967-2e14-4e95-bdb0-54723595672d"),
-                Status = Status.Inactive
+                Status = Status.Active
             };
 
             var group3 = new Group
             {
                 Id = Guid.Parse("e44e9133-6f88-42b9-84ba-970f9293c87a"),
-                Status = Status.Inactive
+                Status = Status.Active
             };
             
             var group4 = new Group
             {
                 Id = Guid.Parse("e1f2df93-23b6-45ec-9e2f-a845fcd25cff"),
-                Status = Status.Inactive
+                Status = Status.Active
             };
 
 
@@ -87,7 +87,7 @@ namespace api.Services
                 Title = "Smart lock 2",
                 Description = "Access to G3",
                 ManufactureId = "qweasd123",
-                Status = Status.Inactive
+                Status = Status.Active
 
             };
             var smartLock3 = new SmartLock
@@ -96,7 +96,7 @@ namespace api.Services
                 Title = "Smart lock 3",
                 Description = "Access to  U3, and G1",
                 ManufactureId = "qweasd123",
-                Status = Status.Inactive
+                Status = Status.Active
 
             };
 
@@ -106,7 +106,7 @@ namespace api.Services
                 Title = "Smart lock 4",
                 Description = "Access to U1, and G2",
                 ManufactureId = "qweasd123",
-                Status = Status.Inactive
+                Status = Status.Active
 
             };
 
@@ -117,7 +117,7 @@ namespace api.Services
                 Title = "Smart lock 5",
                 Description = "Access to G1, and G2",
                 ManufactureId = "qweasd123",
-                Status = Status.Inactive
+                Status = Status.Active
 
             };
 
@@ -127,7 +127,7 @@ namespace api.Services
                 Title = "Smart lock 6",
                 Description = "Access to U1, U2, U3, G1, G2, and G3",
                 ManufactureId = "qweasd123",
-                Status = Status.Inactive
+                Status = Status.Active
 
             };
 
