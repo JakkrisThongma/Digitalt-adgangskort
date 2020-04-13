@@ -86,14 +86,18 @@ namespace api.Services
                 Id = Guid.Parse("e7d2c9dd-cc16-4bce-a908-019d98619417"),
                 Title = "Smart lock 2",
                 Description = "Access to G3",
-                ManufactureId = "qweasd123"
+                ManufactureId = "qweasd123",
+                Status = Status.Inactive
+
             };
             var smartLock3 = new SmartLock
             {
                 Id = Guid.Parse("ad2f8c1a-3590-4b93-b5f8-4fae365ec8ef"),
                 Title = "Smart lock 3",
                 Description = "Access to  U3, and G1",
-                ManufactureId = "qweasd123"
+                ManufactureId = "qweasd123",
+                Status = Status.Inactive
+
             };
 
             var smartLock4 = new SmartLock
@@ -101,7 +105,9 @@ namespace api.Services
                 Id = Guid.Parse("064259d2-237f-4237-9127-1683573e1190"),
                 Title = "Smart lock 4",
                 Description = "Access to U1, and G2",
-                ManufactureId = "qweasd123"
+                ManufactureId = "qweasd123",
+                Status = Status.Inactive
+
             };
 
 
@@ -110,7 +116,9 @@ namespace api.Services
                 Id = Guid.Parse("64136395-55d4-41df-881a-863dfb9dd747"),
                 Title = "Smart lock 5",
                 Description = "Access to G1, and G2",
-                ManufactureId = "qweasd123"
+                ManufactureId = "qweasd123",
+                Status = Status.Inactive
+
             };
 
             var smartLock6 = new SmartLock
@@ -118,7 +126,9 @@ namespace api.Services
                 Id = Guid.Parse("0f90217c-1709-4771-8669-57c89fca2f3d"),
                 Title = "Smart lock 6",
                 Description = "Access to U1, U2, U3, G1, G2, and G3",
-                ManufactureId = "qweasd123"
+                ManufactureId = "qweasd123",
+                Status = Status.Inactive
+
             };
 
 
@@ -140,6 +150,7 @@ namespace api.Services
                     smartLock6);
                 context.SaveChanges();
             }
+            
 
             context.AddRange(
                 new SmartLockGroup

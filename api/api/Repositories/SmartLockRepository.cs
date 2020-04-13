@@ -52,7 +52,9 @@ namespace api.Repositories
             {
                 throw new ArgumentNullException(nameof(smartLock));
             }
-
+            
+            smartLock.Id = Guid.NewGuid();
+            
             _context.SmartLocks.Add(smartLock);
         }
 

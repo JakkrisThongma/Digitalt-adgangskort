@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Types;
+using api.ValidationAttributes;
 
 namespace api.Entities
 {
@@ -16,6 +17,7 @@ namespace api.Entities
         }
         
         [Key] 
+        [NonEmptyGuid]
         public Guid Id { get; set; }
         public Status Status { get; set; }
         public DateTimeOffset CreationDate { get; set; }

@@ -4,6 +4,7 @@
  */
 
 using System;
+using api.Models;
 using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,29 +15,19 @@ namespace api.Controllers
         private readonly IIdentityService _identityService;
 
 
-
         public IdentityController(IIdentityService identityService)
         {
             _identityService = identityService ??
                                throw new ArgumentNullException(nameof(identityService));
-
         }
 
         [HttpGet("validate-token")]
-        public ActionResult ValidateToken()
+        public ActionResult<IdentityDto> ValidateToken()
         {
-            if (_identityService.IsAuthenticated())
+            return Ok(new IdentityDto
             {
-                return Ok(new
-                {
-                    Id = _identityService.GetId(),
-                    Login = _identityService.GetMail(),
-                    IsAuthenticated = _identityService.IsAuthenticated(),
-                });
-            }
-
-            return Ok(new
-            {
+                UserId = _identityService.GetId(),
+                Mail = _identityService.GetMail(),
                 IsAuthenticated = _identityService.IsAuthenticated(),
             });
         }
