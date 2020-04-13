@@ -10,6 +10,7 @@ using api.Repositories;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Group = Microsoft.Graph.Group;
@@ -130,6 +131,37 @@ namespace api.Controllers
             userEntity.Id = userId;
             userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
             _userRepository.UpdateUser(userEntity);
+            await _userRepository.Save();
+
+            return NoContent();
+        }
+        
+        [HttpPatch("{userId}")]
+        [Consumes("application/json-patch+json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateUserPartially(Guid userId,
+            [FromBody] JsonPatchDocument<UserModificationDto> patchDoc)
+        {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
+            var userFromRepo = await _userRepository.GetUser(userId);
+            
+            var userToPatch = _mapper.Map<UserModificationDto>(userFromRepo);
+            
+            patchDoc.ApplyTo(userToPatch, ModelState);
+
+            if (!TryValidateModel(userToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(userToPatch, userFromRepo);
+            
+            userFromRepo.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _userRepository.UpdateUser(userFromRepo);
             await _userRepository.Save();
 
             return NoContent();
