@@ -21,6 +21,13 @@ namespace api
 
 		public static IWebHostBuilder CreateHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
+				.ConfigureLogging((context, logging) =>
+				{
+					logging.ClearProviders();
+					logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+					logging.AddDebug();
+					logging.AddConsole();
+				})
 				.ConfigureServices(serviceCollection =>
 					serviceCollection
 						.AddScoped<IDatabaseInitialize, DatabaseInitialize>())
