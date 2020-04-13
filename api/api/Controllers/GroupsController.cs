@@ -8,6 +8,7 @@ using api.Repositories;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 using Group = api.Entities.Group;
@@ -120,6 +121,37 @@ namespace api.Controllers
             groupEntity.Id = groupId;
             groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
             _groupRepository.UpdateGroup(groupEntity);
+            await _groupRepository.Save();
+
+            return NoContent();
+        }
+        
+        [HttpPatch("{groupId}")]
+        [Consumes("application/json-patch+json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateUserPartially(Guid groupId,
+            [FromBody] JsonPatchDocument<GroupModificationDto> patchDoc)
+        {
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
+
+            var groupFromRepo = await _groupRepository.GetGroup(groupId);
+            
+            var groupToPatch = _mapper.Map<GroupModificationDto>(groupFromRepo);
+            
+            patchDoc.ApplyTo(groupToPatch, ModelState);
+
+            if (!TryValidateModel(groupToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(groupToPatch, groupFromRepo);
+            
+            groupFromRepo.LastModificationDate = new DateTimeOffset(DateTime.Now);
+            _groupRepository.UpdateGroup(groupFromRepo);
             await _groupRepository.Save();
 
             return NoContent();
