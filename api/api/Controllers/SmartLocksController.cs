@@ -280,8 +280,7 @@ namespace api.Controllers
 
             var allSmartLockGroupsFromRepo = await _smartLockRepository.GetSmartLockGroups(smartLockId);
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
 
             var mergedSmartLockUsers = DataMerger.MergeGroupsWithAzureData(
                 allSmartLockGroupsFromRepo, allGroupsFromAzureAd, _mapper);

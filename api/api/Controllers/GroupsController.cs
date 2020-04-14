@@ -42,8 +42,7 @@ namespace api.Controllers
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
 
             var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
                 allGroupsFromAzureAd, _mapper);

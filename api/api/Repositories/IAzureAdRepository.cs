@@ -24,7 +24,7 @@ namespace api.Repositories
             string groupId);
 
 
-        public Task<IGraphServiceGroupsCollectionPage> GetGroups(GraphServiceClient client);
+        public Task<IGraphServiceGroupsCollectionPage> GetGroups();
 
 
 
