@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using api.Entities;
 using api.Helpers;
 using api.Models;
 using api.Repositories;
@@ -28,11 +27,14 @@ namespace api.Controllers
         private readonly IGroupRepository _groupRepository;
         private readonly ISmartLockRepository _smartLockRepository;
         private readonly IAzureAdRepository _azureAdRepository;
+        private readonly IIdentityService _identityService;
+
         private readonly IMapper _mapper;
 
 
         public UsersController(IUserRepository userRepository, IGroupRepository groupRepository,
-            IAzureAdRepository azureAdRepository, ISmartLockRepository smartLockRepository, IMapper mapper)
+            IAzureAdRepository azureAdRepository, ISmartLockRepository smartLockRepository,
+            IIdentityService identityService, IMapper mapper)
         {
             _userRepository = userRepository ??
                               throw new ArgumentNullException(nameof(userRepository));
@@ -42,6 +44,10 @@ namespace api.Controllers
                                    throw new ArgumentNullException(nameof(smartLockRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(_azureAdRepository));
+            
+            _identityService = identityService ??
+                               throw new ArgumentNullException(nameof(identityService));
+            
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
@@ -61,26 +67,6 @@ namespace api.Controllers
                 allUsersFromAzureAd, _mapper);
 
             return Ok(mergedUsers);
-        }
-
-        // GET: api/users/5
-        [HttpGet("{userId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDto>> GetUser(Guid userId)
-        {
-            var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return NotFound();
-
-            var userFromRepo = await _userRepository.GetUser(userId);
-
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var userFromAzureAd = await _azureAdRepository.GetUser(client, userId.ToString());
-
-            var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
-
-            return Ok(mergedUser);
         }
 
         // POST: api/users
@@ -115,7 +101,28 @@ namespace api.Controllers
             
             return CreatedAtAction("GetUser", new {userId = userDto.Id}, userDto);
         }
+        
+        // GET: api/users/5
+        [HttpGet("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<UserDto>> GetUser(Guid userId)
+        {
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
 
+            var userFromRepo = await _userRepository.GetUser(userId);
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userFromAzureAd = await _azureAdRepository.GetUser(client, userId.ToString());
+
+            var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
+
+            return Ok(mergedUser);
+        }
+        
+        
         // PUT: api/users/5
         [HttpPut("{userId}")]
         [Consumes("application/json")]
@@ -246,6 +253,26 @@ namespace api.Controllers
             var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allUserSmartLocks);
 
             return Ok(userSmartLocksDto);
+        }
+        
+        [HttpGet("current")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var userId = Guid.Parse(_identityService.GetId());
+            var userExists = await _userRepository.UserExists(userId);
+            if (!userExists) return NotFound();
+
+            var userFromRepo = await _userRepository.GetUser(userId);
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userFromAzureAd = await _azureAdRepository.GetUser(client, userId.ToString());
+
+            var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
+
+            return Ok(mergedUser);
         }
     }
 }
