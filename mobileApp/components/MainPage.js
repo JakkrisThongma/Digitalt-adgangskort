@@ -3,6 +3,10 @@ import { Container,Content, Button, Text, Icon } from 'native-base';
 import NfcManager, {NfcTech, NfcEvents} from 'react-native-nfc-manager';
 import CustomModal from './CustomModal';
 import { StyleSheet, TouchableOpacity, Image, View} from 'react-native'
+import AuthContext from '../App'
+import axiosapi from '../axiosAPI'
+
+
 
 export default class MainPage extends Component {
   constructor(props){
@@ -14,6 +18,7 @@ export default class MainPage extends Component {
       error: false
     }
 
+    
     /*
     <Button
             style={{
@@ -92,6 +97,8 @@ export default class MainPage extends Component {
 
   componentDidMount() {
     NfcManager.start();
+    console.log(this.props.authState)
+   
   }
 
   componentWillUnmount() {
@@ -150,15 +157,20 @@ export default class MainPage extends Component {
   }
 
   render() {
+  
     return (
       <Container>
         <Content contentContainerStyle= {styles.container}>
           <Text style = {styles.text}>Velkommen bruker</Text>
-          
+         
           <Button  primary style = {styles.button}  onPress={()=>this.Scan()}>
             <Icon name = 'unlock'/>
             <Text>Lås opp dør</Text>
           </Button>
+          <Button  primary style = {styles.button}  onPress={()=>this.Scan()}>
+            <Text></Text>
+          </Button>
+          
           {
           this.state.isModalVisible
           ?

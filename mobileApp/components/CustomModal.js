@@ -27,7 +27,7 @@ export default class CustomModal extends Component {
       }
     }
     const  {scanning, success, cancelScan, error} = this.props
-    const text = setText();
+    const statusText = setText();
   
 
     return (
@@ -35,7 +35,7 @@ export default class CustomModal extends Component {
         <View style= {styles.outerContainer}>
         
         <Text style= {styles.responseText}> 
-        {text}
+        {statusText}
         </Text> 
         
 

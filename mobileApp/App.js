@@ -8,17 +8,17 @@ import MainPage from './components/MainPage';
 
 import {Container, Header, Title, Content, Footer, FooterTab, Button, Text, Icon} from 'native-base';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, createContext} from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { authorize, prefetchConfiguration } from 'react-native-app-auth';
 
+import config from './authConfig';
 
+/*
 type State = {
   hasLoggedInOnce: boolean,
   provider: ?string,
   accessToken: ?string,
-  accessTokenExpirationDate: ?string,
-  refreshToken: ?string
 };
 
 const config = {
@@ -36,6 +36,7 @@ const config = {
   }
 };
 
+*/
 const defaultAuthState = {
   hasLoggedInOnce: false,
   provider: '',
@@ -55,12 +56,12 @@ export default () => {
     async provider => {
       try {
         const newAuthState = await authorize(config);
-        console.log(newAuthState)
+        
         setAuthState({
           hasLoggedInOnce: true,
           provider: provider,
           ...newAuthState
-        });
+        }); 
       } catch (error) {
         Alert.alert('Failed to log in', error.message);
       }
@@ -72,7 +73,7 @@ export default () => {
     <Container>
       <Content contentContainerStyle= {styles.container}>
         {authState.accessToken ? ( //Klarte å logge inn/har token
-        <MainPage></MainPage>
+        <MainPage authState = {authState.accessToken} ></MainPage>
         ) :
           <Button primary style = {styles.button} onPress={() => handleAuthorize()} >
             <Text>Logg Inn</Text>
