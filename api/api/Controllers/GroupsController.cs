@@ -21,13 +21,17 @@ namespace api.Controllers
     public class GroupsController : ControllerBase
     {
         private readonly IGroupRepository _groupRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
-        public GroupsController(IGroupRepository groupRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
+        public GroupsController(IGroupRepository groupRepository, IUserRepository userRepository,
+            IAzureAdRepository azureAdRepository, IMapper mapper)
         {
             _groupRepository = groupRepository ??
                                throw new ArgumentNullException(nameof(groupRepository));
+            _userRepository = userRepository ??
+                              throw new ArgumentNullException(nameof(userRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(azureAdRepository));
             _mapper = mapper ??
@@ -124,13 +128,13 @@ namespace api.Controllers
 
             return NoContent();
         }
-        
+
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUserPartially(Guid groupId,
+        public async Task<IActionResult> UpdateGroupPartially(Guid groupId,
             [FromBody] JsonPatchDocument<GroupModificationDto> patchDoc)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
@@ -173,13 +177,35 @@ namespace api.Controllers
 
             return NoContent();
         }
+        
+        // GET: api/groups/5/users
+        [HttpGet("{groupId}/users")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetGroupUsers(Guid groupId)
+        {
+            var groupExists = await _groupRepository.GroupExists(groupId);
+            if (!groupExists) return NotFound();
+
+            var allUsersFromRepo = await _userRepository.GetUsers();
+
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var groupUsersFromAzureAd = await _azureAdRepository
+                .GetGroupMembers(client, groupId.ToString());
+            
+            var mergedUsers = DataMerger.MergeUsersWithAzureData(allUsersFromRepo,
+                groupUsersFromAzureAd, _mapper);
+
+            return Ok(mergedUsers);
+        }
 
         // GET: api/groups/5/smart-locks
         [HttpGet("{groupId}/smart-locks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid groupId)
+        public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetGroupSmartLocks(Guid groupId)
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
             if (!groupExists) return NotFound();

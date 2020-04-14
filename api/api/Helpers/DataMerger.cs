@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using api.Entities;
 using api.Models;
 using AutoMapper;
+using Microsoft.Graph;
+using Group = api.Entities.Group;
+using User = api.Entities.User;
 
 namespace api.Helpers
 {
@@ -28,6 +30,20 @@ namespace api.Helpers
             return mergedUsers;
         }
 
+
+        public static IEnumerable<UserDto> MergeUsersWithAzureData(IEnumerable<User> usersFromRepo,
+            IGroupMembersCollectionWithReferencesPage usersFromAzureAd, IMapper mapper)
+        {
+            var mergedUsers = (from userFromRepo in usersFromRepo
+                from dbUserFromAzureAd in usersFromAzureAd
+                where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
+                let dtoFromDb = mapper.Map<UserDto>(userFromRepo)
+                select mapper.Map(dbUserFromAzureAd, dtoFromDb));
+
+            return mergedUsers;
+        }
+
+
         public static GroupDto MergeGroupWithAzureData(Group groupFromRepo, Microsoft.Graph.Group groupFromAzureAd,
             IMapper mapper)
         {
@@ -37,7 +53,7 @@ namespace api.Helpers
         }
 
         public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo,
-            Microsoft.Graph.IGraphServiceGroupsCollectionPage allGroupsFromAzureAd, IMapper mapper)
+            IEnumerable<Microsoft.Graph.User> allGroupsFromAzureAd, IMapper mapper)
         {
             var mergedGroups = (from groupFromRepo in groupsFromRepo
                 from dbGroupFromAzureAd in allGroupsFromAzureAd
@@ -62,7 +78,7 @@ namespace api.Helpers
 
         public static List<string> MergeLists(List<string> list1, List<string> list2)
         {
-            if (list1.Count > 0 && list2.Count > 0 )
+            if (list1.Count > 0 && list2.Count > 0)
             {
                 foreach (var item in list2)
                 {
@@ -71,15 +87,15 @@ namespace api.Helpers
                         list1.Add(item);
                     }
                 }
-               
+
                 return list1;
             }
-            if (list1.Count > 0 )
+
+            if (list1.Count > 0)
             {
                 return list1;
-
             }
-            
+
             return list2;
         }
     }
