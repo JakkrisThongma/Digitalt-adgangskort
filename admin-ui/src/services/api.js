@@ -13,7 +13,7 @@ export function addUser(data) {
     method: "POST",
     url: "users",
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 export function getUser(userId) {
@@ -71,7 +71,7 @@ export function addGroup(data) {
     method: "POST",
     url: "groups",
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 export function getGroup(groupId) {
@@ -122,7 +122,7 @@ export function addSmartLock(data) {
     method: "POST",
     url: "smart-locks",
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 export function getSmartLock(smartLockId) {
@@ -158,7 +158,7 @@ export function addSmartLockUser(smartLockId, data) {
     method: "POST",
     url: `smart-locks/${smartLockId}/users`,
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 export function getSmartLockUser(smartLockId, userId) {
@@ -187,7 +187,7 @@ export function addSmartLockGroup(smartLockId, data) {
     method: "POST",
     url: `smart-locks/${smartLockId}/groups`,
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 export function getSmartLockGroup(smartLockId, groupId) {
@@ -209,7 +209,7 @@ export function getAccess(data) {
     method: "POST",
     url: "smart-locks/get-access",
     data
-  });
+  }).then(res => Promise.resolve(res.data));
 }
 
 // Azure AD endpoints
