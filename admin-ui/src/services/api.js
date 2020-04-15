@@ -23,7 +23,7 @@ export function getUser(userId) {
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getCurrentUser() {
+export function getCurrentAuthenticatedUser() {
   return http({
     method: "GET",
     url: "users/current"
@@ -34,6 +34,9 @@ export function updateUser(userId, data) {
   return http({
     method: "PATCH",
     url: `users/${userId}`,
+    headers: {
+      "Content-Type": "application/json-patch+json"
+    },
     data
   });
 }
@@ -85,6 +88,9 @@ export function updateGroup(groupId, data) {
   return http({
     method: "PATCH",
     url: `groups/${groupId}`,
+    headers: {
+      "Content-Type": "application/json-patch+json"
+    },
     data
   });
 }
@@ -136,6 +142,9 @@ export function updateSmartLock(smartLockId, data) {
   return http({
     method: "PATCH",
     url: `smart-locks/${smartLockId}`,
+    headers: {
+      "Content-Type": "application/json-patch+json"
+    },
     data
   });
 }
@@ -204,7 +213,7 @@ export function deleteSmartLockGroup(smartLockId, groupId) {
   });
 }
 
-export function getAccess(data) {
+export function accessRequest(data) {
   return http({
     method: "POST",
     url: "smart-locks/get-access",
