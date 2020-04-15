@@ -1,22 +1,25 @@
 const initialState = {
-  error: null,
-  loading: false,
   users: [],
+  user: null,
+  newUser: null,
+  userGroups: [],
+  userSmartLocks: [],
+  currentAuthenticatedUser: null,
   groups: [],
+  group: null,
+  newGroup: null,
+  groupUsers: [],
+  groupSmartLocks: [],
   smartLocks: [],
-  currentUser: {
-    userGroups: [],
-    userSmartLocks: []
-  },
-
-  currentGroup: {
-    groupUsers: [],
-    groupSmartLocks: []
-  },
-  currentSmartLock: {
-    smartLockUsers: [],
-    smartLockGroups: []
-  }
+  smartLock: null,
+  newSmartLock: null,
+  newSmartLockUser: null,
+  newSmartLockGroup: null,
+  smartLockUsers: [],
+  smartLockGroups: [],
+  loading: false,
+  didInvalidate: false,
+  error: null
 };
 
 export default initialState;
