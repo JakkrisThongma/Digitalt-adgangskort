@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -8,7 +8,8 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Checkbox
+  Checkbox,
+  Button
 } from "@material-ui/core";
 
 import {
@@ -16,10 +17,23 @@ import {
   TableHeader,
   AddUserDialog
 } from "@/components/usersList";
+import initialState from "../data/initialState";
+import fetchUsers from "../../actions/userActions";
+import addLock from "../../actions/smartLockActions";
+import useApiRequest from "../../reducers/useApiRequest";
+import userReducer from "../../reducers/userReducer";
+import smartLockReducer from "../../reducers/smartLockReducer";
 
 function createData(id, firstname, lastname, email, mobile) {
   return { id, firstname, lastname, email, mobile };
 }
+
+const newLock = {
+  title: "New lock",
+  description: "New lock",
+  manufactureId: "string",
+  status: "Inactive"
+};
 
 const rows = [
   createData("1001", "Ola", "Nordmann", "ola@nordmann.no", "44556677"),
@@ -104,6 +118,28 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UsersList = () => {
+  const [state, dispatch] = useApiRequest(userReducer, initialState);
+  const { users } = state;
+  const [state2, dispatch2] = useApiRequest(smartLockReducer, initialState);
+
+  useEffect(() => {
+    console.log(state);
+    dispatch(dispatch => {});
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log(state);
+    dispatch(dispatch => {});
+  }, [dispatch2]);
+
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
+
+  useEffect(() => {
+    dispatch(fetchUsers);
+  }, []);
+
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("firstname");
@@ -253,6 +289,10 @@ const UsersList = () => {
           isAddUserOpened={openAddUser}
           onAddUserCancelClick={handleAddUserCancelClick}
         />
+        <Button
+          onClick={() => dispatch2(dispatch => addLock(dispatch, newLock))}>
+          hi
+        </Button>
       </Paper>
     </div>
   );
