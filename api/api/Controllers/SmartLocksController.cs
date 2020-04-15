@@ -297,10 +297,9 @@ namespace api.Controllers
         public async Task<ActionResult<SmartLockGroupDto>> AddSmartLockGroup(Guid smartLockId,
             SmartLockGroupCreationDto smartLockGroup)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
-                await _azureAdRepository.GetGroup(client, smartLockGroup.GroupId.ToString());
+                await _azureAdRepository.GetGroup(smartLockGroup.GroupId.ToString());
             }
             catch (ServiceException e)
             {

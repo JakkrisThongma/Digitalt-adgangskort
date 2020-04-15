@@ -213,7 +213,7 @@ namespace api.Controllers
             foreach (var groupId in userGroupsIdsFromAzureAd)
             {
                 var group = await _azureAdRepository
-                    .GetGroup(client, groupId.ToString());
+                    .GetGroup(groupId.ToString());
                 userGroupsFromAzureAd.Add(group);
             }
 

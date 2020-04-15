@@ -17,7 +17,7 @@ namespace api.Repositories
 
         public Task<IGraphServiceUsersCollectionPage> GetUsers(GraphServiceClient client);
         
-        public Task<Group> GetGroup(GraphServiceClient client, string groupId);
+        public Task<Group> GetGroup(string groupId);
 
 
         public Task<IGroupMembersCollectionWithReferencesPage> GetGroupMembers(GraphServiceClient client,

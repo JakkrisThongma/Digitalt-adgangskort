@@ -67,16 +67,16 @@ namespace api.Repositories
             return userList;
         }
         
-        public async Task<Group> GetGroup(GraphServiceClient client, string groupId)
+        public async Task<Group> GetGroup(string groupId)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
             if (groupId == null)
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
+            
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+            
             var group = await client.Groups[groupId].Request().GetAsync();
 
             return group;

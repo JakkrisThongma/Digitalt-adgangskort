@@ -200,10 +200,9 @@ namespace api.Controllers
             try
             {
                 // Initialize the GraphServiceClient.
-                var client = await MicrosoftGraphClient.GetGraphServiceClient();
 
                 // Load group profile.
-                var group = await _azureAdRepository.GetGroup(client, groupId);
+                var group = await _azureAdRepository.GetGroup(groupId);
 
                 return Ok(_mapper.Map<AzureAdGroupDto>(group));
             }
