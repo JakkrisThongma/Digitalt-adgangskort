@@ -5,7 +5,7 @@ const useApiRequest = (reducer, initialState) => {
 
   const enhancedDispatch = useCallback(
     action => {
-      console.log(`action is : ${action}`);
+      // console.log(`action is : ${action}`);
 
       if (typeof action === "function") {
         action(dispatch);

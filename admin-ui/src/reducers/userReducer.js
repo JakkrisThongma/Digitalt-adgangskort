@@ -30,7 +30,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: true,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -42,7 +43,8 @@ const userReducer = (state, action) => {
       ...state,
       users: action.payload.users,
       loading: false,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -53,7 +55,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: false,
-      error: action.payload.error
+      error: action.payload.error,
+      didInvalidate: false
     };
   }
 
@@ -103,7 +106,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: true,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -115,7 +119,8 @@ const userReducer = (state, action) => {
       ...state,
       user: action.payload.user,
       loading: false,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -126,7 +131,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: false,
-      error: action.payload.error
+      error: action.payload.error,
+      didInvalidate: false
     };
   }
 
@@ -212,7 +218,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: true,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -224,7 +231,8 @@ const userReducer = (state, action) => {
       ...state,
       userGroups: action.payload.userGroups,
       loading: false,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -235,7 +243,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: false,
-      error: action.payload.error
+      error: action.payload.error,
+      didInvalidate: false
     };
   }
 
@@ -247,7 +256,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: true,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -259,7 +269,8 @@ const userReducer = (state, action) => {
       ...state,
       userSmartLocks: action.payload.userSmartLocks,
       loading: false,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -270,7 +281,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: false,
-      error: action.payload.error
+      error: action.payload.error,
+      didInvalidate: false
     };
   }
 
@@ -282,7 +294,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: true,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -294,7 +307,8 @@ const userReducer = (state, action) => {
       ...state,
       currentAuthenticatedUser: action.payload.currentAuthenticatedUser,
       loading: false,
-      error: null
+      error: null,
+      didInvalidate: false
     };
   }
 
@@ -305,7 +319,8 @@ const userReducer = (state, action) => {
     return {
       ...state,
       loading: false,
-      error: action.payload.error
+      error: action.payload.error,
+      didInvalidate: false
     };
   }
 
