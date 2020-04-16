@@ -11,7 +11,7 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "../actions/actionTypes";
 
 import {
   USERS_RESOURCE_TYPE,
@@ -19,9 +19,10 @@ import {
   USER_GROUPS_RESOURCE_TYPE,
   USER_SMART_LOCKS_RESOURCE_TYPE,
   CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "../actions/actionResourceTypes";
 
 const userReducer = (state, action) => {
+  // Read users
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === USERS_RESOURCE_TYPE
@@ -56,8 +57,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // -------------
-
+  // Create users
   if (
     action.type === CREATE_RESOURCES_PENDING &&
     action.resourceType === USER_RESOURCE_TYPE
@@ -95,8 +95,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read user
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === USER_RESOURCE_TYPE
@@ -131,8 +130,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Update user
   if (
     action.type === UPDATE_RESOURCES_PENDING &&
     action.resourceType === USER_RESOURCE_TYPE
@@ -169,8 +167,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Delete user
   if (
     action.type === DELETE_RESOURCES_PENDING &&
     action.resourceType === USER_RESOURCE_TYPE
@@ -207,8 +204,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read user groups
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === USER_GROUPS_RESOURCE_TYPE
@@ -243,8 +239,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // ------------
-
+  // Read user smart locks
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === USER_SMART_LOCKS_RESOURCE_TYPE
@@ -279,8 +274,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  // -------------
-
+  // Read current user
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE

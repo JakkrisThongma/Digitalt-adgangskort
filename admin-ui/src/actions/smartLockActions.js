@@ -24,7 +24,7 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "./actionTypes";
 
 import {
   SMART_LOCKS_RESOURCE_TYPE,
@@ -33,7 +33,7 @@ import {
   SMART_LOCK_USER_RESOURCE_TYPE,
   SMART_LOCK_GROUPS_RESOURCE_TYPE,
   SMART_LOCK_GROUP_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "./actionResourceTypes";
 
 const getSmartLocks = dispatch => {
   dispatch({

@@ -11,7 +11,7 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "../actions/actionTypes";
 
 import {
   SMART_LOCKS_RESOURCE_TYPE,
@@ -20,9 +20,10 @@ import {
   SMART_LOCK_USER_RESOURCE_TYPE,
   SMART_LOCK_GROUPS_RESOURCE_TYPE,
   SMART_LOCK_GROUP_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "../actions/actionResourceTypes";
 
 const smartLockReducer = (state, action) => {
+  // Read smart locks
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCKS_RESOURCE_TYPE
@@ -57,8 +58,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // -------------
-
+  // Create smart locks
   if (
     action.type === CREATE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_RESOURCE_TYPE
@@ -96,8 +96,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read smart lock
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_RESOURCE_TYPE
@@ -132,8 +131,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Update smart locks
   if (
     action.type === UPDATE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_RESOURCE_TYPE
@@ -170,8 +168,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Delete smart locks
   if (
     action.type === DELETE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_RESOURCE_TYPE
@@ -208,8 +205,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read smart lock users
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_USERS_RESOURCE_TYPE
@@ -243,8 +239,8 @@ const smartLockReducer = (state, action) => {
       error: action.payload.error
     };
   }
-  // -------------
 
+  // Read smart lock user
   if (
     action.type === CREATE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_USER_RESOURCE_TYPE
@@ -282,8 +278,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // -------------
-
+  // Delete smart lock user
   if (
     action.type === DELETE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_USER_RESOURCE_TYPE
@@ -320,8 +315,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ----
-
+  // Read smart lock group
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_GROUPS_RESOURCE_TYPE
@@ -356,8 +350,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // -----
-
+  // Create smart lock group
   if (
     action.type === CREATE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_GROUP_RESOURCE_TYPE
@@ -395,8 +388,7 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Delete smart lock group
   if (
     action.type === DELETE_RESOURCES_PENDING &&
     action.resourceType === SMART_LOCK_GROUP_RESOURCE_TYPE
@@ -432,8 +424,6 @@ const smartLockReducer = (state, action) => {
       didInvalidate: false
     };
   }
-
-  // ------
 
   return state;
 };

@@ -20,14 +20,14 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "./actionTypes";
 
 import {
   GROUPS_RESOURCE_TYPE,
   GROUP_RESOURCE_TYPE,
   GROUP_USERS_RESOURCE_TYPE,
   GROUP_SMART_LOCKS_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "./actionResourceTypes";
 
 const getGroups = dispatch => {
   dispatch({

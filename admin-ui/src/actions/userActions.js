@@ -21,7 +21,7 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "./actionTypes";
 
 import {
   USERS_RESOURCE_TYPE,
@@ -29,7 +29,7 @@ import {
   USER_GROUPS_RESOURCE_TYPE,
   USER_SMART_LOCKS_RESOURCE_TYPE,
   CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "./actionResourceTypes";
 
 const getUsers = dispatch => {
   dispatch({ type: READ_RESOURCES_PENDING, resourceType: USERS_RESOURCE_TYPE });

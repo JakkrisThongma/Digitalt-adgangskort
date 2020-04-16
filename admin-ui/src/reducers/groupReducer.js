@@ -11,16 +11,17 @@ import {
   DELETE_RESOURCES_PENDING,
   DELETE_RESOURCES_SUCCEEDED,
   DELETE_RESOURCES_FAILED
-} from "../types/actionTypes";
+} from "../actions/actionTypes";
 
 import {
   GROUPS_RESOURCE_TYPE,
   GROUP_RESOURCE_TYPE,
   GROUP_USERS_RESOURCE_TYPE,
   GROUP_SMART_LOCKS_RESOURCE_TYPE
-} from "../types/resourceTypes";
+} from "../actions/actionResourceTypes";
 
 const groupReducer = (state, action) => {
+  // Read groups
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === GROUPS_RESOURCE_TYPE
@@ -55,8 +56,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // -------------
-
+  // Create group
   if (
     action.type === CREATE_RESOURCES_PENDING &&
     action.resourceType === GROUP_RESOURCE_TYPE
@@ -94,8 +94,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read group
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === GROUP_RESOURCE_TYPE
@@ -130,8 +129,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Update group
   if (
     action.type === UPDATE_RESOURCES_PENDING &&
     action.resourceType === GROUP_RESOURCE_TYPE
@@ -168,7 +166,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // ------
+  // Delete group
 
   if (
     action.type === DELETE_RESOURCES_PENDING &&
@@ -206,8 +204,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // ------
-
+  // Read group users
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === GROUP_USERS_RESOURCE_TYPE
@@ -242,8 +239,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // ------------
-
+  // Read group smart locks
   if (
     action.type === READ_RESOURCES_PENDING &&
     action.resourceType === GROUP_SMART_LOCKS_RESOURCE_TYPE
