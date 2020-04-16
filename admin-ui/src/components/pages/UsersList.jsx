@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -8,8 +8,7 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Checkbox,
-  Button
+  Checkbox
 } from "@material-ui/core";
 
 import {
@@ -17,31 +16,11 @@ import {
   TableHeader,
   AddUserDialog
 } from "@/components/usersList";
-import initialState from "../data/initialState";
-import fetchUsers from "../../actions/userActions";
-import addLock from "../../actions/smartLockActions";
+import initialState from "../../data/initialState";
+
+import { getUsers } from "../../actions/userActions";
 import useApiRequest from "../../reducers/useApiRequest";
 import userReducer from "../../reducers/userReducer";
-import smartLockReducer from "../../reducers/smartLockReducer";
-
-function createData(id, firstname, lastname, email, mobile) {
-  return { id, firstname, lastname, email, mobile };
-}
-
-const newLock = {
-  title: "New lock",
-  description: "New lock",
-  manufactureId: "string",
-  status: "Inactive"
-};
-
-const rows = [
-  createData("1001", "Ola", "Nordmann", "ola@nordmann.no", "44556677"),
-  createData("1002", "Kari", "Nordmann", "kari@nordmann.no", "2233445566"),
-  createData("1003", "Hans", "Hansen", "hans@nordmann.no", "33445566"),
-  createData("1004", "Martine", "Nilsen", "martine@nordmann.no", "12312312"),
-  createData("1005", "Ole", "Martin", "ole@nordmann.no", "23232323")
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -70,21 +49,22 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
+  { id: "id", numeric: false, disablePadding: false, label: "ID" },
   {
-    id: "id",
-    numeric: false,
-    disablePadding: true,
-    label: "ID"
-  },
-  {
-    id: "firstname",
+    id: "firstName",
     numeric: false,
     disablePadding: false,
     label: "First name"
   },
-  { id: "lastname", numeric: false, disablePadding: false, label: "Last name" },
-  { id: "email", numeric: false, disablePadding: false, label: "Email" },
-  { id: "mobile", numeric: false, disablePadding: false, label: "Mobile" }
+  { id: "lastName", numeric: false, disablePadding: false, label: "Last name" },
+  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  { id: "created", numeric: false, disablePadding: false, label: "Created" },
+  {
+    id: "lastModified",
+    numeric: false,
+    disablePadding: false,
+    label: "lastModified"
+  }
 ];
 
 const useStyles = makeStyles(theme => ({
@@ -119,30 +99,11 @@ const useStyles = makeStyles(theme => ({
 
 const UsersList = () => {
   const [state, dispatch] = useApiRequest(userReducer, initialState);
-  const { users } = state;
-  const [state2, dispatch2] = useApiRequest(smartLockReducer, initialState);
-
-  useEffect(() => {
-    console.log(state);
-    dispatch(dispatch => {});
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log(state);
-    dispatch(dispatch => {});
-  }, [dispatch2]);
-
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
-
-  useEffect(() => {
-    dispatch(fetchUsers);
-  }, []);
-
+  const { users, didInvalidate } = state;
+  const [rows, setRows] = useState([]);
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("firstname");
+  const [orderBy, setOrderBy] = React.useState("givenName");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [openAddUser, setOpenAddUser] = React.useState(false);
@@ -205,6 +166,21 @@ const UsersList = () => {
     setOpenAddUser(false);
   };
 
+  useEffect(() => {
+    dispatch(getUsers);
+  }, []);
+
+  useEffect(() => {
+    setRows(users);
+    console.log(state);
+  }, [state]);
+
+  useEffect(() => {
+    if (didInvalidate) {
+      dispatch(getUsers);
+    }
+  }, [didInvalidate]);
+
   return (
     <div className={classes.root}>
       <h1>Users</h1>
@@ -261,10 +237,13 @@ const UsersList = () => {
                         padding="none">
                         {row.id}
                       </TableCell>
-                      <TableCell align="center">{row.firstname}</TableCell>
-                      <TableCell align="center">{row.lastname}</TableCell>
-                      <TableCell align="center">{row.email}</TableCell>
-                      <TableCell align="center">{row.mobile}</TableCell>
+                      <TableCell align="center">{row.givenName}</TableCell>
+                      <TableCell align="center">{row.sureName}</TableCell>
+                      <TableCell align="center">{row.status}</TableCell>
+                      <TableCell align="center">{row.creationDate}</TableCell>
+                      <TableCell align="center">
+                        {row.modificationDate}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -289,10 +268,6 @@ const UsersList = () => {
           isAddUserOpened={openAddUser}
           onAddUserCancelClick={handleAddUserCancelClick}
         />
-        <Button
-          onClick={() => dispatch2(dispatch => addLock(dispatch, newLock))}>
-          hi
-        </Button>
       </Paper>
     </div>
   );
