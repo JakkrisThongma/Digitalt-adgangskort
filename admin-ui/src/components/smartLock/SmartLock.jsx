@@ -22,8 +22,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Lock = props => {
-  const { title, active, date } = props;
+const SmartLock = props => {
+  const {
+    title,
+    status,
+    description,
+    manufactureId,
+    creationDate,
+    lastModificationDate
+  } = props;
 
   const classes = useStyles();
 
@@ -39,14 +46,21 @@ const Lock = props => {
               variant="h4">
               {title}
             </Typography>
+            <Typography variant="body2">Description: {description}</Typography>
             <Typography
               className={classes.title}
               color="textSecondary"
               gutterBottom
               variant="body2">
-              Status: {active ? "Active" : "Not active"}
+              Status: {status}
             </Typography>
-            <Typography variant="body2">{date}</Typography>
+            <Typography variant="body2">
+              Manufacture id {manufactureId}
+            </Typography>
+            <Typography variant="body2">Created on {creationDate}</Typography>
+            <Typography variant="body2">
+              Last modified {lastModificationDate}
+            </Typography>
           </Grid>
           <Grid item>
             <LockIcon />
@@ -69,13 +83,20 @@ const Lock = props => {
   );
 };
 
-Lock.propTypes = {
+SmartLock.propTypes = {
   title: PropTypes.string.isRequired,
-  active: PropTypes.bool,
-  date: PropTypes.string.isRequired
+  description: PropTypes.string,
+  status: PropTypes.string,
+  manufactureId: PropTypes.string,
+  creationDate: PropTypes.string,
+  lastModificationDate: PropTypes.string
 };
 
-Lock.defaultProps = {
-  active: false
+SmartLock.defaultProps = {
+  description: "",
+  status: "",
+  manufactureId: "",
+  creationDate: "",
+  lastModificationDate: ""
 };
-export default Lock;
+export default SmartLock;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -8,7 +8,8 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Checkbox
+  Checkbox,
+  Button
 } from "@material-ui/core";
 
 import {
@@ -18,9 +19,31 @@ import {
 } from "@/components/usersList";
 import initialState from "../../data/initialState";
 
-import { getUsers } from "../../actions/userActions";
+import {
+  getUsers,
+  addUSer,
+  updateUser,
+  getUser,
+  deleteUser
+} from "../../actions/userActions";
 import useApiRequest from "../../reducers/useApiRequest";
 import userReducer from "../../reducers/userReducer";
+
+const newUser = {
+  id: "1ba5bd99-412a-4bcb-9f8b-73bcc1df1195",
+  status: "Inactive"
+};
+
+const userToUpdate = [
+  {
+    value: "inactive",
+    path: "/status",
+    op: "replace"
+  }
+];
+const userId = "1ba5bd99-412a-4bcb-9f8b-73bcc1df1195";
+const userId2 = "48984aba-64e1-4eef-b2bd-af2061cb2616";
+const userId1 = "cde7bd38-15ea-46e6-b7eb-e15f79e87c6a";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -107,23 +130,28 @@ const UsersList = () => {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [openAddUser, setOpenAddUser] = React.useState(false);
-
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
+  const handleRequestSort = useCallback(
+    (event, property) => {
+      const isAsc = orderBy === property && order === "asc";
+      setOrder(isAsc ? "desc" : "asc");
+      setOrderBy(property);
+    },
+    [order]
+  );
 
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.id);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  const handleSelectAllClick = useCallback(
+    event => {
+      if (event.target.checked) {
+        const newSelecteds = rows.map(n => n.id);
+        setSelected(newSelecteds);
+        return;
+      }
+      setSelected([]);
+    },
+    [selected, rows]
+  );
 
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
@@ -159,12 +187,16 @@ const UsersList = () => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const handleAddUserClick = () => {
+  const handleAddUserClick = useCallback(() => {
     setOpenAddUser(true);
-  };
-  const handleAddUserCancelClick = () => {
+  }, [openAddUser]);
+  const handleAddUserCancelClick = useCallback(() => {
     setOpenAddUser(false);
-  };
+  }, [openAddUser]);
+
+  const handleAddUser = useCallback(() => {
+    dispatch(innerDispatch => addUSer(innerDispatch, newUser));
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(getUsers);
@@ -173,7 +205,7 @@ const UsersList = () => {
   useEffect(() => {
     setRows(users);
     console.log(state);
-  }, [state]);
+  }, [users]);
 
   useEffect(() => {
     if (didInvalidate) {
@@ -269,6 +301,43 @@ const UsersList = () => {
           onAddUserCancelClick={handleAddUserCancelClick}
         />
       </Paper>
+      <Button onClick={handleAddUser}>Add</Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch =>
+            updateUser(innerDispatch, userId2, userToUpdate)
+          )
+        }>
+        Update
+      </Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => deleteUser(innerDispatch, userId))
+        }>
+        Delete
+      </Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId))
+        }>
+        Get User
+      </Button>
+
+      <Button onClick={() => dispatch(getUsers)}>Get users</Button>
+
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId1))
+        }>
+        Get user 1
+      </Button>
+
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId2))
+        }>
+        Get user 2
+      </Button>
     </div>
   );
 };

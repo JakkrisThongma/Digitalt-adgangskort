@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField } from "@material-ui/core";
 
-const AccessGroupSelector = props => {
+const GroupSelector = props => {
   const { accessGroups, handleListOnChange } = props;
   return (
     <Autocomplete
@@ -26,9 +26,9 @@ const AccessGroupSelector = props => {
   );
 };
 
-AccessGroupSelector.propTypes = {
+GroupSelector.propTypes = {
   accessGroups: PropTypes.array.isRequired,
   handleListOnChange: PropTypes.func.isRequired
 };
 
-export default AccessGroupSelector;
+export default GroupSelector;

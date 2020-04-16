@@ -13,7 +13,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonAdd as PersonAddIcon } from "@material-ui/icons";
 import useFormValidation from "validation/useFormValidation";
-import AccessGroupSelector from "./AccessGroupSelector";
+import GroupSelector from "./GroupSelector";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -188,7 +188,7 @@ const AddUserDialog = props => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <AccessGroupSelector
+                  <GroupSelector
                     accessGroups={accessGroups}
                     handleListOnChange={handleListOnChange}
                   />

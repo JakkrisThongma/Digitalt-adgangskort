@@ -26,8 +26,8 @@ const Sidebar = props => {
   const listItems = [
     { text: "Dashboard", link: "/dashboard", icon: Dashboard },
     { text: "Users", link: "/users", icon: People },
-    { text: "Locks", link: "/locks", icon: Lock },
-    { text: "Access level", link: "/access-levels", icon: AccountTree }
+    { text: "Groups", link: "/groups", icon: AccountTree },
+    { text: "Smart locks", link: "/smart-locks", icon: Lock }
   ];
   const sideList = () => (
     <div
