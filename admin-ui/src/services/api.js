@@ -222,48 +222,48 @@ export function accessRequest(data) {
 }
 
 // Azure AD endpoints
-export function getUsersFromAzureAd() {
+export function getAzureAdUsers() {
   return http({
     method: "GET",
     url: "azure-ad/users"
   }).then(res => Promise.resolve(res.data));
 }
-export function getUserFromAzureAd(userId) {
+export function getAzureAdUser(userId) {
   return http({
     method: "GET",
     url: `azure-ad/users/${userId}`
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getUserPhotoFromAzureAd(userId) {
+export function getAzureAdUserPhoto(userId) {
   return http({
     method: "GET",
     url: `azure-ad/users/${userId}/photo`
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getUserGroupFromAzureAd(userId) {
+export function getAzureAdUserGroup(userId) {
   return http({
     method: "GET",
     url: `azure-ad/users/${userId}/groups`
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getGroupsFromAzureAd() {
+export function getAzureAdGroups() {
   return http({
     method: "GET",
     url: "azure-ad/groups"
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getGroupFromAzureAd(groupId) {
+export function getAzureAdGroup(groupId) {
   return http({
     method: "GET",
     url: `azure-ad/groups/${groupId}`
   }).then(res => Promise.resolve(res.data));
 }
 
-export function getGroupMembersFromAzureAd(groupId) {
+export function getAzureAdGroupMembers(groupId) {
   return http({
     method: "GET",
     url: `azure-ad/groups/${groupId}/members`
