@@ -1,10 +1,7 @@
 import {
   READ_RESOURCES_PENDING,
   READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED,
-  CREATE_RESOURCES_PENDING,
-  CREATE_RESOURCES_SUCCEEDED,
-  CREATE_RESOURCES_FAILED
+  READ_RESOURCES_FAILED
 } from "./actionTypes";
 
 import {
@@ -51,20 +48,20 @@ const getAzureAdUsers = dispatch => {
 
 const getAzureAdUser = (dispatch, userId) => {
   dispatch({
-    type: CREATE_RESOURCES_PENDING,
+    type: READ_RESOURCES_PENDING,
     resourceType: AZURE_AD_USER_RESOURCE_TYPE
   });
   getAzureAdUserFromAPI(userId)
     .then(response =>
       dispatch({
-        type: CREATE_RESOURCES_SUCCEEDED,
+        type: READ_RESOURCES_SUCCEEDED,
         resourceType: AZURE_AD_USER_RESOURCE_TYPE,
         payload: { azureAdUser: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: CREATE_RESOURCES_FAILED,
+        type: READ_RESOURCES_FAILED,
         resourceType: AZURE_AD_USER_RESOURCE_TYPE,
         payload: { error }
       })
