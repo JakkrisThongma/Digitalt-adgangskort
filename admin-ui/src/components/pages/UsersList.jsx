@@ -80,7 +80,7 @@ const headCells = [
     disablePadding: false,
     label: "First name"
   },
-  { id: "sureName", numeric: false, disablePadding: false, label: "Last name" },
+  { id: "surname", numeric: false, disablePadding: false, label: "Last name" },
   { id: "status", numeric: false, disablePadding: false, label: "Status" },
   {
     id: "creationDate",
@@ -277,7 +277,7 @@ const UsersList = () => {
                         {row.id}
                       </TableCell>
                       <TableCell align="center">{row.givenName}</TableCell>
-                      <TableCell align="center">{row.sureName}</TableCell>
+                      <TableCell align="center">{row.surname}</TableCell>
                       <TableCell align="center">{row.status}</TableCell>
                       <TableCell align="center">{row.creationDate}</TableCell>
                       <TableCell align="center">

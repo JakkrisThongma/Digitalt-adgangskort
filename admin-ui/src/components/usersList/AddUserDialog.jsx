@@ -177,7 +177,6 @@ const AddUserDialog = props => {
 
                 <Grid item xs={12}>
                   <SmartLocksSelector
-                      smartLocks={smartLocks}
                     handleListOnChange={handleListOnChange}
                   />
                 </Grid>

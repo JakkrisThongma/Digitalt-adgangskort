@@ -16,9 +16,21 @@ export default function AzureAdUserSelector() {
   const loading = open && options.length === 0;
 
   useEffect(() => {
-    const x = azureAdUsers.map(u => `${u.surname}, ${u.givenName}`);
-    setOptions(x);
-    console.log("options: ", options);
+    const optionList = azureAdUsers.map(u => {
+      let value = "";
+
+      if (u.displayName) value = `${u.displayName}`;
+      if (u.surname && u.givenName) value = `${u.surname}, ${u.givenName}`;
+
+      if (u.surname && !u.givenName) value = `${u.surname}`;
+
+      if (!u.surname && u.givenName) value = `${u.givenName}`;
+      return {
+        id: u.id,
+        value
+      };
+    });
+    setOptions(optionList);
   }, [azureAdUsers]);
 
   React.useEffect(() => {
@@ -42,11 +54,12 @@ export default function AzureAdUserSelector() {
       onOpen={() => {
         setOpen(true);
       }}
+      onChange={(event, value) => console.log(value)}
       onClose={() => {
         setOpen(false);
       }}
-      getOptionSelected={(option, value) => option === value}
-      getOptionLabel={option => option}
+      getOptionSelected={(option, value) => option.value === value.value}
+      getOptionLabel={option => option.value}
       options={options}
       loading={loading}
       renderInput={params => (
