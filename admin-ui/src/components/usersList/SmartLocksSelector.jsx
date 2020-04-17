@@ -3,21 +3,21 @@ import PropTypes from "prop-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField } from "@material-ui/core";
 
-const GroupSelector = props => {
-  const { accessGroups, handleListOnChange } = props;
+const SmartLocksSelector = props => {
+  const { smartLocks, handleListOnChange } = props;
   return (
     <Autocomplete
       multiple
-      id="access-groups"
+      id="smart-locks"
       filterSelectedOptions
-      options={accessGroups}
+      options={smartLocks}
       getOptionLabel={option => option.label}
       onChange={(event, val) => handleListOnChange(event, val)}
       getOptionSelected={(option, values) => option.key === values.key}
       renderInput={params => (
         <TextField
           {...params}
-          label="Access groups"
+          label="Smart locks"
           fullWidth
           variant="outlined"
         />
@@ -26,9 +26,9 @@ const GroupSelector = props => {
   );
 };
 
-GroupSelector.propTypes = {
-  accessGroups: PropTypes.array.isRequired,
+SmartLocksSelector.propTypes = {
+  smartLocks: PropTypes.array.isRequired,
   handleListOnChange: PropTypes.func.isRequired
 };
 
-export default GroupSelector;
+export default SmartLocksSelector;
