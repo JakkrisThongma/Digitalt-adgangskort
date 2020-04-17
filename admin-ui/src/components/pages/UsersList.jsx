@@ -9,7 +9,8 @@ import {
   TableRow,
   Paper,
   Checkbox,
-  Button
+  Button,
+  LinearProgress
 } from "@material-ui/core";
 
 import {
@@ -72,21 +73,26 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: "id", numeric: false, disablePadding: false, label: "ID" },
+  { id: "id", numeric: false, disablePadding: false, label: "Id" },
   {
-    id: "firstName",
+    id: "givenName",
     numeric: false,
     disablePadding: false,
     label: "First name"
   },
-  { id: "lastName", numeric: false, disablePadding: false, label: "Last name" },
+  { id: "sureName", numeric: false, disablePadding: false, label: "Last name" },
   { id: "status", numeric: false, disablePadding: false, label: "Status" },
-  { id: "created", numeric: false, disablePadding: false, label: "Created" },
   {
-    id: "lastModified",
+    id: "creationDate",
     numeric: false,
     disablePadding: false,
-    label: "lastModified"
+    label: "Created"
+  },
+  {
+    id: "modificationDate",
+    numeric: false,
+    disablePadding: false,
+    label: "Last modified"
   }
 ];
 
@@ -122,7 +128,7 @@ const useStyles = makeStyles(theme => ({
 
 const UsersList = () => {
   const [state, dispatch] = useApiRequest(userReducer, initialState);
-  const { users, didInvalidate } = state;
+  const { users, didInvalidate, loading } = state;
   const [rows, setRows] = useState([]);
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
@@ -138,7 +144,7 @@ const UsersList = () => {
       setOrder(isAsc ? "desc" : "asc");
       setOrderBy(property);
     },
-    [order]
+    [order, orderBy]
   );
 
   const handleSelectAllClick = useCallback(
@@ -218,6 +224,7 @@ const UsersList = () => {
       <h1>Users</h1>
 
       <Paper className={classes.paper}>
+        {loading ? <LinearProgress color="primary" /> : null}
         <TableToolbar
           numSelected={selected.length}
           onAddUserClick={handleAddUserClick}
