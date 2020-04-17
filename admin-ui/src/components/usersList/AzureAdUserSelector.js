@@ -8,22 +8,26 @@ import initialState from "../../data/initialState";
 import azureAdReducer from "../../reducers/azureAdReducer";
 import { getAzureAdUsers } from "../../actions/azureAdActions";
 
-
 export default function AzureAdUserSelector() {
   const [state, dispatch] = useApiRequest(azureAdReducer, initialState);
-  const { azureAdUsers, loading } = state;
+  const { azureAdUsers, error } = state;
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
-  // const loading = open && options.length === 0;
+  const loading = open && options.length === 0;
 
   useEffect(() => {
-    dispatch(getAzureAdUsers);
-  }, []);
-
-  useEffect(() => {
-    setOptions(azureAdUsers);
-    console.log(state);
+    const x = azureAdUsers.map(u => `${u.surname}, ${u.givenName}`);
+    setOptions(x);
+    console.log("options: ", options);
   }, [azureAdUsers]);
+
+  React.useEffect(() => {
+    if (!loading) {
+      console.log("not loading");
+      return undefined;
+    }
+    dispatch(getAzureAdUsers);
+  }, [loading]);
 
   React.useEffect(() => {
     if (!open) {
@@ -41,8 +45,8 @@ export default function AzureAdUserSelector() {
       onClose={() => {
         setOpen(false);
       }}
-      getOptionSelected={(option, value) => option.name === value.name}
-      getOptionLabel={option => option.name}
+      getOptionSelected={(option, value) => option === value}
+      getOptionLabel={option => option}
       options={options}
       loading={loading}
       renderInput={params => (
@@ -51,6 +55,8 @@ export default function AzureAdUserSelector() {
           label="Azure Ad user"
           variant="outlined"
           fullWidth
+          error={error && true}
+          helperText={error && "Something went wrong. Try again later"}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
