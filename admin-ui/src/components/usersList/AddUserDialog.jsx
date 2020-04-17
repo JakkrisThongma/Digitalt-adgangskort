@@ -13,7 +13,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonAdd as PersonAddIcon } from "@material-ui/icons";
 import useFormValidation from "validation/useFormValidation";
-import GroupSelector from "./GroupSelector";
+import SmartLocksSelector from "./SmartLocksSelector";
+import AzureAdUserSelector from "./AzureAdUserSelector";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -40,7 +41,7 @@ const INITIAL_STATE = {
   mobile: "",
   password: "",
   confirmPassword: "",
-  accessGroups: []
+  smartLocks: []
 };
 
 const AddUserDialog = props => {
@@ -59,12 +60,12 @@ const AddUserDialog = props => {
 
   function login() {
     console.log("No errors, submited!");
-    console.log(values.accessGroups);
+    console.log(values.smartLocks);
     console.log(values.email);
 
     onAddUserCancelClick();
   }
-  const accessGroups = [
+  const smartLocks = [
     { key: 0, label: "Guest spaces" },
     { key: 1, label: "Employee spaces" },
     { key: 2, label: "Developer spaces" },
@@ -87,21 +88,8 @@ const AddUserDialog = props => {
           <div>
             <form className={classes.form}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.firstName && true}
-                    value={values.firstName}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    autoComplete="fname"
-                    name="firstName"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="firstName"
-                    label="First Name"
-                    helperText={errors.firstName}
-                  />
+                <Grid item xs={12}>
+              <AzureAdUserSelector />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -188,8 +176,8 @@ const AddUserDialog = props => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <GroupSelector
-                    accessGroups={accessGroups}
+                  <SmartLocksSelector
+                      smartLocks={smartLocks}
                     handleListOnChange={handleListOnChange}
                   />
                 </Grid>
