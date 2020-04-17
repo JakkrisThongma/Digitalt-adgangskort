@@ -232,25 +232,11 @@ namespace api.Controllers
         {
             var userExists = await _userRepository.UserExists(userId);
             if (!userExists) return NotFound();
+            
+            var userSmartLocks = await _userRepository.GetUserSmartLocks(userId);
+            if (!userSmartLocks.Any()) return NotFound();
 
-            var userSmartLocksIdListFromRepo = await _userRepository.GetUserSmartLocksIdList(userId);
-
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var userGroupsIdListFromAzureAd = await _azureAdRepository
-                .GetUserGroupsIds(client, userId.ToString());
-
-            var userGroupsSmartLocksIdList =
-                await _groupRepository.GetGroupsSmartLocksIdList(userGroupsIdListFromAzureAd);
-
-            var mergedUserSmartLocksIdList =
-                DataMerger.MergeLists(userSmartLocksIdListFromRepo, userGroupsSmartLocksIdList);
-
-
-            var allUserSmartLocks = await _smartLockRepository.GetSmartLocks(mergedUserSmartLocksIdList);
-
-            if (!allUserSmartLocks.Any()) return NotFound();
-
-            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allUserSmartLocks);
+            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(userSmartLocks);
 
             return Ok(userSmartLocksDto);
         }
