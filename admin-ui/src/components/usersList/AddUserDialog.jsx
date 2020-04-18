@@ -10,6 +10,7 @@ import {
   TextField,
   Button
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonAdd as PersonAddIcon } from "@material-ui/icons";
 import useFormValidation from "validation/useFormValidation";
@@ -24,8 +25,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center"
   },
   form: {
-    width: "100%",
-    margin: theme.spacing(3, 0, 3)
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto"
   },
 
   chip: {
@@ -34,6 +36,7 @@ const useStyles = makeStyles(theme => ({
   button: { marginBottom: theme.spacing(2), minWidth: 80 }
 }));
 
+const statusOptions = ["Inactive", "Active", "Suspended"];
 const INITIAL_STATE = {
   firstName: "",
   lastName: "",
@@ -65,15 +68,14 @@ const AddUserDialog = props => {
 
     onAddUserCancelClick();
   }
-  const smartLocks = [
-    { key: 0, label: "Guest spaces" },
-    { key: 1, label: "Employee spaces" },
-    { key: 2, label: "Developer spaces" },
-    { key: 3, label: "Full access" }
-  ];
+
   return (
     <div>
-      <Dialog open={isAddUserOpened} aria-labelledby="form-dialog-title">
+      <Dialog
+        open={isAddUserOpened}
+        aria-labelledby="form-dialog-title"
+        maxWidth="sm"
+        fullWidth>
         <DialogTitle id="form-dialog-title">
           <Grid container spacing={2}>
             <Grid item>
@@ -89,96 +91,27 @@ const AddUserDialog = props => {
             <form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-              <AzureAdUserSelector />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.lastName && true}
-                    value={values.lastName}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.lastName}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="lname"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.email && true}
-                    value={values.email}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.email}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.mobile && true}
-                    value={values.mobile}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.mobile}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="mobile"
-                    label="Mobile"
-                    id="mobile"
-                    autoComplete="mobile"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    error={errors.password && true}
-                    value={values.password}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.password}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    error={errors.confirmPassword && true}
-                    value={values.confirmPassword}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.confirmPassword}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="confirm password"
-                    type="password"
-                    id="confirmPassword"
-                    autoComplete="confirmPassword"
-                  />
+                  <AzureAdUserSelector />
                 </Grid>
 
                 <Grid item xs={12}>
-                  <SmartLocksSelector
-                    handleListOnChange={handleListOnChange}
+                  <Autocomplete
+                    id="user-status"
+                    options={statusOptions}
+                    defaultValue={statusOptions[0]}
+                    getOptionLabel={option => option}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label="Status"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    )}
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <SmartLocksSelector handleListOnChange={handleListOnChange} />
                 </Grid>
               </Grid>
             </form>

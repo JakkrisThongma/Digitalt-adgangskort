@@ -58,7 +58,7 @@ const SmartLocksSelector = props => {
       renderInput={params => (
         <TextField
           {...params}
-          label="Azure Ad user"
+          label="Smart lock(s)"
           variant="outlined"
           fullWidth
           error={error && true}

@@ -70,6 +70,7 @@ export default function AzureAdUserSelector() {
           fullWidth
           error={error && true}
           helperText={error && "Something went wrong. Try again later"}
+          required
           InputProps={{
             ...params.InputProps,
             endAdornment: (
