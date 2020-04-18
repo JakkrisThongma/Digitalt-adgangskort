@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -8,7 +8,9 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Checkbox
+  Checkbox,
+  Button,
+  LinearProgress
 } from "@material-ui/core";
 
 import {
@@ -16,18 +18,33 @@ import {
   TableHeader,
   AddUserDialog
 } from "@/components/usersList";
+import initialState from "../../data/initialState";
 
-function createData(id, firstname, lastname, email, mobile) {
-  return { id, firstname, lastname, email, mobile };
-}
+import {
+  getUsers,
+  addUSer,
+  updateUser,
+  getUser,
+  deleteUser
+} from "../../actions/userActions";
+import useApiRequest from "../../reducers/useApiRequest";
+import userReducer from "../../reducers/userReducer";
 
-const rows = [
-  createData("1001", "Ola", "Nordmann", "ola@nordmann.no", "44556677"),
-  createData("1002", "Kari", "Nordmann", "kari@nordmann.no", "2233445566"),
-  createData("1003", "Hans", "Hansen", "hans@nordmann.no", "33445566"),
-  createData("1004", "Martine", "Nilsen", "martine@nordmann.no", "12312312"),
-  createData("1005", "Ole", "Martin", "ole@nordmann.no", "23232323")
+const newUser = {
+  id: "1ba5bd99-412a-4bcb-9f8b-73bcc1df1195",
+  status: "Inactive"
+};
+
+const userToUpdate = [
+  {
+    value: "inactive",
+    path: "/status",
+    op: "replace"
+  }
 ];
+const userId = "1ba5bd99-412a-4bcb-9f8b-73bcc1df1195";
+const userId2 = "48984aba-64e1-4eef-b2bd-af2061cb2616";
+const userId1 = "cde7bd38-15ea-46e6-b7eb-e15f79e87c6a";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -56,21 +73,27 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
+  { id: "id", numeric: false, disablePadding: false, label: "Id" },
   {
-    id: "id",
-    numeric: false,
-    disablePadding: true,
-    label: "ID"
-  },
-  {
-    id: "firstname",
+    id: "givenName",
     numeric: false,
     disablePadding: false,
     label: "First name"
   },
-  { id: "lastname", numeric: false, disablePadding: false, label: "Last name" },
-  { id: "email", numeric: false, disablePadding: false, label: "Email" },
-  { id: "mobile", numeric: false, disablePadding: false, label: "Mobile" }
+  { id: "surname", numeric: false, disablePadding: false, label: "Last name" },
+  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  {
+    id: "creationDate",
+    numeric: false,
+    disablePadding: false,
+    label: "Created"
+  },
+  {
+    id: "modificationDate",
+    numeric: false,
+    disablePadding: false,
+    label: "Last modified"
+  }
 ];
 
 const useStyles = makeStyles(theme => ({
@@ -104,29 +127,37 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UsersList = () => {
+  const [state, dispatch] = useApiRequest(userReducer, initialState);
+  const { users, didInvalidate, loading } = state;
+  const [rows, setRows] = useState([]);
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("firstname");
+  const [orderBy, setOrderBy] = React.useState("givenName");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [openAddUser, setOpenAddUser] = React.useState(false);
-
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
+  const handleRequestSort = useCallback(
+    (event, property) => {
+      const isAsc = orderBy === property && order === "asc";
+      setOrder(isAsc ? "desc" : "asc");
+      setOrderBy(property);
+    },
+    [order, orderBy]
+  );
 
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.id);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  const handleSelectAllClick = useCallback(
+    event => {
+      if (event.target.checked) {
+        const newSelecteds = rows.map(n => n.id);
+        setSelected(newSelecteds);
+        return;
+      }
+      setSelected([]);
+    },
+    [selected, rows]
+  );
 
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
@@ -162,18 +193,38 @@ const UsersList = () => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const handleAddUserClick = () => {
+  const handleAddUserClick = useCallback(() => {
     setOpenAddUser(true);
-  };
-  const handleAddUserCancelClick = () => {
+  }, [openAddUser]);
+  const handleAddUserCancelClick = useCallback(() => {
     setOpenAddUser(false);
-  };
+  }, [openAddUser]);
+
+  const handleAddUser = useCallback(() => {
+    dispatch(innerDispatch => addUSer(innerDispatch, newUser));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getUsers);
+  }, []);
+
+  useEffect(() => {
+    setRows(users);
+    console.log(state);
+  }, [users]);
+
+  useEffect(() => {
+    if (didInvalidate) {
+      dispatch(getUsers);
+    }
+  }, [didInvalidate]);
 
   return (
     <div className={classes.root}>
       <h1>Users</h1>
 
       <Paper className={classes.paper}>
+        {loading ? <LinearProgress color="primary" /> : null}
         <TableToolbar
           numSelected={selected.length}
           onAddUserClick={handleAddUserClick}
@@ -225,10 +276,13 @@ const UsersList = () => {
                         padding="none">
                         {row.id}
                       </TableCell>
-                      <TableCell align="center">{row.firstname}</TableCell>
-                      <TableCell align="center">{row.lastname}</TableCell>
-                      <TableCell align="center">{row.email}</TableCell>
-                      <TableCell align="center">{row.mobile}</TableCell>
+                      <TableCell align="center">{row.givenName}</TableCell>
+                      <TableCell align="center">{row.surname}</TableCell>
+                      <TableCell align="center">{row.status}</TableCell>
+                      <TableCell align="center">{row.creationDate}</TableCell>
+                      <TableCell align="center">
+                        {row.modificationDate}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -254,6 +308,43 @@ const UsersList = () => {
           onAddUserCancelClick={handleAddUserCancelClick}
         />
       </Paper>
+      <Button onClick={handleAddUser}>Add</Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch =>
+            updateUser(innerDispatch, userId2, userToUpdate)
+          )
+        }>
+        Update
+      </Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => deleteUser(innerDispatch, userId))
+        }>
+        Delete
+      </Button>
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId))
+        }>
+        Get User
+      </Button>
+
+      <Button onClick={() => dispatch(getUsers)}>Get users</Button>
+
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId1))
+        }>
+        Get user 1
+      </Button>
+
+      <Button
+        onClick={() =>
+          dispatch(innerDispatch => getUser(innerDispatch, userId2))
+        }>
+        Get user 2
+      </Button>
     </div>
   );
 };

@@ -46,6 +46,11 @@ namespace api.Repositories
                 throw new ArgumentNullException(nameof(user));
             }
 
+            foreach (var smartLockUser in user.SmartLockUsers)
+            {
+                smartLockUser.UserId = user.Id;
+            }
+            
             _context.Users.Add(user);
         }
         
@@ -85,6 +90,7 @@ namespace api.Repositories
                 .ThenInclude(slu => slu.SmartLock).FirstOrDefaultAsync(u => u.Id == userId);
 
             return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock).ToList();
+            
         }
         
         public async Task<bool> UserExists(Guid userId)

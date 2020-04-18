@@ -22,9 +22,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const AccessGroup = props => {
-  const { title, totalMembers, totalLocks } = props;
-
+const Group = props => {
+  const {
+    title,
+    description,
+    status,
+    creationDate,
+    lastModificationDate
+  } = props;
   const classes = useStyles();
 
   return (
@@ -44,9 +49,13 @@ const AccessGroup = props => {
               color="textSecondary"
               gutterBottom
               variant="body2">
-              Total members: {totalMembers}
+              Description: {description}
             </Typography>
-            <Typography variant="body2">Total locks: {totalLocks}</Typography>
+            <Typography variant="body2">status: {status}</Typography>
+            <Typography variant="body2">Created on: {creationDate}</Typography>
+            <Typography variant="body2">
+              Last modified: {lastModificationDate}
+            </Typography>
           </Grid>
           <Grid item>
             <AccessGroupIcon />
@@ -69,14 +78,16 @@ const AccessGroup = props => {
   );
 };
 
-AccessGroup.propTypes = {
+Group.propTypes = {
   title: PropTypes.string.isRequired,
-  totalMembers: PropTypes.number,
-  totalLocks: PropTypes.number
+  description: PropTypes.string,
+  status: PropTypes.string.isRequired,
+  creationDate: PropTypes.string.isRequired,
+  lastModificationDate: PropTypes.string
+};
+Group.defaultProps = {
+  description: "",
+  lastModificationDate: ""
 };
 
-AccessGroup.defaultProps = {
-  totalMembers: 0,
-  totalLocks: 0
-};
-export default AccessGroup;
+export default Group;

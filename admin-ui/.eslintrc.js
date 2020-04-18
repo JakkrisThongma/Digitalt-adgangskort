@@ -4,7 +4,7 @@ module.exports = {
   },
   parser: "babel-eslint",
   extends: ["airbnb", "prettier", "prettier/react"],
-  plugins: ["react", "jsx-a11y", "import", "prettier"],
+  plugins: ["react", "jsx-a11y", "import", "prettier", "react-hooks"],
   rules: {
     "prettier/prettier": [
       "error",
@@ -22,7 +22,8 @@ module.exports = {
     ],
     quotes: [2, "double", { avoidEscape: true }],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-  
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   settings: {
     'import/resolver': {

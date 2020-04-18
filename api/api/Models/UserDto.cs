@@ -8,6 +8,7 @@ namespace api.Models
     public class UserDto
     {
         public Guid Id { get; set; }
+        public string DisplayName { get; set; } 
         public string GivenName { get; set; } 
         public string Surname { get; set; }
         public string UserPrincipalName { get; set; }

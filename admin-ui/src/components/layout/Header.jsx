@@ -84,11 +84,11 @@ const Header = () => {
             <Button className={classes.navElement} href="/users">
               Users
             </Button>
-            <Button className={classes.navElement} href="/locks">
-              Locks
+            <Button className={classes.navElement} href="/groups">
+              Groups
             </Button>
-            <Button className={classes.navElement} href="/access-levels">
-              Access levels
+            <Button className={classes.navElement} href="/smart-locks">
+              Smart locks
             </Button>
           </div>
         </Toolbar>
