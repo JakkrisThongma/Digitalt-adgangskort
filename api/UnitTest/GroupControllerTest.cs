@@ -5,9 +5,12 @@ using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.Entities;
+using api.Models;
 using api.Types;
 
 namespace UnitTest
@@ -52,7 +55,7 @@ namespace UnitTest
 		
 		
 		[TestMethod]
-		public async Task TestGetGroupByIdNotFound()
+		public async Task GroupById_GroupIdNotExist_NotFound()
 		{
 			// Arrange 
 			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
@@ -67,7 +70,7 @@ namespace UnitTest
 		}
 		
 		[TestMethod]
-		public async Task TestGetGroupMerged()
+		public async Task GetGroup_WithGroupId_ReturnsGroupGto()
 		{
 			// Arrange 
 			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
@@ -89,7 +92,7 @@ namespace UnitTest
 		}
 
 		[TestMethod]
-		public async Task TestGetMergedGroupOk()
+		public async Task GetGroups_Groups_ReturnsMergedGroupsStatusOk()
 		{
 			// Arrange
 			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
@@ -104,9 +107,9 @@ namespace UnitTest
 			};
 			// Act
 			var result = await controller.GetGroups();
-			
-			
+
 			// Assert
+			//Assert.AreEqual(4, result.Value.GetEnumerator());
 			Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 		}
 
