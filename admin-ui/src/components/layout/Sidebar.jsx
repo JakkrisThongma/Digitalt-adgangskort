@@ -7,9 +7,11 @@ import {
   Divider,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Button
 } from "@material-ui/core";
 import { Dashboard, People, Lock, AccountTree } from "@material-ui/icons";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles({
   list: {
@@ -39,7 +41,11 @@ const Sidebar = props => {
         {listItems.map(item => {
           const ItemIcon = item.icon;
           return (
-            <ListItem button key={item.text} component="a" href={item.link}>
+            <ListItem
+              button
+              key={item.text}
+              component={RouterLink}
+              to={item.link}>
               <ListItemIcon>
                 <ItemIcon />
               </ListItemIcon>
