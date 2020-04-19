@@ -35,11 +35,11 @@ namespace UnitTest
 		}
 
 		[TestMethod]
-		public async Task TestDeleteGroupNotFound()
+		public async Task DeleteGroup_UserNotExist_ThrowsNotFound()
 		{
 			// Arrange
 			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(),
-				new AzureAdRepositoryStub(), _mapper);
+				new SmartLockRepositoryStub(), new AzureAdRepositoryStub(), _mapper);
 			
 			var groupId = Guid.Parse("c374cb18-862e-4fef-871f-ae08337d1234");
 			
@@ -56,7 +56,7 @@ namespace UnitTest
 		{
 			// Arrange 
 			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
-				new AzureAdRepositoryStub(), _mapper);
+				new SmartLockRepositoryStub(),new AzureAdRepositoryStub(), _mapper);
 			var groupId = Guid.Parse("c374cb18-862e-4fef-871f-ae08337d1234");
 			
 			// Act
@@ -70,7 +70,8 @@ namespace UnitTest
 		public async Task TestGetGroupMerged()
 		{
 			// Arrange 
-			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), new AzureAdRepositoryStub(), _mapper);
+			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
+				new SmartLockRepositoryStub(), new AzureAdRepositoryStub(), _mapper);
 			var groupId = Guid.Parse("c374cb18-862e-4fef-871f-ae08337d1f76");
 			
 			// Act
@@ -91,7 +92,8 @@ namespace UnitTest
 		public async Task TestGetMergedGroupOk()
 		{
 			// Arrange
-			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), new AzureAdRepositoryStub(), _mapper);
+			var controller = new GroupsController(new GroupRepositoryStub(), new UserRepositoryStub(), 
+				new SmartLockRepositoryStub(), new AzureAdRepositoryStub(), _mapper);
 			
 			var groups = new List<Group>
 			{

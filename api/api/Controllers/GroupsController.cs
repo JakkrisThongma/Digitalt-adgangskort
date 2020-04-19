@@ -49,8 +49,7 @@ namespace api.Controllers
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
 
             var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
                 allGroupsFromAzureAd, _mapper);
@@ -58,25 +57,7 @@ namespace api.Controllers
             return Ok(mergedGroups);
         }
 
-        // GET: api/groups/5
-        [HttpGet("{groupId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
-        {
-            var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return NotFound();
-
-            var groupFromRepo = await _groupRepository.GetGroup(groupId);
-
-            var groupFromAzureAd = await _azureAdRepository.GetGroup(groupId.ToString());
-
-            var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo,
-                groupFromAzureAd, _mapper);
-
-            return mergedGroup;
-        }
+       
 
         
         // POST: api/groups
@@ -88,10 +69,9 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
-                await _azureAdRepository.GetGroup(client, group.Id.ToString());
+                await _azureAdRepository.GetGroup(group.Id.ToString());
             }
             catch (ServiceException e)
             {
@@ -142,8 +122,7 @@ namespace api.Controllers
 
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
+            var groupFromAzureAd = await _azureAdRepository.GetGroup(groupId.ToString());
 
             var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo,
                 groupFromAzureAd, _mapper);
@@ -151,7 +130,6 @@ namespace api.Controllers
             return mergedGroup;
         }
 
-        
         // PUT: api/groups/5
         [HttpPut("{groupId}")]
         [Consumes("application/json")]
