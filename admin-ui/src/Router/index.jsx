@@ -7,8 +7,8 @@ import {
   Login,
   Dashboard,
   UsersList,
-  LockList,
-  AccessLevelList,
+  SmartLockList,
+  GroupList,
   NotFound
 } from "@/components/pages";
 
@@ -35,16 +35,16 @@ const Router = () => {
         path="/users"
       />
       <RouteWithLayout
-        component={LockList}
+        component={SmartLockList}
         exact
         layout={MainLayout}
-        path="/locks"
+        path="/smart-locks"
       />
       <RouteWithLayout
-        component={AccessLevelList}
+        component={GroupList}
         exact
         layout={MainLayout}
-        path="/access-levels"
+        path="/groups"
       />
       <RouteWithLayout
         component={NotFound}

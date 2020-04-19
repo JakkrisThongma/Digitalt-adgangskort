@@ -10,13 +10,14 @@ namespace api.MappingProfiles
 		{
             CreateMap<Entities.SmartLock, Models.SmartLockDto>();
             CreateMap<Entities.SmartLock, Models.SmartLockModificationDto>();
+            CreateMap<Entities.SmartLockUser, Models.SmartLockUserDto>();
+            CreateMap<Entities.SmartLockGroup, Models.SmartLockGroupDto>();
 
             CreateMap<Models.SmartLockDto, Entities.SmartLock>();
             CreateMap<Models.SmartLockCreationDto, Entities.SmartLock>();
             CreateMap<Models.SmartLockModificationDto, Entities.SmartLock>();
-            
-            CreateMap<Entities.SmartLockUser, Models.SmartLockUserDto>();
-            CreateMap<Entities.SmartLockGroup, Models.SmartLockGroupDto>();
+            CreateMap<Models.UserCollectionCreationDto, Entities.SmartLockUser>();
+            CreateMap<Models.GroupCollectionCreationDto, Entities.SmartLockGroup>();
 		}
 	}
 }

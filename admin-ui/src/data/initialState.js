@@ -1,0 +1,32 @@
+const initialState = {
+  users: [],
+  user: null,
+  newUser: null,
+  userGroups: [],
+  userSmartLocks: [],
+  currentAuthenticatedUser: null,
+  groups: [],
+  group: null,
+  newGroup: null,
+  groupUsers: [],
+  groupSmartLocks: [],
+  smartLocks: [],
+  smartLock: null,
+  newSmartLock: null,
+  newSmartLockUser: null,
+  newSmartLockGroup: null,
+  smartLockUsers: [],
+  smartLockGroups: [],
+  azureAdUsers: [],
+  azureAdUser: null,
+  azureAdUserPhoto: null,
+  azureAdUserGroups: [],
+  azureAdGroups: [],
+  azureAdGroup: null,
+  azureAdGroupMembers: [],
+  loading: false,
+  didInvalidate: false,
+  error: null
+};
+
+export default initialState;

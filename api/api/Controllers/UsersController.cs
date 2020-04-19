@@ -87,13 +87,31 @@ namespace api.Controllers
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return ValidationProblem("User was not found on Azure AD");
+                    ModelState.AddModelError("azureAdUserNotFound",
+                        $"User with id: {user.Id} was not found on Azure AD");
                 }
             }
 
             var userExists = await _userRepository.UserExists(user.Id);
             if (userExists) return Conflict("User already exists");
-
+            if (user.SmartLockUsers.Count > 0)
+            {
+                foreach (var smartLockUser in user.SmartLockUsers)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
+                    if (!smartLockExist)
+                    {
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockUser.SmartLockId} doesn't exist");
+                    }
+                }
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+            
             var userEntity = _mapper.Map<User>(user);
             _userRepository.AddUser(userEntity);
             await _userRepository.Save();
@@ -232,25 +250,10 @@ namespace api.Controllers
         {
             var userExists = await _userRepository.UserExists(userId);
             if (!userExists) return NotFound();
+            
+            var userSmartLocks = await _userRepository.GetUserSmartLocks(userId);
 
-            var userSmartLocksIdListFromRepo = await _userRepository.GetUserSmartLocksIdList(userId);
-
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var userGroupsIdListFromAzureAd = await _azureAdRepository
-                .GetUserGroupsIds(client, userId.ToString());
-
-            var userGroupsSmartLocksIdList =
-                await _groupRepository.GetGroupsSmartLocksIdList(userGroupsIdListFromAzureAd);
-
-            var mergedUserSmartLocksIdList =
-                DataMerger.MergeLists(userSmartLocksIdListFromRepo, userGroupsSmartLocksIdList);
-
-
-            var allUserSmartLocks = await _smartLockRepository.GetSmartLocks(mergedUserSmartLocksIdList);
-
-            if (!allUserSmartLocks.Any()) return NotFound();
-
-            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(allUserSmartLocks);
+            var userSmartLocksDto = _mapper.Map<IEnumerable<SmartLockDto>>(userSmartLocks);
 
             return Ok(userSmartLocksDto);
         }

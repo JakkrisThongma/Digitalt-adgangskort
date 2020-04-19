@@ -20,6 +20,8 @@ namespace api.MappingProfiles
             CreateMap<Models.GroupDto, Entities.Group>();
             CreateMap<Models.GroupCreationDto, Entities.Group>();
             CreateMap<Models.GroupModificationDto, Entities.Group>();
+            CreateMap<Models.SmartLockCollectionCreationDto, Entities.SmartLockGroup>();
+
 
         }
     }

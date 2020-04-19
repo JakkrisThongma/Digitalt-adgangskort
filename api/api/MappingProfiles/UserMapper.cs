@@ -12,7 +12,7 @@ namespace api.MappingProfiles
             CreateMap<Entities.User, Microsoft.Graph.User>();
             CreateMap<Entities.User, Models.UserDto>();
             CreateMap<Entities.User, Models.UserModificationDto>();
-            
+
             CreateMap<Microsoft.Graph.User, Models.AzureAdUserDto>();
             CreateMap<Microsoft.Graph.User, Models.UserDto>();
             CreateMap<Microsoft.Graph.User, Entities.User>();
@@ -21,6 +21,7 @@ namespace api.MappingProfiles
             CreateMap<Models.UserDto, Entities.User>();
             CreateMap<Models.UserCreationDto, Entities.User>();
             CreateMap<Models.UserModificationDto, Entities.User>();
+            CreateMap<Models.SmartLockCollectionCreationDto, Entities.SmartLockUser>();
         }
     }
 }

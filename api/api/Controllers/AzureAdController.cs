@@ -21,7 +21,7 @@ using Microsoft.Graph;
 namespace api.Controllers
 {
     [Produces("application/json")]
-    [Route("azure-ad")]
+    [Route("api/azure-ad")]
     public class AzureAdController : ControllerBase
     {
         private readonly IAzureAdRepository _azureAdRepository;
@@ -36,7 +36,7 @@ namespace api.Controllers
         }
 
 
-        [HttpGet("users/")]
+        [HttpGet("users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
