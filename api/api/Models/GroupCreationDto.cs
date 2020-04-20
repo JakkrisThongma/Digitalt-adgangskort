@@ -13,5 +13,8 @@ namespace api.Models
 		public Guid Id { get; set; }
 
 		public Status Status { get; set; }
+		
+		public ICollection<SmartLockCollectionCreationDto> SmartLockGroups { get; set; }
+			= new List<SmartLockCollectionCreationDto>();
 	}
 }

@@ -22,16 +22,19 @@ namespace api.Controllers
     {
         private readonly IGroupRepository _groupRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ISmartLockRepository _smartLockRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
         public GroupsController(IGroupRepository groupRepository, IUserRepository userRepository,
-            IAzureAdRepository azureAdRepository, IMapper mapper)
+            ISmartLockRepository smartLockRepository ,IAzureAdRepository azureAdRepository, IMapper mapper)
         {
             _groupRepository = groupRepository ??
                                throw new ArgumentNullException(nameof(groupRepository));
             _userRepository = userRepository ??
                               throw new ArgumentNullException(nameof(userRepository));
+            _smartLockRepository = smartLockRepository ??
+                                   throw new ArgumentNullException(nameof(smartLockRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(azureAdRepository));
             _mapper = mapper ??
@@ -53,6 +56,57 @@ namespace api.Controllers
                 allGroupsFromAzureAd, _mapper);
 
             return Ok(mergedGroups);
+        }
+        
+        // POST: api/groups
+        [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
+        {
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            try
+            {
+                await _azureAdRepository.GetGroup(client, group.Id.ToString());
+            }
+            catch (ServiceException e)
+            {
+                if (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    ModelState.AddModelError("azureAdGroupNotFound",
+                        $"Group with id: {group.Id} was not found on Azure AD");
+                }
+            }
+
+            var groupExists = await _groupRepository.GroupExists(group.Id);
+            if (groupExists) return Conflict("Group already exists");
+
+            if (group.SmartLockGroups.Count > 0)
+            {
+                foreach (var smartLockGroup in group.SmartLockGroups)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockGroup.SmartLockId);
+                    if (!smartLockExist)
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockGroup.SmartLockId} doesn't exist");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+            
+            var groupEntity = _mapper.Map<Group>(group);
+            
+            _groupRepository.AddGroup(groupEntity);
+            await _groupRepository.Save();
+            var groupDto = _mapper.Map<GroupDto>(groupEntity);
+
+            return CreatedAtAction("GetGroup", new {groupId = groupDto.Id}, groupDto);
         }
 
         // GET: api/groups/5
@@ -76,40 +130,7 @@ namespace api.Controllers
             return mergedGroup;
         }
 
-        // POST: api/groups
-        [HttpPost]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
-        {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            try
-            {
-                await _azureAdRepository.GetGroup(client, group.Id.ToString());
-            }
-            catch (ServiceException e)
-            {
-                if (e.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return ValidationProblem("Group was not found on Azure AD");
-                }
-            }
-
-            var groupExists = await _groupRepository.GroupExists(group.Id);
-            if (groupExists) return Conflict("Group already exists");
-
-            var groupEntity = _mapper.Map<Group>(group);
-            
-            _groupRepository.AddGroup(groupEntity);
-            await _groupRepository.Save();
-            var groupDto = _mapper.Map<GroupDto>(groupEntity);
-
-            return CreatedAtAction("GetGroup", new {groupId = groupDto.Id}, groupDto);
-        }
-
+        
         // PUT: api/groups/5
         [HttpPut("{groupId}")]
         [Consumes("application/json")]

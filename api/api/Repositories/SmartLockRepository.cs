@@ -53,6 +53,16 @@ namespace api.Repositories
                 throw new ArgumentNullException(nameof(smartLock));
             }
             
+            foreach (var smartLockUser in smartLock.SmartLockUsers)
+            {
+                smartLockUser.SmartLockId = smartLock.Id;
+            }
+
+            foreach (var smartLockGroup in smartLock.SmartLockGroups)
+            {
+                smartLockGroup.SmartLockId = smartLock.Id;
+            }
+
             smartLock.Id = Guid.NewGuid();
             
             _context.SmartLocks.Add(smartLock);

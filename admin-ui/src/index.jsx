@@ -3,8 +3,9 @@ import ReactDOM from "react-dom";
 import { runWithAdal } from "react-adal";
 import App from "./App";
 import "./web.config";
-import { authContext, getToken } from "./auth/adalConfig";
+import { authContext, getToken } from "./services/auth";
 
+/*
 const headers = { Authorization: `Bearer ${getToken()}` };
 console.log(headers);
 const DO_NOT_LOGIN = false;
@@ -15,5 +16,6 @@ runWithAdal(
   },
   DO_NOT_LOGIN
 );
+*/
 
-// ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));

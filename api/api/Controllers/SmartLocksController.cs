@@ -69,6 +69,33 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> CreateSmartLock(SmartLockCreationDto smartLock)
         {
+            if (smartLock.SmartLockUsers.Count > 0)
+            {
+                foreach (var smartLockUser in smartLock.SmartLockUsers)
+                {
+                    var userExist = await _userRepository.UserExists(smartLockUser.UserId);
+                    if (!userExist)
+                        ModelState.AddModelError("userNotExist",
+                            $"User with id: {smartLockUser.UserId} doesn't exist");
+                }
+            }
+
+            if (smartLock.SmartLockGroups.Count > 0)
+            {
+                foreach (var smartLockGroup in smartLock.SmartLockGroups)
+                {
+                    var groupExist = await _groupRepository.GroupExists(smartLockGroup.GroupId);
+                    if (!groupExist)
+                        ModelState.AddModelError("groupNotExist",
+                            $"Group with id: {smartLockGroup.GroupId} doesn't exist");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+            
             var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
             _smartLockRepository.AddSmartLock(smartLockEntity);
             await _smartLockRepository.Save();
@@ -128,7 +155,7 @@ namespace api.Controllers
             var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
             
             var smartLockToPatch = _mapper.Map<SmartLockModificationDto>(smartLockFromRepo);
-            // add validation
+
             patchDoc.ApplyTo(smartLockToPatch, ModelState);
 
             if (!TryValidateModel(smartLockToPatch))
@@ -164,7 +191,7 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5
-        [HttpGet("{smartLockId}/5/users")]
+        [HttpGet("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -203,8 +230,13 @@ namespace api.Controllers
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("User was not found on Azure AD");
-                    return ValidationProblem("User was not found on Azure AD");
+                    ModelState.AddModelError("azureAdUserNotFound",
+                        $"User with id: {smartLockUser.UserId} was not found on Azure AD");
                 }
+            }
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
             }
 
             var userExists = await _smartLockRepository.SmartLockUserExists(smartLockId, smartLockUser.UserId);
@@ -308,8 +340,14 @@ namespace api.Controllers
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("Group  was not found on Azure AD");
-                    return ValidationProblem("Group  was not found on Azure AD");
+                    ModelState.AddModelError("azureAdGroupNotFound",
+                        $"Group with id: {smartLockGroup.GroupId} was not found on Azure AD");
                 }
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
             }
 
             if (await _smartLockRepository.SmartLockGroupExists(smartLockId, smartLockGroup.GroupId))
@@ -378,7 +416,7 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<AccessDto>> OpenSmartLock(SmartLockUserAccessDto smartLockUser)
+        public async Task<ActionResult<AccessDto>> AccessSmartLock(SmartLockUserAccessDto smartLockUser)
         {
             var userExists = await _userRepository.UserExists(smartLockUser.UserId);
             if (!userExists) return NotFound();
@@ -396,8 +434,14 @@ namespace api.Controllers
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("User was not found on Azure AD");
-                    return ValidationProblem("User was not found on Azure AD");
+                    ModelState.AddModelError("azureAdUserNotFound",
+                        $"User with id: {smartLockUser.UserId} was not found on Azure AD");
                 }
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
             }
 
             var smartLockUserExists =

@@ -36,14 +36,19 @@ namespace api.Repositories
             _context.Entry(group).State = EntityState.Modified;
         }
 
-        public void AddGroup(Group groupToAdd)
+        public void AddGroup(Group group)
         {
-            if (groupToAdd == null)
+            if (group == null)
             {
-                throw new ArgumentNullException(nameof(groupToAdd));
+                throw new ArgumentNullException(nameof(group));
+            }
+            
+            foreach (var smartLockGroup in group.SmartLockGroups)
+            {
+                smartLockGroup.GroupId = group.Id;
             }
 
-            _context.Groups.Add(groupToAdd);
+            _context.Groups.Add(group);
         }
 
         public void DeleteGroup(Group groupToDelete)
