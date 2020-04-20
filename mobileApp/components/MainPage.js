@@ -3,9 +3,8 @@ import { Container,Content, Button, Text, Icon } from 'native-base';
 import NfcManager, {NfcTech, NfcEvents} from 'react-native-nfc-manager';
 import CustomModal from './CustomModal';
 import { StyleSheet, TouchableOpacity, Image, View} from 'react-native'
-import AuthContext from '../App'
-import axiosapi from '../axiosAPI'
-
+import {getCurrentUser} from '../api'
+import axios from 'axios'; 
 
 
 export default class MainPage extends Component {
@@ -17,7 +16,6 @@ export default class MainPage extends Component {
       success: false,
       error: false
     }
-
     
     /*
     <Button
@@ -94,13 +92,36 @@ export default class MainPage extends Component {
       }, 3050);
   }
   
-
   componentDidMount() {
     NfcManager.start();
     console.log(this.props.authState)
-   
+
+    const headers = { Authorization: `Bearer ${this.props.authState}` };
+    getCurrentUser(headers).then(response =>console.log(response)).catch(error=>console.log(error))
+
+    /*
+          fetch('http://localhost:5000/api/users',{
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }
+        })
+    .then((response) => response.json())
+    .then((responseJson) => {
+
+       console.log(responseJson);
+
+    })
+    .catch((error) =>{
+        console.error(error);
+    });
+
+    getCurrentUser().then(response => console.log(response)).catch(error=>console.log(error))
+ */
   }
 
+  
   componentWillUnmount() {
     this._cleanUp;
   }
@@ -167,9 +188,7 @@ export default class MainPage extends Component {
             <Icon name = 'unlock'/>
             <Text>Lås opp dør</Text>
           </Button>
-          <Button  primary style = {styles.button}  onPress={()=>this.Scan()}>
-            <Text></Text>
-          </Button>
+          
           
           {
           this.state.isModalVisible

@@ -8,6 +8,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ using User = api.Entities.User;
 namespace api.Controllers
 {
     [Produces("application/json")]
-    //[Authorize("admin")]
+    [Authorize]
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase

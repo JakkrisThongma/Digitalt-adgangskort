@@ -4,7 +4,6 @@ import {Spinner,Text, Button} from 'native-base';
 import LottieView from 'lottie-react-native';
 
 
-
 export default class CustomModal extends Component {
   constructor(props) {
     super(props);
@@ -47,13 +46,13 @@ export default class CustomModal extends Component {
           }
           {success
           ?
-            <LottieView style = {styles.lottie} source={require('./782-check-mark-success')} autoPlay loop={false} speed={1}/>
+            <LottieView style = {styles.lottie} source={require('./animatons/782-check-mark-success.json')} autoPlay loop={false} speed={1}/>
             :
             null
           }
           {error
           ?
-            <LottieView style = {styles.lottie} source={require('./3932-error-cross')} autoPlay loop={false} speed={1}/>
+            <LottieView style = {styles.lottie} source={require('./animatons/3932-error-cross.json')} autoPlay loop={false} speed={1}/>
             :
             null
           }
