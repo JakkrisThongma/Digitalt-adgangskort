@@ -13,12 +13,6 @@ const defaultAuthState = {
   accessToken: '',
 };
 
-/*
-export function getToken(){
-  return authState.accessToken
-}
-*/
-
 export default () => {
   const [authState, setAuthState] = useState(defaultAuthState);
   React.useEffect(() => {
