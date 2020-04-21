@@ -73,7 +73,7 @@ const statusOptions = [
 
 const AddDialog = props => {
   const classes = useStyles();
-  const { isAddDialogOpened, onAddDialogCancelClick } = props;
+  const { isAddDialogOpened, onAddDialogCancelClick, onAddDialogAddClick } = props;
   const [state, dispatch] = useApiRequest(azureAdReducer, initialState);
   const { azureAdGroups, azureAdError } = state;
   const [groupState, groupDispatch] = useApiRequest(groupReducer, initialState);
@@ -142,6 +142,10 @@ const AddDialog = props => {
       smartLockGroups: values.smartLocks.map(v => ({ smartLockId: v.value }))
     };
     groupDispatch(dispatch => addGroup(dispatch, payload));
+    if (groupError){
+      console.log(groupError);
+    }
+    onAddDialogAddClick();
   };
 
   return (

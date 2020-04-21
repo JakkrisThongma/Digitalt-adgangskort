@@ -19,6 +19,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import Typography from "@material-ui/core/Typography";
 import {
+  Add,
   Group,
   Lock,
   PersonAdd,
@@ -27,13 +28,12 @@ import {
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { getGroups } from "../../actions/groupActions";
+import { deleteGroup, getGroups } from "../../actions/groupActions";
 import groupReducer from "../../reducers/groupReducer";
 import initialState from "../../data/initialState";
 import useApiRequest from "../../reducers/useApiRequest";
 import AddDialog from "../group/AddDialog";
-import TextField from "@material-ui/core/TextField";
+import DeleteDialog from "../group/DeleteDialog";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -118,6 +118,8 @@ const GroupList = () => {
   const [state, dispatch] = useApiRequest(groupReducer, initialState);
   const { groups, didInvalidate, loading } = state;
   const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState(false);
 
   const handleAddDialogClick = useCallback(() => {
     setOpenAddDialog(true);
@@ -127,11 +129,29 @@ const GroupList = () => {
     setOpenAddDialog(false);
   }, [openAddDialog]);
 
+  const handleAddDialogAddClick = useCallback(() => {
+    setOpenAddDialog(false);
+    dispatch(getGroups);
+    console.log(groups);
+
+  }, [openAddDialog]);
+
+  const handleDeleteGroupDeleteClick = useCallback(() => {
+    dispatch(dispatch => deleteGroup(dispatch, groupToDelete));
+    setOpenDeleteDialog(false);
+  }, [groupToDelete]);
+
+  const handleDeleteGroupClick = useCallback(() => {
+    setOpenDeleteDialog(true);
+  }, [openDeleteDialog]);
+
+  const handleDeleteGroupCancelClick = useCallback(() => {
+    setOpenDeleteDialog(false);
+  }, [openDeleteDialog]);
+
   useEffect(() => {
     dispatch(getGroups);
   }, []);
-
-
 
   useEffect(() => {
     if (didInvalidate) {
@@ -143,7 +163,6 @@ const GroupList = () => {
     <div className={classes.root}>
       <h1>Groups</h1>
       <Paper className={classes.paper}>
-
         <MaterialTable
           isLoading={loading}
           title=""
@@ -152,71 +171,26 @@ const GroupList = () => {
           icons={tableIcons}
           actions={[
             {
-              icon: "Add",
+              icon: AddBox,
               tooltip: "Add",
-              onClick: (event, rowData) => alert(`You saved ${rowData}`),
+              onClick: (event, rowData) => handleAddDialogClick(),
               isFreeAction: true
             },
             {
-              icon: "Edit",
+              icon: Edit,
               tooltip: "Edit",
-              onClick: (event, rowData) => alert(`You saved ${rowData}`)
+              onClick: (event, rowData) => alert(`You Delete ${rowData}`)
             },
             {
-              icon: "Delete",
+              icon: Delete,
               tooltip: "Delete",
-              onClick: (event, rowData) => alert(`You Delete ${rowData}`)
+              onClick: (event, rowData) => {
+                setGroupToDelete(rowData.id);
+                handleDeleteGroupClick();
+              }
             }
           ]}
-          components={{
-            Action: props => {
-              if (props.action.icon === "Add") {
-                return (
-                  <Button
-                    aria-label="add"
-                    variant="contained"
-                    color="primary"
-                    style={{ marginLeft: 10, marginRight: 10 }}
-                    startIcon={<GroupAdd />}
-                    onClick={handleAddDialogClick}>
-                    Add group
-                  </Button>
-                );
-              }
-              if (props.action.icon === "Edit") {
-                return (
-                  <Tooltip title="Edit">
-                    <IconButton
-                      aria-label="delete"
-                      color="primary"
-                      onClick={event => {
-                        props.action.onClick();
-                        event.stopPropagation();
-                      }}>
-                      <Edit />
-                    </IconButton>
-                  </Tooltip>
-                );
-              }
-              if (props.action.icon === "Delete") {
-                return (
-                  <Tooltip title="Delete">
-                    <IconButton
-                      aria-label="delete"
-                      color="primary"
-                      onClick={event => {
-                        props.action.onClick();
-                        event.stopPropagation();
-                      }}>
-                      <Delete />
-                    </IconButton>
-                  </Tooltip>
-                );
-              }
-              return null;
-            }
-          }}
-          onRowClick={(event, rowData, togglePanel) => handleAddDialogClick()}
+          // onRowClick={(event, rowData, togglePanel) => { console.log(rowData); handleAddDialogClick()}}
           options={{
             actionsColumnIndex: -1,
             draggable: false
@@ -225,6 +199,13 @@ const GroupList = () => {
         <AddDialog
           isAddDialogOpened={openAddDialog}
           onAddDialogCancelClick={handleAddDialogCancelClick}
+          onAddDialogAddClick={handleAddDialogAddClick}
+        />
+
+        <DeleteDialog
+          open={openDeleteDialog}
+          onDeleteClick={handleDeleteGroupDeleteClick}
+          onCancelClick={handleDeleteGroupCancelClick}
         />
       </Paper>
     </div>
