@@ -72,7 +72,11 @@ namespace api.Repositories
                 .Include(g => g.SmartLockGroups)
                 .ThenInclude(slg => slg.SmartLock).FirstOrDefaultAsync(g => g.Id == groupId);
 
-            return groupWithSmartLocks.SmartLockGroups.Select(slu => slu.SmartLock).ToList();
+            return groupWithSmartLocks.SmartLockGroups
+                .Select(slu => slu.SmartLock)
+                .ToList()
+                .OrderBy(sl=> sl.Title);
+            ;
         }
 
         public async Task<List<string>> GetGroupSmartLocksIdList(Guid groupId)
