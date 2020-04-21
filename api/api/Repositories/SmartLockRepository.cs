@@ -133,7 +133,7 @@ namespace api.Repositories
 
         public void DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
-            if (smartLockId == null)
+            if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }
