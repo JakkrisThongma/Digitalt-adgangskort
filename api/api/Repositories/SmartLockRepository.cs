@@ -18,7 +18,9 @@ namespace api.Repositories
 
         public async Task<IEnumerable<SmartLock>> GetSmartLocks()
         {
-            return await _context.SmartLocks.ToListAsync();
+            var smartLocks = await _context.SmartLocks.ToListAsync();
+            return smartLocks.OrderBy(sl=> sl.Title);
+            
         }
 
         public async Task<IEnumerable<SmartLock>> GetSmartLocks(List<string> smartLocksIdList)

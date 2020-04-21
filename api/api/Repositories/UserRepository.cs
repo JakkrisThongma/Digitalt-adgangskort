@@ -78,7 +78,7 @@ namespace api.Repositories
             return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock.ToString()).ToList();
         }
         
-        public async Task<List<SmartLock>> GetUserSmartLocks(Guid userId)
+        public async Task<IEnumerable<SmartLock>> GetUserSmartLocks(Guid userId)
         {
             if (userId == Guid.Empty)
             {
@@ -89,8 +89,9 @@ namespace api.Repositories
                 .Include(u => u.SmartLockUsers)
                 .ThenInclude(slu => slu.SmartLock).FirstOrDefaultAsync(u => u.Id == userId);
 
-            return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock).ToList();
-            
+            return userWithSmartLocks.SmartLockUsers.Select(slu => slu.SmartLock)
+                .ToList()
+                .OrderBy(sl=> sl.Title);
         }
         
         public async Task<bool> UserExists(Guid userId)
