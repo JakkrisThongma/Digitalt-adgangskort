@@ -86,6 +86,25 @@ namespace UnitTest
         }
         
         [Fact]
+        public async Task GetUserSmartLocks_EmptyGuid_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory4")
+                .Options;
+
+            await using (var context = new ApiContext(options))
+            {
+                var userRepository = new UserRepository(context);
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(
+                    // Act
+                    () => userRepository.GetUserSmartLocks(Guid.Empty));
+            }
+        }
+        
+        [Fact]
         public async Task UserExists_EmptyGuid_ThrowsArgumentNullException()
         {
             // Arrange

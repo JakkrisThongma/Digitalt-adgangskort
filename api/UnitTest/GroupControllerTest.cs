@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using api.Entities;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph;
 using Moq;
 using Xunit;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -157,7 +158,5 @@ namespace UnitTest
 				}
 			};
 		}*/
-		
-		
 	}
 }
