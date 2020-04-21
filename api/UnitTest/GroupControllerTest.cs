@@ -140,7 +140,7 @@ namespace UnitTest
 			Assert.IsInstanceOfType(result.Result, typeof(ConflictObjectResult));
 		}
 
-		[TestMethod]
+		/*[TestMethod]
 		public async Task CreateGroup_SmartLockNotExist_AddModelError()
 		{
 			// Arrange 
@@ -156,6 +156,8 @@ namespace UnitTest
 					}
 				}
 			};
-		}
+		}*/
+		
+		
 	}
 }
