@@ -202,7 +202,7 @@ namespace api.Repositories
 
         public void DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
-            if (smartLockId == null)
+            if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }

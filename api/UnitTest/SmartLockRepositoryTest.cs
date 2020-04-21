@@ -190,7 +190,115 @@ namespace UnitTest
                     () => smartLockRepository.DeleteSmartLockUser(Guid.Empty, Guid.NewGuid()));
             }
         }
+        
+        [Fact]
+        public async Task GetSmartLockGroups_SmartLockIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            await using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
 
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(
+                    // Act
+                    () =>  smartLockRepository.GetSmartLockGroups(Guid.Empty));
+            }
+        }
+        
+        
+        [Fact]
+        public void AddSmartLockGroup_SmartLockIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
+
+                // Assert
+                Assert.Throws<ArgumentNullException>(
+                    // Act
+                    () => smartLockRepository.AddSmartLockGroup(Guid.Empty, Guid.NewGuid()));
+            }
+        }
+        
+        [Fact]
+        public void AddSmartLockGroup_UserIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
+
+                // Assert
+                Assert.Throws<ArgumentNullException>(
+                    // Act
+                    () => smartLockRepository.AddSmartLockGroup(Guid.NewGuid(),Guid.Empty));
+            }
+        }
+        
+        [Fact]
+        public async Task GetSmartLockGroup_SmartLockIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            await using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(
+                    // Act
+                    () =>  smartLockRepository.GetSmartLockGroup(Guid.Empty, Guid.NewGuid()));
+            }
+        }
+        
+        [Fact]
+        public async Task GetSmartLockGroup_GroupIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            await using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(
+                    // Act
+                    () =>  smartLockRepository.GetSmartLockGroup(Guid.NewGuid(),Guid.Empty));
+            }
+        }
+        
+        [Fact]
+        public void DeleteSmartLockGroup_SmartLockIdIsEmpty_ThrowsArgumentException()
+        {
+            var options = new DbContextOptionsBuilder<ApiContext>()
+                .UseInMemoryDatabase("TestDbInMemory2")
+                .Options;
+            
+            using (var context = new ApiContext(options))
+            {
+                var smartLockRepository = new SmartLockRepository(context);
+
+                // Assert
+                Assert.Throws<ArgumentNullException>(
+                    // Act
+                    () => smartLockRepository.DeleteSmartLockGroup(Guid.Empty, Guid.NewGuid()));
+            }
+        }
         
     }
 }
