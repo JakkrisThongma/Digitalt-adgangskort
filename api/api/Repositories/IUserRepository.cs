@@ -13,7 +13,7 @@ namespace api.Repositories
         public void AddUser(User user);
         public void DeleteUser(User user);
         public Task<List<string>> GetUserSmartLocksIdList(Guid userId);
-        public Task<List<SmartLock>> GetUserSmartLocks(Guid userId);
+        public Task<IEnumerable<SmartLock>> GetUserSmartLocks(Guid userId);
         public Task<bool> UserExists(Guid userId);
         public Task<bool>  Save();
     }

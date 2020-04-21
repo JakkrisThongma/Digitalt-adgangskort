@@ -24,13 +24,21 @@ namespace api.Controllers
     [Route("api/azure-ad")]
     public class AzureAdController : ControllerBase
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IGroupRepository _groupRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
-        public AzureAdController(IAzureAdRepository azureAdRepository, IMapper mapper)
+        public AzureAdController(IAzureAdRepository azureAdRepository,
+            IUserRepository userRepository, IGroupRepository groupRepository,
+            IMapper mapper)
         {
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(azureAdRepository));
+            _userRepository = userRepository ??
+                              throw new ArgumentNullException(nameof(userRepository));
+            _groupRepository = groupRepository ??
+                               throw new ArgumentNullException(nameof(groupRepository));
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
@@ -50,8 +58,19 @@ namespace api.Controllers
 
                 // Load users profiles.
                 var userList = await _azureAdRepository.GetUsers(client);
+                var userListDto = _mapper.Map<IEnumerable<AzureAdUserDto>>(userList);
+                foreach (var azureAdUserDto in userListDto)
+                {
+                    var userExist = await _userRepository.UserExists(azureAdUserDto.Id);
 
-                return Ok(_mapper.Map<IEnumerable<AzureAdUserDto>>(userList));
+                    if (userExist)
+                    {
+                        azureAdUserDto.AddedToDb = true;
+                    }
+                }
+                
+                return Ok(userListDto);
+
             }
             catch (ServiceException ex)
             {
@@ -85,8 +104,17 @@ namespace api.Controllers
 
                 // Load user profile.
                 var user = await _azureAdRepository.GetUser(client, userId);
+                
+                var userDto = _mapper.Map<AzureAdUserDto>(user);
 
-                return Ok(_mapper.Map<AzureAdUserDto>(user));
+                var userExist = await _userRepository.UserExists(userDto.Id);
+
+                if (userExist)
+                {
+                    userDto.AddedToDb = true;
+                }
+
+                return Ok(userDto);
             }
             catch (ServiceException ex)
             {
@@ -175,10 +203,20 @@ namespace api.Controllers
                 // Initialize the GraphServiceClient.
                 var client = await MicrosoftGraphClient.GetGraphServiceClient();
 
-                // Load groups profiles.
                 var groupList = await _azureAdRepository.GetGroups(client);
 
-                return Ok(_mapper.Map<IEnumerable<AzureAdGroupDto>>(groupList));
+                var groupListDto = _mapper.Map<IEnumerable<AzureAdGroupDto>>(groupList);
+                foreach (var azureAdGroupDto in groupListDto)
+                {
+                    var groupExist = await _groupRepository.GroupExists(azureAdGroupDto.Id);
+
+                    if (groupExist)
+                    {
+                        azureAdGroupDto.AddedToDb = true;
+                    }
+                }
+
+                return Ok(groupListDto);
             }
             catch (ServiceException ex)
             {
@@ -207,8 +245,16 @@ namespace api.Controllers
 
                 // Load group profile.
                 var group = await _azureAdRepository.GetGroup(client, groupId);
+                var groupDto = _mapper.Map<AzureAdGroupDto>(group);
 
-                return Ok(_mapper.Map<AzureAdGroupDto>(group));
+                var groupExist = await _groupRepository.GroupExists(groupDto.Id);
+
+                if (groupExist)
+                {
+                    groupDto.AddedToDb = true;
+                }
+                
+                return Ok(groupDto);
             }
             catch (ServiceException ex)
             {

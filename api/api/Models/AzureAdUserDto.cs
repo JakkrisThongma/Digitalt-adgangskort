@@ -15,6 +15,8 @@ namespace api.Models
         public string JobTitle { get; set; }
         public string OfficeLocation { get; set; }
         public List<string> BusinessPhones { get; set; }
+        public bool AddedToDb { get; set; }
+
 
     }
 }
