@@ -23,13 +23,20 @@
     "@material-ui/lab": "^4.0.0-alpha.45",
     "axios": "^0.19.2",
     "clsx": "^1.1.0",
+    "delete": "^1.1.0",
     "eslint-import-resolver-webpack": "^0.12.1",
     "express": "^4.17.1",
+    "formik": "^2.1.4",
+    "formik-material-ui": "^2.0.0-beta.1",
+    "material-table": "^1.57.2",
+    "material-ui-chip-input": "^1.1.0",
+    "material-ui-formik-components": "^0.6.1",
     "react": "^16.12.0",
     "react-adal": "^0.5.0",
     "react-dom": "^16.12.0",
     "react-props": "^0.0.3",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "yup": "^0.28.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
