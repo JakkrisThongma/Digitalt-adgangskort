@@ -38,7 +38,7 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<List<SmartLock>> GetUserSmartLocks(Guid userId)
+        public Task<IEnumerable<SmartLock>> GetUserSmartLocks(Guid userId)
         {
             throw new NotImplementedException();
         }
