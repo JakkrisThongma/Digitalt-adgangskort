@@ -141,26 +141,6 @@ namespace api.Controllers
         }
         
         
-        // PUT: api/users/5
-        [HttpPut("{userId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUser(Guid userId, UserModificationDto user)
-        {
-            var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return NotFound();
-
-            var userEntity = _mapper.Map<User>(user);
-            userEntity.Id = userId;
-            userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _userRepository.UpdateUser(userEntity);
-            await _userRepository.Save();
-
-            return NoContent();
-        }
-        
         [HttpPatch("{userId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -172,11 +152,24 @@ namespace api.Controllers
             var userExists = await _userRepository.UserExists(userId);
             if (!userExists) return NotFound();
 
-            var userFromRepo = await _userRepository.GetUser(userId);
+            var userFromRepo = await _userRepository.GetUserWithSmartLocks(userId);
             
             var userToPatch = _mapper.Map<UserModificationDto>(userFromRepo);
             
             patchDoc.ApplyTo(userToPatch, ModelState);
+            
+            if (userToPatch.SmartLockUsers.Count > 0)
+            {
+                foreach (var smartLockUser in userToPatch.SmartLockUsers)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
+                    if (!smartLockExist)
+                    {
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockUser.SmartLockId} doesn't exist");
+                    }
+                }
+            }
 
             if (!TryValidateModel(userToPatch))
             {

@@ -32,9 +32,28 @@ namespace api.Repositories
             
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);;
         }
+        
+        public async Task<User> GetUserWithSmartLocks(Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+            
+            var userWithSmartLocks = await _context.Users
+                .Include(u => u.SmartLockUsers)
+                .ThenInclude(slu => slu.SmartLock).FirstOrDefaultAsync(u => u.Id == userId);
+            
+            return userWithSmartLocks;
+        }
 
         public void UpdateUser(User user)
         {
+            foreach (var smartLockUser in user.SmartLockUsers)
+            {
+                smartLockUser.UserId = user.Id;
+            }
+            
             _context.Entry(user).State = EntityState.Modified;
 
         }

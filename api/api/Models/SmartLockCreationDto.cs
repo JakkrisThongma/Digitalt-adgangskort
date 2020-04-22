@@ -20,11 +20,11 @@ namespace api.Models
 		public string ManufactureId { get; set; }
 		public Status Status { get; set; }
 		
-		public ICollection<UserCollectionCreationDto> SmartLockUsers { get; set; }
-			= new List<UserCollectionCreationDto>();
+		public ICollection<UserCollectionDto> SmartLockUsers { get; set; }
+			= new List<UserCollectionDto>();
 		
-		public ICollection<GroupCollectionCreationDto> SmartLockGroups { get; set; }
-			= new List<GroupCollectionCreationDto>();
+		public ICollection<GroupCollectionDto> SmartLockGroups { get; set; }
+			= new List<GroupCollectionDto>();
 		
 	}
 }
