@@ -42,9 +42,36 @@ namespace api.Repositories
 
             return await _context.SmartLocks.FirstOrDefaultAsync(sl => sl.Id == smartLockId);
         }
+        
+        public async Task<SmartLock> GetSmartLockWithGroupsAndUsers(Guid smartLockId)
+        {
+            if (smartLockId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(smartLockId));
+            }
+            
+            var smartLockWithGroupsAndUsers = await _context.SmartLocks
+                .Include(sl => sl.SmartLockGroups)
+                .ThenInclude(slg => slg.Group)
+                .Include(sl => sl.SmartLockUsers)
+                .ThenInclude(slu => slu.User)
+                .FirstOrDefaultAsync(sl => sl.Id == smartLockId);
+            
+            return smartLockWithGroupsAndUsers;
+        }
 
         public void UpdateSmartLock(SmartLock smartLock)
         {
+            foreach (var smartLockUser in smartLock.SmartLockUsers)
+            {
+                smartLockUser.SmartLockId = smartLock.Id;
+            }
+            
+            foreach (var smartLockGroup in smartLock.SmartLockGroups)
+            {
+                smartLockGroup.SmartLockId = smartLock.Id;
+            }
+            
             _context.Entry(smartLock).State = EntityState.Modified;
         }
 

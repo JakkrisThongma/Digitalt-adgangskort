@@ -121,25 +121,6 @@ namespace api.Controllers
             return Ok(smartLock);
         }
 
-        // PUT: api/smart-locks/5
-        [HttpPut("{smartLockId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateSmartLock(Guid smartLockId, SmartLockModificationDto smartLock)
-        {
-            var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
-            if (!smartLockExists) return NotFound();
-
-            var smartLockEntity = _mapper.Map<SmartLock>(smartLock);
-            smartLockEntity.Id = smartLockId;
-            smartLockEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _smartLockRepository.UpdateSmartLock(smartLockEntity);
-            await _smartLockRepository.Save();
-
-            return NoContent();
-        }
         
         [HttpPatch("{smartLockId}")]
         [Consumes("application/json-patch+json")]
@@ -152,11 +133,33 @@ namespace api.Controllers
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockId);
             if (!smartLockExists) return NotFound();
 
-            var smartLockFromRepo = await _smartLockRepository.GetSmartLock(smartLockId);
+            var smartLockFromRepo = await _smartLockRepository.GetSmartLockWithGroupsAndUsers(smartLockId);
             
             var smartLockToPatch = _mapper.Map<SmartLockModificationDto>(smartLockFromRepo);
 
             patchDoc.ApplyTo(smartLockToPatch, ModelState);
+            
+            if (smartLockToPatch.SmartLockUsers.Count > 0)
+            {
+                foreach (var smartLockUser in smartLockToPatch.SmartLockUsers)
+                {
+                    var userExist = await _userRepository.UserExists(smartLockUser.UserId);
+                    if (!userExist)
+                        ModelState.AddModelError("userNotExist",
+                            $"User with id: {smartLockUser.UserId} doesn't exist");
+                }
+            }
+
+            if (smartLockToPatch.SmartLockGroups.Count > 0)
+            {
+                foreach (var smartLockGroup in smartLockToPatch.SmartLockGroups)
+                {
+                    var groupExist = await _groupRepository.GroupExists(smartLockGroup.GroupId);
+                    if (!groupExist)
+                        ModelState.AddModelError("groupNotExist",
+                            $"Group with id: {smartLockGroup.GroupId} doesn't exist");
+                }
+            }
 
             if (!TryValidateModel(smartLockToPatch))
             {

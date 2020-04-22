@@ -14,6 +14,7 @@ namespace api.Repositories
         public void AddSmartLock(SmartLock smartLock);
         public void DeleteSmartLock(SmartLock smartLock);
         public Task<bool> SmartLockExists(Guid smartLockId);
+        public Task<SmartLock> GetSmartLockWithGroupsAndUsers(Guid smartLockId);
         public Task<IEnumerable<User>>GetSmartLockUsers(Guid smartLockId);
         public void AddSmartLockUser(Guid smartLockId, Guid userId);
         public Task<SmartLockUser> GetSmartLockUser(Guid smartLockId, Guid userId);
