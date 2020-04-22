@@ -129,27 +129,7 @@ namespace api.Controllers
 
             return mergedGroup;
         }
-
         
-        // PUT: api/groups/5
-        [HttpPut("{groupId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
-        {
-            var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return NotFound();
-
-            var groupEntity = _mapper.Map<Group>(group);
-            groupEntity.Id = groupId;
-            groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _groupRepository.UpdateGroup(groupEntity);
-            await _groupRepository.Save();
-
-            return NoContent();
-        }
 
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
@@ -161,12 +141,25 @@ namespace api.Controllers
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
             if (!groupExists) return NotFound();
+            
 
-            var groupFromRepo = await _groupRepository.GetGroup(groupId);
+            var groupFromRepo = await _groupRepository.GetGroupWithSmartLocks(groupId);
             
             var groupToPatch = _mapper.Map<GroupModificationDto>(groupFromRepo);
             
+            
             patchDoc.ApplyTo(groupToPatch, ModelState);
+            
+            if (groupToPatch.SmartLockGroups.Count > 0)
+            {
+                foreach (var smartLockGroup in groupToPatch.SmartLockGroups)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockGroup.SmartLockId);
+                    if (!smartLockExist)
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockGroup.SmartLockId} doesn't exist");
+                }
+            }
 
             if (!TryValidateModel(groupToPatch))
             {

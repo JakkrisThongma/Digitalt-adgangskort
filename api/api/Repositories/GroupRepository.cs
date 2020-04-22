@@ -30,9 +30,29 @@ namespace api.Repositories
 
             return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         }
+        
+        public async Task<Group> GetGroupWithSmartLocks(Guid groupId)
+        {
+            if (groupId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+            
+            var groupWithSmartLocks = await _context.Groups
+                .Include(g => g.SmartLockGroups)
+                .ThenInclude(slg => slg.SmartLock).FirstOrDefaultAsync(g => g.Id == groupId);
+            
+            return groupWithSmartLocks;
+        }
 
         public void UpdateGroup(Group group)
         {
+            
+            foreach (var smartLockGroup in group.SmartLockGroups)
+            {
+                smartLockGroup.GroupId = group.Id;
+            }
+            
             _context.Entry(group).State = EntityState.Modified;
         }
 
