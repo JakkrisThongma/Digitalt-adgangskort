@@ -4,7 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import useApiRequest from "../../reducers/useApiRequest";
-import initialState from "../../data/initialState";
+import initialState from "../../store/initialState";
 import azureAdReducer from "../../reducers/azureAdReducer";
 import { getAzureAdUsers } from "../../actions/azureAdActions";
 

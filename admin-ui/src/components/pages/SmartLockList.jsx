@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import PaginationItem from "@material-ui/lab/PaginationItem";
 import useApiRequest from "../../reducers/useApiRequest";
-import initialState from "../../data/initialState";
+import initialState from "../../store/initialState";
 import { getSmartLocks } from "../../actions/smartLockActions";
 import smartLockReducer from "../../reducers/smartLockReducer";
 

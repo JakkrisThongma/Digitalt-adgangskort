@@ -1,6 +1,6 @@
 // https://material-ui.com/components/dialogs/#AlertDialogSlide.js
 
-import React from "react";
+import React, {useContext} from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -8,25 +8,37 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import {closeDeleteGroupDialog, deleteGroup} from "../../actions/groupActions";
+import {GroupContext} from "../../store/Store";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+
+
 const DeleteDialog = props => {
-  const {
-    open,
-    onCancelClick,
-    onDeleteClick
-  } = props;
+
+  const [groupState, groupDispatch] = useContext(GroupContext);
+  const { didInvalidate, loading ,deleteDialogOpen, selectedGroupId } = groupState;
+
+  const handleCancelClick = () => {
+    groupDispatch(closeDeleteGroupDialog);
+  };
+
+  const handleDeleteClick = () => {
+    groupDispatch(dispatch => deleteGroup(dispatch, selectedGroupId));
+    groupDispatch(closeDeleteGroupDialog);
+  };
+
 
   return (
     <div>
       <Dialog
-        open={open}
+        open={deleteDialogOpen}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCancelClick}
+        onClose={handleCancelClick}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle id="alert-dialog-slide-title">Delete group </DialogTitle>
@@ -36,10 +48,10 @@ const DeleteDialog = props => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onCancelClick} color="primary">
+          <Button onClick={handleCancelClick} color="primary">
             Cancel
           </Button>
-          <Button onClick={onDeleteClick} color="primary">
+          <Button onClick={handleDeleteClick} color="primary">
             Delete
           </Button>
         </DialogActions>

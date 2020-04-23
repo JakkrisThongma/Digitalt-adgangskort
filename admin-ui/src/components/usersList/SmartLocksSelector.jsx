@@ -4,7 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import useApiRequest from "../../reducers/useApiRequest";
-import initialState from "../../data/initialState";
+import initialState from "../../store/initialState";
 import smartLockReducer from "../../reducers/smartLockReducer";
 import { getSmartLocks } from "../../actions/smartLockActions";
 

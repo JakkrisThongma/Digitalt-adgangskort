@@ -18,7 +18,7 @@ import {
   TableHeader,
   AddUserDialog
 } from "@/components/usersList";
-import initialState from "../../data/initialState";
+import initialState from "../../store/initialState";
 
 import {
   getUsers,

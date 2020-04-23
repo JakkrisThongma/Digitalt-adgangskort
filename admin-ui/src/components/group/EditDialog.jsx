@@ -20,7 +20,8 @@ import { Autocomplete, Select } from "material-ui-formik-components";
 import {
   addGroup,
   closeAddGroupDialog,
-  openAddGroupDialog
+  closeEditGroupDialog,
+  getGroup
 } from "../../actions/groupActions";
 import useApiRequest from "../../reducers/useApiRequest";
 import azureAdReducer from "../../reducers/azureAdReducer";
@@ -68,9 +69,7 @@ const initialValues = {
 
 const validationSchema = object().shape({
   status: string(),
-  groupId: string()
-    .required("Group is required")
-    .nullable(),
+  groupId: string(),
   smartLocks: array()
 });
 
@@ -80,69 +79,52 @@ const statusOptions = [
   { value: "suspended", label: "Suspended" }
 ];
 
-const AddDialog = props => {
+const EditDialog = props => {
   const classes = useStyles();
-  const { isAddDialogOpened, onAddDialogCancelClick } = props;
-  const [azureAdState, azureAdDispatch] = useContext(AzureAdContext);
 
+  const [azureAdState, azureAdDispatch] = useContext(AzureAdContext);
   const { azureAdGroups, azureAdError } = azureAdState;
+
   const [groupState, groupDispatch] = useContext(GroupContext);
-  const { groupError, loading, addDialogOpen } = groupState;
+  const {
+    group,
+    groupError,
+    groupSmartLocks,
+    loading: groupLoading,
+    selectedGroupId,
+    editDialogOpen
+  } = groupState;
 
   const [openGroup, setOpenGroup] = useState(false);
+  const [formData, setFormData] = useState({});
   const [groupOptions, setGroupOptions] = useState([]);
-  const groupLoading = openGroup && groupOptions.length === 0;
+  // const groupLoading = openGroup && groupOptions.length === 0;
 
   const [smartLockState, smartLockDispatch] = useContext(SmartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
-  const [openSmartLock, setOpenSmartLock] = useState(false);
   const [smartLockOptions, setSmartLockOptions] = useState([]);
-  const smartLockLoading = openSmartLock && smartLockOptions.length === 0;
+  const [smartLockValues, setSmartLockValues] = useState(groupSmartLocks);
 
   useEffect(() => {
-    const optionList = azureAdGroups.map(u => {
-      let label = "";
-
-      if (u.displayName) label = `${u.displayName}`;
-      return {
-        label,
-        value: u.id,
-        addedToDb: u.addedToDb
-      };
+    setFormData({
+      ...formData,
+      groupId: group ? group.displayName : "",
+      status: group ? group.status.toLowerCase() : "inactive"
     });
-    setGroupOptions(optionList);
-  }, [azureAdGroups]);
+    setGroupOptions([group]);
+  }, [group]);
 
   useEffect(() => {
-    if (!groupLoading) {
-      console.log("not loading");
-      return undefined;
-    }
-    azureAdDispatch(getAzureAdGroups);
-  }, [groupLoading]);
+    setSmartLockOptions(smartLocks);
+  }, [smartLocks]);
+
 
   useEffect(() => {
-    if (!openGroup) {
-      setGroupOptions([]);
-    }
-  }, [openGroup]);
-
-  useEffect(() => {
-    const optionList = smartLocks.map(u => {
-      return {
-        value: u.id,
-        label: u.title
-      };
-    });
-    setSmartLockOptions(optionList)
-    }, [smartLocks]);
-
-  useEffect(() => {
-    smartLockDispatch(getSmartLocks);
-  }, []);
+    setSmartLockValues(groupSmartLocks);
+  }, [groupSmartLocks]);
 
   const handleCancelClick = () => {
-    groupDispatch(closeAddGroupDialog);
+    groupDispatch(closeEditGroupDialog);
   };
 
   const handleAddClick = values => {
@@ -152,31 +134,41 @@ const AddDialog = props => {
       smartLockGroups: values.smartLocks.map(v => ({ smartLockId: v.value }))
     };
     groupDispatch(dispatch => addGroup(dispatch, payload));
-    groupDispatch(closeAddGroupDialog);
+    if (groupError) {
+      console.log(groupError);
+    }
+    groupDispatch(closeEditGroupDialog);
+  };
+
+  const onListChange = val => {
+    setSmartLockValues(val);
+
+    console.log("val", val);
+    console.log("smartLockValues", smartLockValues);
   };
 
   return (
     <div>
       <Dialog
-        open={addDialogOpen}
+        open={editDialogOpen}
         onClose={handleCancelClick}
-        aria-labelledby="form-dialog-title"
+        aria-labelledby="edit-dialog-title"
         maxWidth="sm"
         fullWidth>
-        <DialogTitle id="form-dialog-title">
+        <DialogTitle id="edit-dialog-title">
           <Grid container spacing={2}>
             <Grid item>
               <GroupAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add New Group</Typography>
+              <Typography variant="h6">Edit Group</Typography>
             </Grid>
           </Grid>
         </DialogTitle>
         <DialogContent>
           <div>
             <Formik
-              initialValues={initialValues}
+              initialValues={formData}
               validationSchema={validationSchema}
               validateOnChange
               onSubmit={values => handleAddClick(values)}>
@@ -185,22 +177,16 @@ const AddDialog = props => {
                   <Field
                     name="groupId"
                     component={Autocomplete}
+                    disabled
+                    getOptionLabel={option => option.displayName}
                     options={groupOptions}
-                    open={openGroup}
-                    onOpen={() => {
-                      setOpenGroup(true);
-                    }}
-                    onClose={() => {
-                      setOpenGroup(false);
-                    }}
-                    loading={groupLoading}
+                    value={group ? groupOptions[0] : null}
                     size="small"
                     textFieldProps={{
                       label: "Azure AD group",
                       required: true,
                       variant: "outlined"
                     }}
-                    getOptionDisabled={option => option.addedToDb === true}
                   />
                   <Field
                     name="status"
@@ -212,10 +198,16 @@ const AddDialog = props => {
                   />
                   <Field
                     name="smartLocks"
+                    getOptionLabel={option => option.title}
                     options={smartLockOptions}
-                    component={Autocomplete}
+                    onChange={(e, v) => onListChange(v)}
+                    value={smartLockValues}
                     filterSelectedOptions
+                    getOptionSelected={(option, value) =>
+                      option.id === value.id
+                    }
                     multiple
+                    component={Autocomplete}
                     size="small"
                     textFieldProps={{
                       label: "Smart lock(s)",
@@ -236,19 +228,22 @@ const AddDialog = props => {
                       color="primary"
                       disabled={!formik.dirty}
                       type="submit">
-                      Add
+                      Edit
                     </Button>
                   </DialogActions>
                 </Form>
               )}
             </Formik>
           </div>
+          <Backdrop className={classes.backdrop} open={groupLoading}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-AddDialog.propTypes = {};
+EditDialog.propTypes = {};
 
-export default AddDialog;
+export default EditDialog;

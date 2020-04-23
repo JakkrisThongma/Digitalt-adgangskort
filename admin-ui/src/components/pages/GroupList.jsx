@@ -1,4 +1,10 @@
-import React, { useEffect, useState, forwardRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useCallback,
+  useContext
+} from "react";
 import { Grid, Button, Tooltip, Toolbar } from "@material-ui/core";
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
@@ -28,12 +34,22 @@ import {
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import { deleteGroup, getGroups } from "../../actions/groupActions";
+import {
+  closeAddGroupDialog,
+  closeDeleteGroupDialog,
+  deleteGroup, getGroup,
+  getGroups, getGroupSmartLocks, openAddGroupDialog,
+  openDeleteGroupDialog, openEditGroupDialog, setSelectedGroupId
+} from "../../actions/groupActions";
 import groupReducer from "../../reducers/groupReducer";
-import initialState from "../../data/initialState";
+import initialState from "../../store/initialState";
 import useApiRequest from "../../reducers/useApiRequest";
 import AddDialog from "../group/AddDialog";
 import DeleteDialog from "../group/DeleteDialog";
+import Store from "../../store";
+import {GroupContext, SmartLockContext} from "../../store/Store";
+import EditDialog from "../group/EditDialog";
+import {getSmartLocks} from "../../actions/smartLockActions";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -115,47 +131,38 @@ const columns = [
 
 const GroupList = () => {
   const classes = useStyles();
-  const [state, dispatch] = useApiRequest(groupReducer, initialState);
-  const { groups, didInvalidate, loading } = state;
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [groupToDelete, setGroupToDelete] = useState(false);
+  const [groupState, groupDispatch] = useContext(GroupContext);
+  const { groups, didInvalidate, loading, addDialogOpen, editDialogOpen ,deleteDialogOpen } = groupState;
+  const [smartLockState, smartLockDispatch] = useContext(SmartLockContext);
 
-  const handleAddDialogClick = useCallback(() => {
-    setOpenAddDialog(true);
-  }, [openAddDialog]);
 
-  const handleAddDialogCancelClick = useCallback(() => {
-    setOpenAddDialog(false);
-  }, [openAddDialog]);
+  const handleAddGroupClick = () => {
+    groupDispatch(openAddGroupDialog);
+  };
 
-  const handleAddDialogAddClick = useCallback(() => {
-    setOpenAddDialog(false);
-    dispatch(getGroups);
-    console.log(groups);
+  const handleEditGroupClick = groupId => {
+    groupDispatch(dispatch => setSelectedGroupId(dispatch, groupId));
+    groupDispatch(dispatch => getGroup(dispatch, groupId));
+    groupDispatch(dispatch => getGroupSmartLocks(dispatch, groupId));
+    smartLockDispatch(getSmartLocks);
 
-  }, [openAddDialog]);
+    groupDispatch(openEditGroupDialog);
+  };
 
-  const handleDeleteGroupDeleteClick = useCallback(() => {
-    dispatch(dispatch => deleteGroup(dispatch, groupToDelete));
-    setOpenDeleteDialog(false);
-  }, [groupToDelete]);
+  const handleDeleteGroupClick = groupId => {
+    groupDispatch(dispatch => setSelectedGroupId(dispatch, groupId));
+    groupDispatch(openDeleteGroupDialog);
 
-  const handleDeleteGroupClick = useCallback(() => {
-    setOpenDeleteDialog(true);
-  }, [openDeleteDialog]);
+  };
 
-  const handleDeleteGroupCancelClick = useCallback(() => {
-    setOpenDeleteDialog(false);
-  }, [openDeleteDialog]);
 
   useEffect(() => {
-    dispatch(getGroups);
+    groupDispatch(getGroups);
   }, []);
 
   useEffect(() => {
     if (didInvalidate) {
-      dispatch(getGroups);
+      groupDispatch(getGroups);
     }
   }, [didInvalidate]);
 
@@ -173,20 +180,19 @@ const GroupList = () => {
             {
               icon: AddBox,
               tooltip: "Add",
-              onClick: (event, rowData) => handleAddDialogClick(),
+              onClick: () => handleAddGroupClick(),
               isFreeAction: true
             },
             {
               icon: Edit,
               tooltip: "Edit",
-              onClick: (event, rowData) => alert(`You Delete ${rowData}`)
+              onClick: (event, rowData) => handleEditGroupClick(rowData.id)
             },
             {
               icon: Delete,
               tooltip: "Delete",
               onClick: (event, rowData) => {
-                setGroupToDelete(rowData.id);
-                handleDeleteGroupClick();
+                handleDeleteGroupClick(rowData.id);
               }
             }
           ]}
@@ -196,17 +202,10 @@ const GroupList = () => {
             draggable: false
           }}
         />
-        <AddDialog
-          isAddDialogOpened={openAddDialog}
-          onAddDialogCancelClick={handleAddDialogCancelClick}
-          onAddDialogAddClick={handleAddDialogAddClick}
-        />
+        <AddDialog />
+        <EditDialog />
+        <DeleteDialog />
 
-        <DeleteDialog
-          open={openDeleteDialog}
-          onDeleteClick={handleDeleteGroupDeleteClick}
-          onCancelClick={handleDeleteGroupCancelClick}
-        />
       </Paper>
     </div>
   );
