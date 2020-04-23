@@ -6,6 +6,7 @@ import { createBrowserHistory } from "history";
 import { theme } from "./styles";
 import Routes from "./Router";
 import "@/styles/App.css";
+import Store from "./store";
 
 const browserHistory = createBrowserHistory();
 
@@ -13,10 +14,13 @@ function App() {
   return (
     <>
       <CssBaseline />
+
       <ThemeProvider theme={theme}>
-        <Router history={browserHistory}>
-          <Routes />
-        </Router>
+        <Store>
+          <Router history={browserHistory}>
+            <Routes />
+          </Router>
+        </Store>
       </ThemeProvider>
     </>
   );
