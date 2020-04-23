@@ -1,18 +1,26 @@
 import {
-  READ_RESOURCES_PENDING,
-  READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED
+  GET_AZURE_AD_USERS_PENDING,
+  GET_AZURE_AD_USERS_FAILED,
+  GET_AZURE_AD_USERS_SUCCEEDED,
+  GET_AZURE_AD_USER_PENDING,
+  GET_AZURE_AD_USER_FAILED,
+  GET_AZURE_AD_USER_SUCCEEDED,
+  GET_AZURE_AD_USER_PHOTO_PENDING,
+  GET_AZURE_AD_USER_PHOTO_FAILED,
+  GET_AZURE_AD_USER_PHOTO_SUCCEEDED,
+  GET_AZURE_AD_USER_GROUPS_PENDING,
+  GET_AZURE_AD_USER_GROUPS_FAILED,
+  GET_AZURE_AD_USER_GROUPS_SUCCEEDED,
+  GET_AZURE_AD_GROUPS_PENDING,
+  GET_AZURE_AD_GROUPS_FAILED,
+  GET_AZURE_AD_GROUPS_SUCCEEDED,
+  GET_AZURE_AD_GROUP_PENDING,
+  GET_AZURE_AD_GROUP_FAILED,
+  GET_AZURE_AD_GROUP_SUCCEEDED,
+  GET_AZURE_AD_GROUP_MEMBERS_PENDING,
+  GET_AZURE_AD_GROUP_MEMBERS_FAILED,
+  GET_AZURE_AD_GROUP_MEMBERS_SUCCEEDED
 } from "./actionTypes";
-
-import {
-  AZURE_AD_USERS_RESOURCE_TYPE,
-  AZURE_AD_USER_RESOURCE_TYPE,
-  AZURE_AD_USER_PHOTO_RESOURCE_TYPE,
-  AZURE_AD_USER_GROUPS_RESOURCE_TYPE,
-  AZURE_AD_GROUPS_RESOURCE_TYPE,
-  AZURE_AD_GROUP_RESOURCE_TYPE,
-  AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
-} from "./actionResourceTypes";
 
 import {
   getAzureAdUsers as getAzureAdUsersFromAPI,
@@ -26,21 +34,18 @@ import {
 
 const getAzureAdUsers = dispatch => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_USERS_RESOURCE_TYPE
+    type: GET_AZURE_AD_USERS_PENDING
   });
   getAzureAdUsersFromAPI()
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_USERS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USERS_SUCCEEDED,
         payload: { azureAdUsers: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_USERS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USERS_FAILED,
         payload: { error }
       })
     );
@@ -48,21 +53,18 @@ const getAzureAdUsers = dispatch => {
 
 const getAzureAdUser = (dispatch, userId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_USER_RESOURCE_TYPE
+    type: GET_AZURE_AD_USER_PENDING
   });
   getAzureAdUserFromAPI(userId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_USER_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_SUCCEEDED,
         payload: { azureAdUser: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_USER_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_FAILED,
         payload: { error }
       })
     );
@@ -70,21 +72,18 @@ const getAzureAdUser = (dispatch, userId) => {
 
 const getAzureAdUserPhoto = (dispatch, userId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_USER_PHOTO_RESOURCE_TYPE
+    type: GET_AZURE_AD_USER_PHOTO_PENDING
   });
   getAzureAdUserPhotoFromAPI(userId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_USER_PHOTO_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_PHOTO_SUCCEEDED,
         payload: { azureAdUserPhoto: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_USER_PHOTO_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_PHOTO_FAILED,
         payload: { error }
       })
     );
@@ -92,42 +91,37 @@ const getAzureAdUserPhoto = (dispatch, userId) => {
 
 const getAzureAdUserGroup = (dispatch, userId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_USER_GROUPS_RESOURCE_TYPE
+    type: GET_AZURE_AD_USER_GROUPS_PENDING
   });
   getAzureAdUserGroupFromAPI(userId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_USER_GROUPS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_GROUPS_SUCCEEDED,
         payload: { azureAdUserGroups: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_USER_GROUPS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_USER_GROUPS_FAILED,
         payload: { error }
       })
     );
 };
+
 const getAzureAdGroups = dispatch => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_GROUPS_RESOURCE_TYPE
+    type: GET_AZURE_AD_GROUPS_PENDING
   });
   getAzureAdGroupsFromAPI()
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_GROUPS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUPS_SUCCEEDED,
         payload: { azureAdGroups: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_GROUPS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUPS_FAILED,
         payload: { error }
       })
     );
@@ -135,42 +129,37 @@ const getAzureAdGroups = dispatch => {
 
 const getAzureAdGroup = (dispatch, groupId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_GROUP_RESOURCE_TYPE
+    type: GET_AZURE_AD_GROUP_PENDING
   });
   getAzureAdGroupFromAPI(groupId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_GROUP_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUP_SUCCEEDED,
         payload: { azureAdGroup: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_GROUP_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUP_FAILED,
         payload: { error }
       })
     );
 };
+
 const getAzureAdGroupMembers = (dispatch, groupId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
+    type: GET_AZURE_AD_GROUP_MEMBERS_PENDING
   });
   getAzureAdGroupMembersFromAPI(groupId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUP_MEMBERS_SUCCEEDED,
         payload: { azureAdGroupMembers: response }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE,
+        type: GET_AZURE_AD_GROUP_MEMBERS_FAILED,
         payload: { error }
       })
     );

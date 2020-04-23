@@ -1,32 +1,35 @@
 import {
-  READ_RESOURCES_PENDING,
-  READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED,
-  CREATE_RESOURCES_PENDING,
-  CREATE_RESOURCES_SUCCEEDED,
-  CREATE_RESOURCES_FAILED,
-  UPDATE_RESOURCES_PENDING,
-  UPDATE_RESOURCES_SUCCEEDED,
-  UPDATE_RESOURCES_FAILED,
-  DELETE_RESOURCES_PENDING,
-  DELETE_RESOURCES_SUCCEEDED,
-  DELETE_RESOURCES_FAILED
+  GET_USERS_PENDING,
+  GET_USERS_SUCCEEDED,
+  GET_USERS_FAILED,
+  GET_USER_PENDING,
+  GET_USER_SUCCEEDED,
+  GET_USER_FAILED,
+  ADD_USER_PENDING,
+  ADD_USER_SUCCEEDED,
+  ADD_USER_FAILED,
+  UPDATE_USER_PENDING,
+  UPDATE_USER_SUCCEEDED,
+  UPDATE_USER_FAILED,
+  DELETE_USER_PENDING,
+  DELETE_USER_SUCCEEDED,
+  DELETE_USER_FAILED,
+  GET_CURRENT_AUTHENTICATED_USER_FAILED,
+  GET_CURRENT_AUTHENTICATED_USER_SUCCEEDED,
+  GET_CURRENT_AUTHENTICATED_USER_PENDING,
+  GET_USER_SMART_LOCKS_FAILED,
+  GET_USER_SMART_LOCKS_SUCCEEDED,
+  GET_USER_SMART_LOCKS_PENDING,
+  GET_USER_GROUPS_FAILED,
+  GET_USER_GROUPS_SUCCEEDED,
+  GET_USER_GROUPS_PENDING
 } from "../actions/actionTypes";
 
-import {
-  USERS_RESOURCE_TYPE,
-  USER_RESOURCE_TYPE,
-  USER_GROUPS_RESOURCE_TYPE,
-  USER_SMART_LOCKS_RESOURCE_TYPE,
-  CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-} from "../actions/actionResourceTypes";
-
 const userReducer = (state, action) => {
-  // Read users
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === USERS_RESOURCE_TYPE
-  ) {
+  console.log("User action: ", action.type);
+
+  // Get users
+  if (action.type === GET_USERS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -35,10 +38,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USERS_SUCCEEDED) {
     return {
       ...state,
       users: action.payload.users,
@@ -48,10 +48,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USERS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -60,11 +57,8 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Create users
-  if (
-    action.type === CREATE_RESOURCES_PENDING &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  // Add users
+  if (action.type === ADD_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -73,10 +67,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === CREATE_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === ADD_USER_SUCCEEDED) {
     return {
       ...state,
       newUser: action.payload.newUser,
@@ -86,10 +77,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === CREATE_RESOURCES_FAILED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === ADD_USER_FAILED) {
     return {
       ...state,
       loading: false,
@@ -98,11 +86,8 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Read user
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  // Get user
+  if (action.type === GET_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -111,10 +96,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_SUCCEEDED) {
     return {
       ...state,
       user: action.payload.user,
@@ -124,10 +106,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_FAILED) {
     return {
       ...state,
       loading: false,
@@ -137,10 +116,7 @@ const userReducer = (state, action) => {
   }
 
   // Update user
-  if (
-    action.type === UPDATE_RESOURCES_PENDING &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -149,10 +125,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === UPDATE_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_USER_SUCCEEDED) {
     return {
       ...state,
       loading: false,
@@ -161,10 +134,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === UPDATE_RESOURCES_FAILED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_USER_FAILED) {
     return {
       ...state,
       loading: false,
@@ -174,10 +144,7 @@ const userReducer = (state, action) => {
   }
 
   // Delete user
-  if (
-    action.type === DELETE_RESOURCES_PENDING &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -186,10 +153,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === DELETE_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_USER_SUCCEEDED) {
     return {
       ...state,
       loading: false,
@@ -198,10 +162,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === DELETE_RESOURCES_FAILED &&
-    action.resourceType === USER_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_USER_FAILED) {
     return {
       ...state,
       loading: false,
@@ -210,11 +171,8 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Read user groups
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === USER_GROUPS_RESOURCE_TYPE
-  ) {
+  // Get user groups
+  if (action.type === GET_USER_GROUPS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -223,10 +181,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_GROUPS_SUCCEEDED) {
     return {
       ...state,
       userGroups: action.payload.userGroups,
@@ -236,10 +191,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === USER_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_GROUPS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -248,11 +200,8 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Read user smart locks
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === USER_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  // Get user smart locks
+  if (action.type === GET_USER_SMART_LOCKS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -261,10 +210,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === USER_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_SMART_LOCKS_SUCCEEDED) {
     return {
       ...state,
       userSmartLocks: action.payload.userSmartLocks,
@@ -274,10 +220,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === USER_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_USER_SMART_LOCKS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -286,11 +229,8 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Read current user
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-  ) {
+  // Get current user
+  if (action.type === GET_CURRENT_AUTHENTICATED_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -299,10 +239,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_CURRENT_AUTHENTICATED_USER_SUCCEEDED) {
     return {
       ...state,
       currentAuthenticatedUser: action.payload.currentAuthenticatedUser,
@@ -312,10 +249,7 @@ const userReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === CURRENT_AUTHENTICATED_USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_CURRENT_AUTHENTICATED_USER_FAILED) {
     return {
       ...state,
       loading: false,

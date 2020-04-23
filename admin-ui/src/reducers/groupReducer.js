@@ -1,31 +1,38 @@
 import {
-  READ_RESOURCES_PENDING,
-  READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED,
-  CREATE_RESOURCES_PENDING,
-  CREATE_RESOURCES_SUCCEEDED,
-  CREATE_RESOURCES_FAILED,
-  UPDATE_RESOURCES_PENDING,
-  UPDATE_RESOURCES_SUCCEEDED,
-  UPDATE_RESOURCES_FAILED,
-  DELETE_RESOURCES_PENDING,
-  DELETE_RESOURCES_SUCCEEDED,
-  DELETE_RESOURCES_FAILED
+  GET_GROUPS_PENDING,
+  GET_GROUPS_SUCCEEDED,
+  GET_GROUPS_FAILED,
+  GET_GROUP_PENDING,
+  GET_GROUP_SUCCEEDED,
+  GET_GROUP_FAILED,
+  ADD_GROUP_PENDING,
+  ADD_GROUP_SUCCEEDED,
+  ADD_GROUP_FAILED,
+  UPDATE_GROUP_PENDING,
+  UPDATE_GROUP_SUCCEEDED,
+  UPDATE_GROUP_FAILED,
+  DELETE_GROUP_PENDING,
+  DELETE_GROUP_SUCCEEDED,
+  DELETE_GROUP_FAILED,
+  GET_GROUP_SMART_LOCKS_FAILED,
+  GET_GROUP_SMART_LOCKS_SUCCEEDED,
+  GET_GROUP_SMART_LOCKS_PENDING,
+  GET_GROUP_USERS_FAILED,
+  GET_GROUP_USERS_SUCCEEDED,
+  GET_GROUP_USERS_PENDING,
+  OPEN_ADD_GROUP_DIALOG,
+  CLOSE_ADD_GROUP_DIALOG,
+  OPEN_EDIT_GROUP_DIALOG,
+  CLOSE_EDIT_GROUP_DIALOG,
+  OPEN_DELETE_GROUP_DIALOG,
+  CLOSE_DELETE_GROUP_DIALOG,
+  SET_SELECTED_GROUP_ID
 } from "../actions/actionTypes";
 
-import {
-  GROUPS_RESOURCE_TYPE,
-  GROUP_RESOURCE_TYPE,
-  GROUP_USERS_RESOURCE_TYPE,
-  GROUP_SMART_LOCKS_RESOURCE_TYPE
-} from "../actions/actionResourceTypes";
-
 const groupReducer = (state, action) => {
-  // Read groups
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === GROUPS_RESOURCE_TYPE
-  ) {
+  console.log("Group action: ", action.type);
+  // Get groups
+  if (action.type === GET_GROUPS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -33,10 +40,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUPS_SUCCEEDED) {
     return {
       ...state,
       groups: action.payload.groups,
@@ -45,10 +49,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUPS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -56,11 +57,8 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // Create group
-  if (
-    action.type === CREATE_RESOURCES_PENDING &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  // Add group
+  if (action.type === ADD_GROUP_PENDING) {
     return {
       ...state,
       loading: true,
@@ -69,10 +67,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === CREATE_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === ADD_GROUP_SUCCEEDED) {
     return {
       ...state,
       newGroup: action.payload.newGroup,
@@ -82,10 +77,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === CREATE_RESOURCES_FAILED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === ADD_GROUP_FAILED) {
     return {
       ...state,
       loading: false,
@@ -94,22 +86,17 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // Read group
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  // Get group
+  if (action.type === GET_GROUP_PENDING) {
     return {
       ...state,
+      group: null,
       loading: true,
       error: null
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_SUCCEEDED) {
     return {
       ...state,
       group: action.payload.group,
@@ -118,10 +105,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_FAILED) {
     return {
       ...state,
       loading: false,
@@ -130,10 +114,7 @@ const groupReducer = (state, action) => {
   }
 
   // Update group
-  if (
-    action.type === UPDATE_RESOURCES_PENDING &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_GROUP_PENDING) {
     return {
       ...state,
       loading: true,
@@ -142,10 +123,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === UPDATE_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_GROUP_SUCCEEDED) {
     return {
       ...state,
       loading: false,
@@ -154,10 +132,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === UPDATE_RESOURCES_FAILED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === UPDATE_GROUP_FAILED) {
     return {
       ...state,
       loading: false,
@@ -168,10 +143,7 @@ const groupReducer = (state, action) => {
 
   // Delete group
 
-  if (
-    action.type === DELETE_RESOURCES_PENDING &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_GROUP_PENDING) {
     return {
       ...state,
       loading: true,
@@ -180,10 +152,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === DELETE_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_GROUP_SUCCEEDED) {
     return {
       ...state,
       loading: false,
@@ -192,10 +161,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === DELETE_RESOURCES_FAILED &&
-    action.resourceType === GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === DELETE_GROUP_FAILED) {
     return {
       ...state,
       loading: false,
@@ -204,11 +170,8 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // Read group users
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === GROUP_USERS_RESOURCE_TYPE
-  ) {
+  // Get group users
+  if (action.type === GET_GROUP_USERS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -216,10 +179,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_USERS_SUCCEEDED) {
     return {
       ...state,
       groupUsers: action.payload.groupUsers,
@@ -228,10 +188,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === GROUP_USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_USERS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -239,11 +196,8 @@ const groupReducer = (state, action) => {
     };
   }
 
-  // Read group smart locks
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === GROUP_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  // Get group smart locks
+  if (action.type === GET_GROUP_SMART_LOCKS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -251,10 +205,7 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === GROUP_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_SMART_LOCKS_SUCCEEDED) {
     return {
       ...state,
       groupSmartLocks: action.payload.groupSmartLocks,
@@ -263,14 +214,62 @@ const groupReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === GROUP_SMART_LOCKS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_GROUP_SMART_LOCKS_FAILED) {
     return {
       ...state,
       loading: false,
       error: action.payload.error
+    };
+  }
+
+  // Set selected group id
+  if (action.type === SET_SELECTED_GROUP_ID) {
+    return {
+      ...state,
+      selectedGroupId: action.payload.groupId
+    };
+  }
+
+  // Add group dialog
+  if (action.type === OPEN_ADD_GROUP_DIALOG) {
+    return {
+      ...state,
+      addDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_ADD_GROUP_DIALOG) {
+    return {
+      ...state,
+      addDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_EDIT_GROUP_DIALOG) {
+    return {
+      ...state,
+      editDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_EDIT_GROUP_DIALOG) {
+    return {
+      ...state,
+      editDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_DELETE_GROUP_DIALOG) {
+    return {
+      ...state,
+      deleteDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_DELETE_GROUP_DIALOG) {
+    return {
+      ...state,
+      deleteDialogOpen: false
     };
   }
 
