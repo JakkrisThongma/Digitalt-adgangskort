@@ -44,6 +44,7 @@ import {
   openAddGroupDialog,
   openDeleteGroupDialog,
   openEditGroupDialog,
+  openViewGroupDialog,
   setSelectedGroupId
 } from "../../actions/groupActions";
 import AddDialog from "../group/AddDialog";
@@ -51,6 +52,7 @@ import DeleteDialog from "../group/DeleteDialog";
 import { groupContext, smartLockContext } from "../../store/Store";
 import EditDialog from "../group/EditDialog";
 import { getSmartLocks } from "../../actions/smartLockActions";
+import ViewDialog from "../group/ViewDialog";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -147,6 +149,10 @@ const GroupList = () => {
     groupDispatch(openAddGroupDialog);
   };
 
+  const handleViewGroupClick = () => {
+    groupDispatch(openViewGroupDialog);
+  };
+
   const handleEditGroupClick = groupId => {
     groupDispatch(dispatch => setSelectedGroupId(dispatch, groupId));
     groupDispatch(dispatch => getGroup(dispatch, groupId));
@@ -193,8 +199,7 @@ const GroupList = () => {
               tooltip: "Edit",
               onClick: (event, rowData) => {
                 event.stopPropagation();
-                handleEditGroupClick(rowData.id)
-
+                handleEditGroupClick(rowData.id);
               }
             },
             {
@@ -202,12 +207,14 @@ const GroupList = () => {
               tooltip: "Delete",
               onClick: (event, rowData) => {
                 event.stopPropagation();
-                console.log(rowData)
+                console.log(rowData);
                 handleDeleteGroupClick(rowData.id);
               }
             }
           ]}
-           onRowClick={(event, rowData, togglePanel) => { console.log(rowData);}}
+          onRowClick={(event, rowData, togglePanel) => {
+            handleViewGroupClick(rowData.id);
+          }}
           options={{
             actionsColumnIndex: -1,
             draggable: false
@@ -216,6 +223,7 @@ const GroupList = () => {
         <AddDialog />
         <EditDialog />
         <DeleteDialog />
+        <ViewDialog />
       </Paper>
     </div>
   );
