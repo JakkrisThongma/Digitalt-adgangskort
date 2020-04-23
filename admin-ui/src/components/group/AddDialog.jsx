@@ -30,9 +30,9 @@ import smartLockReducer from "../../reducers/smartLockReducer";
 import { getSmartLocks } from "../../actions/smartLockActions";
 import groupReducer from "../../reducers/groupReducer";
 import {
-  AzureAdContext,
-  GroupContext,
-  SmartLockContext
+  azureAdContext,
+  groupContext,
+  smartLockContext
 } from "../../store/Store";
 
 const useStyles = makeStyles(theme => ({
@@ -83,17 +83,17 @@ const statusOptions = [
 const AddDialog = props => {
   const classes = useStyles();
   const { isAddDialogOpened, onAddDialogCancelClick } = props;
-  const [azureAdState, azureAdDispatch] = useContext(AzureAdContext);
+  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
 
   const { azureAdGroups, azureAdError } = azureAdState;
-  const [groupState, groupDispatch] = useContext(GroupContext);
+  const [groupState, groupDispatch] = useContext(groupContext);
   const { groupError, loading, addDialogOpen } = groupState;
 
   const [openGroup, setOpenGroup] = useState(false);
   const [groupOptions, setGroupOptions] = useState([]);
   const groupLoading = openGroup && groupOptions.length === 0;
 
-  const [smartLockState, smartLockDispatch] = useContext(SmartLockContext);
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
   const [openSmartLock, setOpenSmartLock] = useState(false);
   const [smartLockOptions, setSmartLockOptions] = useState([]);

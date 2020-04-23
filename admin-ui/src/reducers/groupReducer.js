@@ -26,7 +26,9 @@ import {
   CLOSE_EDIT_GROUP_DIALOG,
   OPEN_DELETE_GROUP_DIALOG,
   CLOSE_DELETE_GROUP_DIALOG,
-  SET_SELECTED_GROUP_ID
+  SET_SELECTED_GROUP_ID,
+  OPEN_VIEW_GROUP_DIALOG,
+  CLOSE_VIEW_GROUP_DIALOG
 } from "../actions/actionTypes";
 
 const groupReducer = (state, action) => {
@@ -270,6 +272,20 @@ const groupReducer = (state, action) => {
     return {
       ...state,
       deleteDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_VIEW_GROUP_DIALOG) {
+    return {
+      ...state,
+      viewDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_VIEW_GROUP_DIALOG) {
+    return {
+      ...state,
+      viewDialogOpen: false
     };
   }
 

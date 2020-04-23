@@ -5,10 +5,10 @@ import groupReducer from "../reducers/groupReducer";
 import smartLockReducer from "../reducers/smartLockReducer";
 import azureAdReducer from "../reducers/azureAdReducer";
 
-export const UserContext = React.createContext({});
-export const GroupContext = React.createContext({});
-export const SmartLockContext = React.createContext({});
-export const AzureAdContext = React.createContext({});
+export const userContext = React.createContext({});
+export const groupContext = React.createContext({});
+export const smartLockContext = React.createContext({});
+export const azureAdContext = React.createContext({});
 
 const userInitialState = {
   users: [],
@@ -34,7 +34,8 @@ const groupInitialState = {
   error: null,
   addDialogOpen: false,
   editDialogOpen: false,
-  deleteDialogOpen: false
+  deleteDialogOpen: false,
+  viewDialogOpen: false
 };
 
 const smartLockInitialState = {
@@ -81,15 +82,15 @@ const Store = ({ children }) => {
   );
 
   return (
-    <UserContext.Provider value={[userState, userDispatch]}>
-      <GroupContext.Provider value={[groupState, groupDispatch]}>
-        <SmartLockContext.Provider value={[smartLockState, smartLockDispatch]}>
-          <AzureAdContext.Provider value={[azureAdState, azureAdDispatch]}>
+    <userContext.Provider value={[userState, userDispatch]}>
+      <groupContext.Provider value={[groupState, groupDispatch]}>
+        <smartLockContext.Provider value={[smartLockState, smartLockDispatch]}>
+          <azureAdContext.Provider value={[azureAdState, azureAdDispatch]}>
             {children}
-          </AzureAdContext.Provider>
-        </SmartLockContext.Provider>
-      </GroupContext.Provider>
-    </UserContext.Provider>
+          </azureAdContext.Provider>
+        </smartLockContext.Provider>
+      </groupContext.Provider>
+    </userContext.Provider>
   );
 };
 

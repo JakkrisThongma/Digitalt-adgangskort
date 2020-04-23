@@ -37,19 +37,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   closeAddGroupDialog,
   closeDeleteGroupDialog,
-  deleteGroup, getGroup,
-  getGroups, getGroupSmartLocks, openAddGroupDialog,
-  openDeleteGroupDialog, openEditGroupDialog, setSelectedGroupId
+  deleteGroup,
+  getGroup,
+  getGroups,
+  getGroupSmartLocks,
+  openAddGroupDialog,
+  openDeleteGroupDialog,
+  openEditGroupDialog,
+  setSelectedGroupId
 } from "../../actions/groupActions";
-import groupReducer from "../../reducers/groupReducer";
-import initialState from "../../store/initialState";
-import useApiRequest from "../../reducers/useApiRequest";
 import AddDialog from "../group/AddDialog";
 import DeleteDialog from "../group/DeleteDialog";
-import Store from "../../store";
-import {GroupContext, SmartLockContext} from "../../store/Store";
+import { groupContext, smartLockContext } from "../../store/Store";
 import EditDialog from "../group/EditDialog";
-import {getSmartLocks} from "../../actions/smartLockActions";
+import { getSmartLocks } from "../../actions/smartLockActions";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -131,10 +132,16 @@ const columns = [
 
 const GroupList = () => {
   const classes = useStyles();
-  const [groupState, groupDispatch] = useContext(GroupContext);
-  const { groups, didInvalidate, loading, addDialogOpen, editDialogOpen ,deleteDialogOpen } = groupState;
-  const [smartLockState, smartLockDispatch] = useContext(SmartLockContext);
-
+  const [groupState, groupDispatch] = useContext(groupContext);
+  const {
+    groups,
+    didInvalidate,
+    loading,
+    addDialogOpen,
+    editDialogOpen,
+    deleteDialogOpen
+  } = groupState;
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
 
   const handleAddGroupClick = () => {
     groupDispatch(openAddGroupDialog);
@@ -152,9 +159,7 @@ const GroupList = () => {
   const handleDeleteGroupClick = groupId => {
     groupDispatch(dispatch => setSelectedGroupId(dispatch, groupId));
     groupDispatch(openDeleteGroupDialog);
-
   };
-
 
   useEffect(() => {
     groupDispatch(getGroups);
@@ -186,17 +191,23 @@ const GroupList = () => {
             {
               icon: Edit,
               tooltip: "Edit",
-              onClick: (event, rowData) => handleEditGroupClick(rowData.id)
+              onClick: (event, rowData) => {
+                event.stopPropagation();
+                handleEditGroupClick(rowData.id)
+
+              }
             },
             {
               icon: Delete,
               tooltip: "Delete",
               onClick: (event, rowData) => {
+                event.stopPropagation();
+                console.log(rowData)
                 handleDeleteGroupClick(rowData.id);
               }
             }
           ]}
-          // onRowClick={(event, rowData, togglePanel) => { console.log(rowData); handleAddDialogClick()}}
+           onRowClick={(event, rowData, togglePanel) => { console.log(rowData);}}
           options={{
             actionsColumnIndex: -1,
             draggable: false
@@ -205,7 +216,6 @@ const GroupList = () => {
         <AddDialog />
         <EditDialog />
         <DeleteDialog />
-
       </Paper>
     </div>
   );

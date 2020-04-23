@@ -1,6 +1,6 @@
 // https://material-ui.com/components/dialogs/#AlertDialogSlide.js
 
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -8,19 +8,29 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import {closeDeleteGroupDialog, deleteGroup} from "../../actions/groupActions";
-import {GroupContext} from "../../store/Store";
+import { useSnackbar } from 'notistack';
+
+
+import {
+  closeDeleteGroupDialog,
+  deleteGroup
+} from "../../actions/groupActions";
+import { groupContext } from "../../store/Store";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-
-
 const DeleteDialog = props => {
-
-  const [groupState, groupDispatch] = useContext(GroupContext);
-  const { didInvalidate, loading ,deleteDialogOpen, selectedGroupId } = groupState;
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [groupState, groupDispatch] = useContext(groupContext);
+  const {
+    didInvalidate,
+    loading,
+    deleteDialogOpen,
+    selectedGroupId,
+    error: groupError
+  } = groupState;
 
   const handleCancelClick = () => {
     groupDispatch(closeDeleteGroupDialog);
@@ -28,9 +38,13 @@ const DeleteDialog = props => {
 
   const handleDeleteClick = () => {
     groupDispatch(dispatch => deleteGroup(dispatch, selectedGroupId));
+    if (!groupError)
+      enqueueSnackbar("Group deleted", {
+        variant: "success"
+      });
+
     groupDispatch(closeDeleteGroupDialog);
   };
-
 
   return (
     <div>

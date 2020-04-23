@@ -4,6 +4,7 @@ import { runWithAdal } from "react-adal";
 import App from "./App";
 import "./web.config";
 import { authContext, getToken } from "./services/auth";
+import { SnackbarProvider } from "notistack";
 
 /*
 const headers = { Authorization: `Bearer ${getToken()}` };
@@ -18,4 +19,14 @@ runWithAdal(
 );
 */
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <SnackbarProvider
+    maxSnack={3}
+    anchorOrigin={{
+      vertical: "top",
+      horizontal: "right"
+    }}>
+    <App />
+  </SnackbarProvider>,
+  document.getElementById("root")
+);

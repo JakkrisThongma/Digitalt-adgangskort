@@ -17,24 +17,9 @@ import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
-import {
-  addGroup,
-  closeAddGroupDialog,
-  closeEditGroupDialog,
-  getGroup
-} from "../../actions/groupActions";
-import useApiRequest from "../../reducers/useApiRequest";
-import azureAdReducer from "../../reducers/azureAdReducer";
-import initialState from "../../store/initialState";
-import { getAzureAdGroups } from "../../actions/azureAdActions";
-import smartLockReducer from "../../reducers/smartLockReducer";
-import { getSmartLocks } from "../../actions/smartLockActions";
-import groupReducer from "../../reducers/groupReducer";
-import {
-  AzureAdContext,
-  GroupContext,
-  SmartLockContext
-} from "../../store/Store";
+import { closeEditGroupDialog, updateGroup } from "../../actions/groupActions";
+
+import { groupContext, smartLockContext } from "../../store/Store";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -63,13 +48,13 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   status: "inactive",
-  groupId: "",
+  group: {},
   smartLocks: []
 };
 
 const validationSchema = object().shape({
   status: string(),
-  groupId: string(),
+  group: object(),
   smartLocks: array()
 });
 
@@ -81,62 +66,64 @@ const statusOptions = [
 
 const EditDialog = props => {
   const classes = useStyles();
-
-  const [azureAdState, azureAdDispatch] = useContext(AzureAdContext);
-  const { azureAdGroups, azureAdError } = azureAdState;
-
-  const [groupState, groupDispatch] = useContext(GroupContext);
+  const [groupState, groupDispatch] = useContext(groupContext);
   const {
     group,
     groupError,
     groupSmartLocks,
     loading: groupLoading,
-    selectedGroupId,
     editDialogOpen
   } = groupState;
 
-  const [openGroup, setOpenGroup] = useState(false);
   const [formData, setFormData] = useState(initialValues);
   const [groupOptions, setGroupOptions] = useState([]);
-  // const groupLoading = openGroup && groupOptions.length === 0;
 
-  const [smartLockState, smartLockDispatch] = useContext(SmartLockContext);
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
   const [smartLockOptions, setSmartLockOptions] = useState([]);
-  const [smartLockValues, setSmartLockValues] = useState(groupSmartLocks);
-  const [statusValue, setStatusValue] = useState("inactive");
 
   useEffect(() => {
-/*    setFormData({
+    setFormData({
       ...formData,
-      groupId: group ? group.displayName : "",
+      group: group || {},
       status: group ? group.status.toLowerCase() : "inactive"
-    });*/
-    console.log(group)
+    });
     setGroupOptions([group]);
-    setStatusValue(group ? group.status.toLowerCase() : "inactive");
   }, [group]);
 
   useEffect(() => {
     setSmartLockOptions(smartLocks);
   }, [smartLocks]);
 
+  useEffect(() => {
+  }, [formData]);
 
   useEffect(() => {
-    setSmartLockValues(groupSmartLocks);
+    setFormData({
+      ...formData,
+      smartLocks: groupSmartLocks
+    });
   }, [groupSmartLocks]);
 
   const handleCancelClick = () => {
     groupDispatch(closeEditGroupDialog);
   };
 
-  const handleAddClick = values => {
-    const payload = {
-      id: values.groupId.value,
-      status: values.status,
-      smartLockGroups: values.smartLocks.map(v => ({ smartLockId: v.value }))
-    };
-    groupDispatch(dispatch => addGroup(dispatch, payload));
+  const handleEditClick = values => {
+    const payload = [
+      {
+        value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
+        path: "/SmartLockGroups",
+        op: "replace"
+      },
+      {
+        value: values.status,
+        path: "/status",
+        op: "replace"
+      }
+    ];
+
+    groupDispatch(dispatch => updateGroup(dispatch, values.group.id, payload));
     if (groupError) {
       console.log(groupError);
     }
@@ -144,17 +131,24 @@ const EditDialog = props => {
   };
 
   const onSmartLockListChange = val => {
-    setSmartLockValues(val);
+    setFormData({
+      ...formData,
+      smartLocks: val
+    });
+  };
 
-    console.log("val", val);
-    console.log("smartLockValues", smartLockValues);
+  const onGroupListChange = val => {
+    setFormData({
+      ...formData,
+      group: val
+    });
   };
 
   const onStatusListChange = event => {
-    setStatusValue(event.target.value);
-
-    console.log("setStatusValue", event.target.value);
-    console.log("StatusValue", statusValue);
+    setFormData({
+      ...formData,
+      status: event.target.value
+    });
   };
 
   return (
@@ -180,17 +174,25 @@ const EditDialog = props => {
             <Formik
               initialValues={formData}
               validationSchema={validationSchema}
+              enableReinitialize
               validateOnChange
-              onSubmit={values => handleAddClick(values)}>
+              onSubmit={values => handleEditClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
-                    name="groupId"
+                    name="group"
+                    getOptionLabel={option =>
+                      option.displayName ? option.displayName : ""
+                    }
                     component={Autocomplete}
-                    disabled
-                    getOptionLabel={option => option.displayName}
+                    value={formData.group}
                     options={groupOptions}
-                    value={group ? groupOptions[0] : null}
+                    disabled
+                    onChange={(e, v) => onGroupListChange(v)}
+                    getOptionSelected={(option, value) => {
+                      if (!option || !value) return {};
+                      return option.id === value.id;
+                    }}
                     size="small"
                     textFieldProps={{
                       label: "Azure AD group",
@@ -203,8 +205,8 @@ const EditDialog = props => {
                     label="Status"
                     component={Select}
                     options={statusOptions}
-                    value={statusValue}
-                    onChange={(e) => onStatusListChange(e)}
+                    value={formData.status}
+                    onChange={e => onStatusListChange(e)}
                     size="small"
                     variant="outlined"
                   />
@@ -213,7 +215,7 @@ const EditDialog = props => {
                     getOptionLabel={option => option.title}
                     options={smartLockOptions}
                     onChange={(e, v) => onSmartLockListChange(v)}
-                    value={smartLockValues}
+                    value={formData.smartLocks}
                     filterSelectedOptions
                     getOptionSelected={(option, value) =>
                       option.id === value.id
@@ -238,7 +240,6 @@ const EditDialog = props => {
                       className={classes.button}
                       variant="contained"
                       color="primary"
-                      disabled={!formik.dirty}
                       type="submit">
                       Edit
                     </Button>
