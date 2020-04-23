@@ -105,6 +105,11 @@ namespace api.Repositories
             return smartLocks.Any(s1 => s1.Id == smartLockId);
         }
 
+        public Task<SmartLock> GetSmartLockWithGroupsAndUsers(Guid smartLockId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<User>> GetSmartLockUsers(Guid smartLockId)
         {
             throw new NotImplementedException();

@@ -6,14 +6,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using api.Entities;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Moq;
-using Xunit;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-using Group = Microsoft.Graph.Group;
 using Status = api.Types.Status;
 
 namespace UnitTest
@@ -125,9 +120,9 @@ namespace UnitTest
 			{
 				Id = Guid.Parse("c374cb18-862e-4fef-871f-ae08337d1f76"),
 				Status = Status.Active,
-				SmartLockGroups = new List<SmartLockCollectionCreationDto>
+				SmartLockGroups = new List<SmartLockCollectionDto>
 				{
-					new SmartLockCollectionCreationDto
+					new SmartLockCollectionDto
 					{
 						SmartLockId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6")
 					}

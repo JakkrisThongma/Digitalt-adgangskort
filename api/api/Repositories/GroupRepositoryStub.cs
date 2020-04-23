@@ -28,6 +28,11 @@ namespace api.Repositories
 			
 		}
 
+		public Task<Group> GetGroupWithSmartLocks(Guid groupId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<Group> GetGroup(Guid groupId)
 		{
 			if (groupId == Guid.Empty)
