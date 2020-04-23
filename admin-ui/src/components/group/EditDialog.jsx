@@ -96,7 +96,7 @@ const EditDialog = props => {
   } = groupState;
 
   const [openGroup, setOpenGroup] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(initialValues);
   const [groupOptions, setGroupOptions] = useState([]);
   // const groupLoading = openGroup && groupOptions.length === 0;
 
@@ -104,14 +104,17 @@ const EditDialog = props => {
   const { smartLocks, smartLockError } = smartLockState;
   const [smartLockOptions, setSmartLockOptions] = useState([]);
   const [smartLockValues, setSmartLockValues] = useState(groupSmartLocks);
+  const [statusValue, setStatusValue] = useState("inactive");
 
   useEffect(() => {
-    setFormData({
+/*    setFormData({
       ...formData,
       groupId: group ? group.displayName : "",
       status: group ? group.status.toLowerCase() : "inactive"
-    });
+    });*/
+    console.log(group)
     setGroupOptions([group]);
+    setStatusValue(group ? group.status.toLowerCase() : "inactive");
   }, [group]);
 
   useEffect(() => {
@@ -140,11 +143,18 @@ const EditDialog = props => {
     groupDispatch(closeEditGroupDialog);
   };
 
-  const onListChange = val => {
+  const onSmartLockListChange = val => {
     setSmartLockValues(val);
 
     console.log("val", val);
     console.log("smartLockValues", smartLockValues);
+  };
+
+  const onStatusListChange = event => {
+    setStatusValue(event.target.value);
+
+    console.log("setStatusValue", event.target.value);
+    console.log("StatusValue", statusValue);
   };
 
   return (
@@ -193,6 +203,8 @@ const EditDialog = props => {
                     label="Status"
                     component={Select}
                     options={statusOptions}
+                    value={statusValue}
+                    onChange={(e) => onStatusListChange(e)}
                     size="small"
                     variant="outlined"
                   />
@@ -200,7 +212,7 @@ const EditDialog = props => {
                     name="smartLocks"
                     getOptionLabel={option => option.title}
                     options={smartLockOptions}
-                    onChange={(e, v) => onListChange(v)}
+                    onChange={(e, v) => onSmartLockListChange(v)}
                     value={smartLockValues}
                     filterSelectedOptions
                     getOptionSelected={(option, value) =>
