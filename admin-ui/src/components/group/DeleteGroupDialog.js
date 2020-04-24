@@ -21,7 +21,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const DeleteDialog = props => {
+const DeleteGroupDialog = props => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
@@ -74,4 +74,4 @@ const DeleteDialog = props => {
   );
 };
 
-export default DeleteDialog;
+export default DeleteGroupDialog;

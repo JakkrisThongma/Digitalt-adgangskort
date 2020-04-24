@@ -5,7 +5,6 @@ import React, {
   useCallback,
   useContext
 } from "react";
-import { Grid, Button, Tooltip, Toolbar } from "@material-ui/core";
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
@@ -14,7 +13,6 @@ import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import ChevronRight from "@material-ui/icons/ChevronRight";
 import Clear from "@material-ui/icons/Clear";
 import Delete from "@material-ui/icons/Delete";
-import GroupAdd from "@material-ui/icons/GroupAdd";
 import Edit from "@material-ui/icons/Edit";
 import FilterList from "@material-ui/icons/FilterList";
 import FirstPage from "@material-ui/icons/FirstPage";
@@ -23,21 +21,10 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import Typography from "@material-ui/core/Typography";
-import {
-  Add,
-  Group,
-  Lock,
-  PersonAdd,
-  PersonAdd as PersonAddIcon
-} from "@material-ui/icons";
+
 import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  closeAddGroupDialog,
-  closeDeleteGroupDialog,
-  deleteGroup,
   getGroup,
   getGroups,
   getGroupSmartLocks,
@@ -47,12 +34,14 @@ import {
   openViewGroupDialog,
   setSelectedGroupId
 } from "../../actions/groupActions";
-import AddDialog from "../group/AddDialog";
-import DeleteDialog from "../group/DeleteDialog";
+import {
+  AddGroupDialog,
+  EditGroupDialog,
+  ViewGroupDialog,
+  DeleteGroupDialog
+} from "../group";
 import { groupContext, smartLockContext } from "../../store/Store";
-import EditDialog from "../group/EditDialog";
 import { getSmartLocks } from "../../actions/smartLockActions";
-import ViewDialog from "../group/ViewDialog";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -139,14 +128,13 @@ const GroupList = () => {
     groups,
     didInvalidate,
     loading,
-    addDialogOpen,
-    editDialogOpen,
-    deleteDialogOpen
   } = groupState;
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
 
   const handleAddGroupClick = () => {
     groupDispatch(openAddGroupDialog);
+    smartLockDispatch(getSmartLocks);
+
   };
 
   const handleViewGroupClick = () => {
@@ -212,7 +200,7 @@ const GroupList = () => {
               }
             }
           ]}
-          onRowClick={(event, rowData, togglePanel) => {
+          onRowClick={(event, rowData) => {
             handleViewGroupClick(rowData.id);
           }}
           options={{
@@ -220,10 +208,10 @@ const GroupList = () => {
             draggable: false
           }}
         />
-        <AddDialog />
-        <EditDialog />
-        <DeleteDialog />
-        <ViewDialog />
+        <AddGroupDialog />
+        <EditGroupDialog />
+        <DeleteGroupDialog />
+        <ViewGroupDialog />
       </Paper>
     </div>
   );

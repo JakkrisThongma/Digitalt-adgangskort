@@ -63,7 +63,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "Digital tilgangskort",
       template: "public/index.html",
-      inject: true
+      inject: true,
+      favicon: "./public/IN-logo.svg"
     }),
     gitRevisionPlugin,
     new DefinePlugin({

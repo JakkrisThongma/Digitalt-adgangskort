@@ -31,6 +31,15 @@ import {
 import { groupContext, smartLockContext } from "../../store/Store";
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+    display: "flex",
+    height: 224
+  },
+  tabs: {
+    borderRight: `1px solid ${theme.palette.divider}`
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
@@ -63,15 +72,14 @@ function TabPanel(props) {
       component="div"
       role="tabpanel"
       hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
       {...other}>
       {value === index && <Box p={3}>{children}</Box>}
     </Typography>
   );
 }
-
-const ViewDialog = props => {
+const ViewGroupDialog = props => {
   const classes = useStyles();
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
@@ -85,28 +93,21 @@ const ViewDialog = props => {
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
 
+  const [value, setValue] = React.useState(0);
+
   const handleCloseClick = () => {
     groupDispatch(closeViewGroupDialog);
   };
-
-  function a11yProps(index) {
-    return {
-      id: `full-width-tab-${index}`,
-      "aria-controls": `full-width-tabpanel-${index}`
-    };
-  }
-
-  const theme = useTheme();
-  const [value, setValue] = React.useState(0);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleChangeIndex = index => {
-    setValue(index);
-  };
-
+  function a11yProps(index) {
+    return {
+      id: `vertical-tab-${index}`,
+      "aria-controls": `vertical-tabpanel-${index}`
+    };
+  }
   return (
     <div>
       <Dialog
@@ -126,39 +127,28 @@ const ViewDialog = props => {
           </Grid>
         </DialogTitle>
         <DialogContent>
-          <AppBar position="static" color="default">
+          <div className={classes.root}>
             <Tabs
+              orientation="vertical"
+              variant="scrollable"
               value={value}
               onChange={handleChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              aria-label="full width tabs example">
+              aria-label="Vertical tabs example"
+              className={classes.tabs}>
               <Tab label="Item One" {...a11yProps(0)} />
               <Tab label="Item Two" {...a11yProps(1)} />
               <Tab label="Item Three" {...a11yProps(2)} />
             </Tabs>
-          </AppBar>
-          <SwipeableViews
-            axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-            index={value}
-            onChangeIndex={handleChangeIndex}>
-            <TabPanel value={value} index={0} dir={theme.direction}>
-              <Typography>Item One </Typography>
-              <Typography>Item One </Typography>
-              <Typography>Item One </Typography>
-              <Typography>Item One </Typography>
-              <Typography>Item One </Typography>
-              <Typography>Item One </Typography>
-
+            <TabPanel value={value} index={0}>
+              Item One
             </TabPanel>
-            <TabPanel value={value} index={1} dir={theme.direction}>
+            <TabPanel value={value} index={1}>
               Item Two
             </TabPanel>
-            <TabPanel value={value} index={2} dir={theme.direction}>
+            <TabPanel value={value} index={2}>
               Item Three
             </TabPanel>
-          </SwipeableViews>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button
@@ -173,6 +163,6 @@ const ViewDialog = props => {
     </div>
   );
 };
-ViewDialog.propTypes = {};
+ViewGroupDialog.propTypes = {};
 
-export default ViewDialog;
+export default ViewGroupDialog;
