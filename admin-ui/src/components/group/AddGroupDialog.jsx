@@ -6,26 +6,23 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  Button,
-  fade
+  Button
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
-import {
-  addGroup,
-  closeAddGroupDialog
-} from "../../actions/groupActions";
+import { addGroup, closeAddGroupDialog } from "../../actions/groupActions";
 
 import { getAzureAdGroups } from "../../actions/azureAdActions";
 
 import {
   azureAdContext,
   groupContext,
-  smartLockContext
-} from "../../store/Store";
+  smartLockContext,
+  statusOptions
+} from "../../store";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -65,12 +62,6 @@ const validationSchema = object().shape({
     .nullable(),
   smartLocks: array()
 });
-
-const statusOptions = [
-  { value: "inactive", label: "Inactive" },
-  { value: "active", label: "Active" },
-  { value: "suspended", label: "Suspended" }
-];
 
 const AddGroupDialog = () => {
   const classes = useStyles();
@@ -114,7 +105,6 @@ const AddGroupDialog = () => {
     }
   }, [openGroup]);
 
-
   const handleCancelClick = () => {
     groupDispatch(closeAddGroupDialog);
   };
@@ -123,7 +113,7 @@ const AddGroupDialog = () => {
     const payload = {
       id: values.groupId.value,
       status: values.status,
-      smartLockGroups: values.smartLocks.map(v => ({ smartLockId: v.value }))
+      smartLockGroups: values.smartLocks.map(smartLock => ({ smartLockId: smartLock.id }))
     };
     groupDispatch(dispatch => addGroup(dispatch, payload));
     groupDispatch(closeAddGroupDialog);
@@ -143,7 +133,7 @@ const AddGroupDialog = () => {
               <GroupAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add New Group</Typography>
+              <Typography variant="h6">Add Azure Ad Group</Typography>
             </Grid>
           </Grid>
         </DialogTitle>

@@ -6,7 +6,7 @@ import { createBrowserHistory } from "history";
 import { theme } from "./styles";
 import Routes from "./Router";
 import "@/styles/App.css";
-import Store from "./store";
+import { Store } from "./store";
 
 const browserHistory = createBrowserHistory();
 
@@ -14,7 +14,6 @@ function App() {
   return (
     <>
       <CssBaseline />
-
       <ThemeProvider theme={theme}>
         <Store>
           <Router history={browserHistory}>

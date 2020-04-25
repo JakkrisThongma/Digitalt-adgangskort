@@ -26,15 +26,30 @@ module.exports = {
         loader: "babel-loader",
         options: {
           presets: [
-            [
-              "@babel/preset-env",
-              {
-                targets: {
-                  browsers: "> 1%, not ie 11, not op_mini all"
-                }
-              }
-            ],
+            ["@babel/preset-env", { modules: false }],
             "@babel/preset-react"
+          ],
+          plugins: [
+            [
+              "babel-plugin-import",
+              {
+                libraryName: "@material-ui/core",
+                // Use "'libraryDirectory': ''," if your bundler does not support ES modules
+                libraryDirectory: "",
+                camel2DashComponentName: false
+              },
+              "core"
+            ],
+            [
+              "babel-plugin-import",
+              {
+                libraryName: "@material-ui/icons",
+                // Use "'libraryDirectory': ''," if your bundler does not support ES modules
+                libraryDirectory: "",
+                camel2DashComponentName: false
+              },
+              "icons"
+            ]
           ]
         }
       },
@@ -79,7 +94,8 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      "@": path.resolve("src")
+      "@": path.resolve("src"),
+      "@material-ui/core": "@material-ui/core/es"
     }
   }
 };

@@ -8,17 +8,16 @@ import {
   Dialog,
   Button,
   Backdrop,
-  CircularProgress,
-  fade
+  CircularProgress
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
 import { closeEditGroupDialog, updateGroup } from "../../actions/groupActions";
 
-import { groupContext, smartLockContext } from "../../store/Store";
+import { groupContext, smartLockContext, statusOptions } from "../../store";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -57,11 +56,7 @@ const validationSchema = object().shape({
   smartLocks: array()
 });
 
-const statusOptions = [
-  { value: "inactive", label: "Inactive" },
-  { value: "active", label: "Active" },
-  { value: "suspended", label: "Suspended" }
-];
+
 
 const EditGroupDialog = () => {
   const classes = useStyles();

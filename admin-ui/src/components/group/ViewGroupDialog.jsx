@@ -1,56 +1,68 @@
-import React, { useContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
+import React, { useContext } from "react";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import {
   Grid,
+  Box,
+  Tab,
+  Tabs,
   Typography,
   DialogTitle,
   DialogContent,
   DialogActions,
   Dialog,
-  Button,
-  Backdrop,
-  CircularProgress,
-  fade
+  Button
 } from "@material-ui/core";
-import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
-import { Formik, Form, Field } from "formik";
-import { object, string, array } from "yup";
-import { Autocomplete, Select } from "material-ui-formik-components";
-import {
-  closeEditGroupDialog,
-  closeViewGroupDialog,
-  updateGroup
-} from "../../actions/groupActions";
+import { GroupAdd as GroupAddIcon, Delete, AddBox } from "@material-ui/icons";
+
 
 import { groupContext, smartLockContext } from "../../store/Store";
+import { closeViewGroupDialog } from "../../actions/groupActions";
+import ViewMaterialTable from "../common/ViewMaterialTable";
+import TabPanel from "../common/TabPanel";
 
+const usercolumns = [
+  { title: "User Id", field: "id", editable: "never", sorting: false },
+  {
+    title: "Name",
+    field: "displayName",
+    defaultSort: "asc"
+  },
+  {
+    title: "Creation Date",
+    field: "creationDate",
+    type: "datetime"
+  }
+];
+const smartLocksColumns = [
+  { title: "Smart Lock Id", field: "id", editable: "never", sorting: false },
+  {
+    title: "Title",
+    field: "title",
+    defaultSort: "asc"
+  },
+  {
+    title: "Creation Date",
+    field: "creationDate",
+    type: "datetime"
+  }
+];
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
+    width: "100%"
+  },
+  tabPanel: {
+    width: "100%",
     backgroundColor: theme.palette.background.paper,
-    display: "flex",
-    height: 224
+    display: "flex"
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto"
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -64,28 +76,14 @@ const useStyles = makeStyles(theme => ({
   option: { backgroundColor: "black" }
 }));
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}>
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
-}
-const ViewGroupDialog = props => {
+const ViewGroupDialog = () => {
   const classes = useStyles();
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
     group,
     groupError,
     groupSmartLocks,
+    groupUsers,
     loading: groupLoading,
     viewDialogOpen
   } = groupState;
@@ -109,12 +107,13 @@ const ViewGroupDialog = props => {
     };
   }
   return (
-    <div>
+    <div className={classes.root}>
       <Dialog
         open={viewDialogOpen}
         onClose={handleCloseClick}
+        scroll="paper"
         aria-labelledby="edit-dialog-title"
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth>
         <DialogTitle id="edit-dialog-title">
           <Grid container spacing={2}>
@@ -127,26 +126,124 @@ const ViewGroupDialog = props => {
           </Grid>
         </DialogTitle>
         <DialogContent>
-          <div className={classes.root}>
+          <div className={classes.tabPanel}>
             <Tabs
               orientation="vertical"
-              variant="scrollable"
               value={value}
               onChange={handleChange}
               aria-label="Vertical tabs example"
               className={classes.tabs}>
-              <Tab label="Item One" {...a11yProps(0)} />
-              <Tab label="Item Two" {...a11yProps(1)} />
-              <Tab label="Item Three" {...a11yProps(2)} />
+              <Tab label="Info" {...a11yProps(0)} />
+              <Tab label="Users" {...a11yProps(1)} />
+              <Tab label="Smart Locks" {...a11yProps(2)} />
             </Tabs>
             <TabPanel value={value} index={0}>
-              Item One
+              <Box mr={2} mb={2} display="inline-block">
+                <Typography display="inline" color="textSecondary">
+                  Id:
+                </Typography>
+              </Box>
+              <Box mb={2} display="inline-block">
+                <Typography display="inline">
+                  {group ? group.id : ""}
+                </Typography>
+              </Box>
+              <br />
+
+              <Box mr={2} mb={2} display="inline-block">
+                <Typography display="inline" color="textSecondary">
+                  Display name:
+                </Typography>
+              </Box>
+              <Box mb={2} display="inline-block">
+                <Typography display="inline">
+                  {group ? group.displayName : ""}
+                </Typography>
+              </Box>
+              <br />
+
+              <Box mr={2} mb={2} display="inline-block">
+                <Typography display="inline" color="textSecondary">
+                  status:
+                </Typography>
+              </Box>
+              <Box mb={2} display="inline-block">
+                <Typography display="inline">
+                  {group ? group.status : ""}
+                </Typography>
+              </Box>
+              <br />
+
+              <Box mr={2} mb={2} display="inline-block">
+                <Typography display="inline" color="textSecondary">
+                  Created:
+                </Typography>
+              </Box>
+              <Box mb={5} display="inline">
+                <Typography display="inline">
+                  {group ? new Date(group.creationDate).toUTCString() : ""}
+                </Typography>
+              </Box>
+              <br />
+              <Box mr={2} mb={5} display="inline">
+                <Typography display="inline" color="textSecondary">
+                  Last modified:
+                </Typography>
+              </Box>
+              <Box mb={5} display="inline">
+                <Typography display="inline">
+                  {group
+                    ? new Date(group.lastModificationDate).toUTCString()
+                    : ""}
+                </Typography>
+              </Box>
+              <br />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              Item Two
+              <ViewMaterialTable
+                isLoading={groupLoading}
+                columns={usercolumns}
+                data={groupUsers}
+                actions={[
+                  {
+                    icon: Delete,
+                    tooltip:
+                      "Delete user from a group should be done from Azure AD",
+                    disabled: true
+                  },
+                  {
+                    icon: () => <AddBox fontSize="large" />,
+                    tooltip: "Add user to group should be done from Azure AD",
+                    isFreeAction: true,
+                    disabled: true
+                  }
+                ]}
+                style={{ boxShadow: "0" }}
+              />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              Item Three
+              <ViewMaterialTable
+                isLoading={groupLoading}
+                columns={smartLocksColumns}
+                data={groupSmartLocks}
+                actions={[
+                  {
+                    icon: Delete,
+                    tooltip: "Delete",
+                    onClick: (event, rowData) => {
+                      event.stopPropagation();
+                      // handleDeleteSmartLockClick(rowData.id);
+                    }
+                  },
+                  {
+                    icon: () => <AddBox fontSize="large" />,
+                    tooltip: "Add",
+                    isFreeAction: true,
+                    onClick: event => event.stopPropagation()
+                  }
+                ]}
+                style={{ boxShadow: "0" }}
+              />
             </TabPanel>
           </div>
         </DialogContent>
@@ -163,6 +260,5 @@ const ViewGroupDialog = props => {
     </div>
   );
 };
-ViewGroupDialog.propTypes = {};
 
 export default ViewGroupDialog;
