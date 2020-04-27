@@ -23,6 +23,8 @@ import {
   smartLockContext,
   statusOptions
 } from "../../store";
+import useDidMountEffect from "../../helpers/useDidMountEffect";
+import {useSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -69,7 +71,7 @@ const AddGroupDialog = () => {
 
   const { azureAdGroups, azureAdError } = azureAdState;
   const [groupState, groupDispatch] = useContext(groupContext);
-  const { groupError, loading, addDialogOpen } = groupState;
+  const { groupError, loading, addDialogOpen, addFailed, addSucceed } = groupState;
 
   const [openGroup, setOpenGroup] = useState(false);
   const [groupOptions, setGroupOptions] = useState([]);
@@ -77,6 +79,8 @@ const AddGroupDialog = () => {
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
 
   useEffect(() => {
     const optionList = azureAdGroups.map(u => {
@@ -104,6 +108,22 @@ const AddGroupDialog = () => {
       setGroupOptions([]);
     }
   }, [openGroup]);
+
+  useDidMountEffect(() => {
+    if (addFailed) {
+      enqueueSnackbar("Add group failed", {
+        variant: "error"
+      });
+    }
+  }, [addFailed]);
+
+  useDidMountEffect(() => {
+    if (addSucceed) {
+      enqueueSnackbar("Group added successfully", {
+        variant: "success"
+      });
+    }
+  }, [addSucceed]);
 
   const handleCancelClick = () => {
     groupDispatch(closeAddGroupDialog);

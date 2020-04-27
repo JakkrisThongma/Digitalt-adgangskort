@@ -57,13 +57,15 @@ const userReducer = (state, action) => {
     };
   }
 
-  // Add users
+  // Add user
   if (action.type === ADD_USER_PENDING) {
     return {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      addFailed: false,
+      addSucceed: false
     };
   }
 
@@ -73,7 +75,8 @@ const userReducer = (state, action) => {
       newUser: action.payload.newUser,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      addSucceed: true
     };
   }
 
@@ -82,7 +85,8 @@ const userReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      addFailed: true
     };
   }
 
@@ -121,7 +125,9 @@ const userReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: false,
+      updateSucceed: false
     };
   }
 
@@ -130,7 +136,8 @@ const userReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      updateSucceed: true
     };
   }
 
@@ -139,7 +146,8 @@ const userReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: false
     };
   }
 
@@ -149,7 +157,9 @@ const userReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: false,
+      deleteSucceed: false
     };
   }
 
@@ -158,7 +168,8 @@ const userReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      deleteSucceed: true
     };
   }
 
@@ -167,7 +178,8 @@ const userReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: true
     };
   }
 

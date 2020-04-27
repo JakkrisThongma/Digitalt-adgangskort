@@ -48,20 +48,18 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const initialValues = {
-  status: "inactive",
   group: {},
   smartLocks: []
 };
 
 const validationSchema = object().shape({
-  status: string(),
   group: object(),
   smartLocks: array()
 });
 
 
 
-const EditGroupDialog = () => {
+const AddGroupSmartLockDialog = () => {
   const classes = useStyles();
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
@@ -209,16 +207,6 @@ const EditGroupDialog = () => {
                     }}
                   />
                   <Field
-                    name="status"
-                    label="Status"
-                    component={Select}
-                    options={statusOptions}
-                    value={formData.status}
-                    onChange={e => onStatusListChange(e)}
-                    size="small"
-                    variant="outlined"
-                  />
-                  <Field
                     name="smartLocks"
                     getOptionLabel={option => option.title}
                     options={smartLocks}
@@ -265,4 +253,4 @@ const EditGroupDialog = () => {
   );
 };
 
-export default EditGroupDialog;
+export default AddGroupSmartLockDialog;

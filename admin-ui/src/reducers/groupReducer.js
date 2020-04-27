@@ -65,7 +65,9 @@ const groupReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      addFailed: false,
+      addSucceed: false
     };
   }
 
@@ -75,7 +77,8 @@ const groupReducer = (state, action) => {
       newGroup: action.payload.newGroup,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      addSucceed: true
     };
   }
 
@@ -84,7 +87,8 @@ const groupReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      addSucceed: false
     };
   }
 
@@ -121,7 +125,9 @@ const groupReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: false,
+      updateSucceed: false
     };
   }
 
@@ -130,7 +136,8 @@ const groupReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      updateSucceed: true
     };
   }
 
@@ -139,7 +146,8 @@ const groupReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: true
     };
   }
 
@@ -150,7 +158,9 @@ const groupReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: false,
+      deleteSucceed: false
     };
   }
 
@@ -159,7 +169,8 @@ const groupReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      deleteSucceed: true
     };
   }
 
@@ -168,7 +179,8 @@ const groupReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: true
     };
   }
 

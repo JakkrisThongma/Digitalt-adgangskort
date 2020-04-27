@@ -8,14 +8,14 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import { useSnackbar } from 'notistack';
-
+import { useSnackbar } from "notistack";
 
 import {
   closeDeleteGroupDialog,
   deleteGroup
 } from "../../actions/groupActions";
 import { groupContext } from "../../store/Store";
+import useDidMountEffect from "../../helpers/useDidMountEffect";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,8 +29,26 @@ const DeleteGroupDialog = props => {
     loading,
     deleteDialogOpen,
     selectedGroupId,
-    error: groupError
+    error: groupError,
+    deleteFailed,
+    deleteSucceed
   } = groupState;
+
+  useDidMountEffect(() => {
+    if (deleteFailed) {
+      enqueueSnackbar("Delete group failed", {
+        variant: "error"
+      });
+    }
+  }, [deleteFailed]);
+
+  useDidMountEffect(() => {
+    if (deleteSucceed) {
+      enqueueSnackbar("Group deleted successfully", {
+        variant: "success"
+      });
+    }
+  }, [deleteSucceed]);
 
   const handleCancelClick = () => {
     groupDispatch(closeDeleteGroupDialog);
@@ -38,10 +56,6 @@ const DeleteGroupDialog = props => {
 
   const handleDeleteClick = () => {
     groupDispatch(dispatch => deleteGroup(dispatch, selectedGroupId));
-    if (!groupError)
-      enqueueSnackbar("Group deleted", {
-        variant: "success"
-      });
 
     groupDispatch(closeDeleteGroupDialog);
   };

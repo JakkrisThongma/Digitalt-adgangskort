@@ -49,6 +49,12 @@ module.exports = {
                 camel2DashComponentName: false
               },
               "icons"
+            ],
+            [
+              "@babel/transform-runtime",
+              {
+                regenerator: true
+              }
             ]
           ]
         }

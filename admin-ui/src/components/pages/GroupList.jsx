@@ -34,12 +34,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const columns = [
-  { title: "Group Id", field: "id", editable: "never", sorting: false },
+const groupColumns = [
+  { title: "Group Id", field: "id", sorting: false },
   {
     title: "Display Name",
     field: "displayName",
-    editable: "never",
     defaultSort: "asc"
   },
   {
@@ -49,7 +48,6 @@ const columns = [
   {
     title: "Creation Date",
     field: "creationDate",
-    editable: "never",
     type: "datetime"
   }
 ];
@@ -103,7 +101,7 @@ const GroupList = () => {
       <Paper className={classes.paper}>
         <EnhancedMaterialTable
           isLoading={loading}
-          columns={columns}
+          columns={groupColumns}
           data={groups}
           actions={[
             {

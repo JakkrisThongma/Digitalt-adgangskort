@@ -31,7 +31,9 @@ import {
   DELETE_SMART_LOCK_GROUP_SUCCEEDED,
   DELETE_SMART_LOCK_USER_FAILED,
   DELETE_SMART_LOCK_USER_PENDING,
-  DELETE_SMART_LOCK_USER_SUCCEEDED
+  DELETE_SMART_LOCK_USER_SUCCEEDED,
+  SET_SELECTED_GROUP_ID,
+  SET_SELECTED_SMART_LOCK_ID
 } from "../actions/actionTypes";
 
 const smartLockReducer = (state, action) => {
@@ -63,13 +65,15 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // Add smart locks
+  // Add smart lock
   if (action.type === ADD_SMART_LOCK_PENDING) {
     return {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      addFailed: false,
+      addSucceed: false
     };
   }
 
@@ -79,7 +83,8 @@ const smartLockReducer = (state, action) => {
       newSmartLock: action.payload.newSmartLock,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      addSucceed: true
     };
   }
 
@@ -88,7 +93,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      addFailed: true
     };
   }
 
@@ -118,13 +124,15 @@ const smartLockReducer = (state, action) => {
     };
   }
 
-  // Update smart locks
+  // Update smart lock
   if (action.type === UPDATE_SMART_LOCK_PENDING) {
     return {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: false,
+      updateSucceed: false
     };
   }
 
@@ -133,7 +141,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      updateSucceed: true
     };
   }
 
@@ -142,17 +151,20 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      updateFailed: true
     };
   }
 
-  // Delete smart locks
+  // Delete smart lock
   if (action.type === DELETE_SMART_LOCK_PENDING) {
     return {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: false,
+      deleteSucceed: false
     };
   }
 
@@ -161,7 +173,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      deleteSucceed: true
     };
   }
 
@@ -170,7 +183,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteFailed: true
     };
   }
 
@@ -206,7 +220,9 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      addUserFailed: false,
+      addUserSucceed: false
     };
   }
 
@@ -216,7 +232,8 @@ const smartLockReducer = (state, action) => {
       newSmartLockUser: action.payload.newSmartLockUser,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      addUserSucceed: true
     };
   }
 
@@ -225,7 +242,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      addUserFailed: true
     };
   }
 
@@ -235,7 +253,9 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteUserFailed: false,
+      deleteUserSucceed: false
     };
   }
 
@@ -244,7 +264,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      deleteUserSucceed: true
     };
   }
 
@@ -253,7 +274,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteUserFailed: true
     };
   }
 
@@ -289,7 +311,9 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      addGroupFailed: false,
+      addGroupSucceed: false
     };
   }
 
@@ -299,7 +323,8 @@ const smartLockReducer = (state, action) => {
       newSmartLockGroup: action.payload.newSmartLockGroup,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      addGroupSucceed: true
     };
   }
 
@@ -308,7 +333,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      addGroupFailed: true
     };
   }
 
@@ -318,7 +344,9 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: true,
       error: null,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteGroupFailed: false,
+      deleteGroupSucceed: false
     };
   }
 
@@ -327,7 +355,8 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: null,
-      didInvalidate: true
+      didInvalidate: true,
+      deleteGroupSucceed: true
     };
   }
 
@@ -336,7 +365,16 @@ const smartLockReducer = (state, action) => {
       ...state,
       loading: false,
       error: action.payload.error,
-      didInvalidate: false
+      didInvalidate: false,
+      deleteGroupFailed: true
+    };
+  }
+
+  // Set selected group id
+  if (action.type === SET_SELECTED_SMART_LOCK_ID) {
+    return {
+      ...state,
+      smartLockId: action.payload.smartLockId
     };
   }
 

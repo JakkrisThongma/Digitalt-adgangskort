@@ -7,7 +7,12 @@ const userInitialState = {
   currentAuthenticatedUser: null,
   loading: false,
   didInvalidate: false,
-  error: null
+  error: null,
+  addFailed: false,
+  addSucceed: false,
+  updateFailed: false,
+  updateSucceed: false,
+  deleteFailed: false
 };
 
 export default userInitialState;

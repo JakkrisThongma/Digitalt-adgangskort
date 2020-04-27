@@ -44,7 +44,8 @@ import {
   DELETE_SMART_LOCK_GROUP_SUCCEEDED,
   DELETE_SMART_LOCK_USER_FAILED,
   DELETE_SMART_LOCK_USER_PENDING,
-  DELETE_SMART_LOCK_USER_SUCCEEDED
+  DELETE_SMART_LOCK_USER_SUCCEEDED,
+  SET_SELECTED_GROUP_ID
 } from "./actionTypes";
 
 const getSmartLocks = dispatch => {
@@ -178,11 +179,11 @@ const addSmartLockUser = (dispatch, smartLockId, data) => {
     );
 };
 
-const deleteSmartLockUser = (dispatch, smartLockId) => {
+const deleteSmartLockUser = (dispatch, smartLockId, userId) => {
   dispatch({
     type: DELETE_SMART_LOCK_USER_PENDING
   });
-  deleteSmartLockUserFromAPI(smartLockId)
+  deleteSmartLockUserFromAPI(smartLockId, userId)
     .then(() =>
       dispatch({
         type: DELETE_SMART_LOCK_USER_SUCCEEDED
@@ -234,25 +235,29 @@ const addSmartLockGroup = (dispatch, smartLockId, data) => {
     );
 };
 
-const deleteSmartLockGroup = (dispatch, smartLockId) => {
+const deleteSmartLockGroup = (dispatch, smartLockId, groupId) => {
   dispatch({
-    type: DELETE_SMART_LOCK_GROUP_PENDING,
-    resourceType: SMART_LOCK_GROUP_RESOURCE_TYPE
+    type: DELETE_SMART_LOCK_GROUP_PENDING
   });
-  deleteSmartLockGroupFromAPI(smartLockId)
+  deleteSmartLockGroupFromAPI(smartLockId, groupId)
     .then(() =>
       dispatch({
-        type: DELETE_SMART_LOCK_GROUP_SUCCEEDED,
-        resourceType: SMART_LOCK_GROUP_RESOURCE_TYPE
+        type: DELETE_SMART_LOCK_GROUP_SUCCEEDED
       })
     )
     .catch(error =>
       dispatch({
         type: DELETE_SMART_LOCK_GROUP_FAILED,
-        resourceType: SMART_LOCK_GROUP_RESOURCE_TYPE,
         payload: { error }
       })
     );
+};
+
+const setSelectedSmartLockId = (dispatch, smartLockId) => {
+  dispatch({
+    type: SET_SELECTED_GROUP_ID,
+    payload: { smartLockId }
+  });
 };
 
 export {
@@ -266,5 +271,6 @@ export {
   deleteSmartLockUser,
   getSmartLockGroups,
   addSmartLockGroup,
-  deleteSmartLockGroup
+  deleteSmartLockGroup,
+  setSelectedSmartLockId
 };

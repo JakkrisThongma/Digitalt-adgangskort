@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import {
   Grid,
@@ -14,11 +14,20 @@ import {
 } from "@material-ui/core";
 import { GroupAdd as GroupAddIcon, Delete, AddBox } from "@material-ui/icons";
 
-
 import { groupContext, smartLockContext } from "../../store/Store";
-import { closeViewGroupDialog } from "../../actions/groupActions";
+import {
+  closeViewGroupDialog,
+  getGroups,
+  getGroupSmartLocks,
+  setSelectedGroupId
+} from "../../actions/groupActions";
 import ViewMaterialTable from "../common/ViewMaterialTable";
 import TabPanel from "../common/TabPanel";
+import {
+  deleteSmartLockGroup,
+  setSelectedSmartLockId
+} from "../../actions/smartLockActions";
+import useDidMountEffect from "../../helpers/useDidMountEffect";
 
 const usercolumns = [
   { title: "User Id", field: "id", editable: "never", sorting: false },
@@ -76,12 +85,24 @@ const useStyles = makeStyles(theme => ({
   option: { backgroundColor: "black" }
 }));
 
+const dateFormater = date => {
+  if (Date.parse(date))
+    return new Date(date).toLocaleString("no-NO", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  return "";
+};
 const ViewGroupDialog = () => {
   const classes = useStyles();
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
     group,
     groupError,
+    selectedGroupId,
     groupSmartLocks,
     groupUsers,
     loading: groupLoading,
@@ -89,16 +110,28 @@ const ViewGroupDialog = () => {
   } = groupState;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError } = smartLockState;
+  const { smartLocks, smartLockError, didInvalidate } = smartLockState;
 
-  const [value, setValue] = React.useState(0);
+  const [tabIndex, setTabIndex] = React.useState(0);
 
   const handleCloseClick = () => {
     groupDispatch(closeViewGroupDialog);
   };
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
   };
+
+  const handleDeleteSmartLockClick = smartLockId => {
+    smartLockDispatch(dispatch =>
+      deleteSmartLockGroup(dispatch, smartLockId, selectedGroupId)
+    );
+  };
+
+  useDidMountEffect(() => {
+    if (didInvalidate) {
+      groupDispatch(dispatch => getGroupSmartLocks(dispatch, selectedGroupId));
+    }
+  }, [didInvalidate]);
 
   function a11yProps(index) {
     return {
@@ -129,18 +162,18 @@ const ViewGroupDialog = () => {
           <div className={classes.tabPanel}>
             <Tabs
               orientation="vertical"
-              value={value}
-              onChange={handleChange}
+              value={tabIndex}
+              onChange={handleTabChange}
               aria-label="Vertical tabs example"
               className={classes.tabs}>
               <Tab label="Info" {...a11yProps(0)} />
               <Tab label="Users" {...a11yProps(1)} />
               <Tab label="Smart Locks" {...a11yProps(2)} />
             </Tabs>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={tabIndex} index={0}>
               <Box mr={2} mb={2} display="inline-block">
                 <Typography display="inline" color="textSecondary">
-                  Id:
+                  ID:
                 </Typography>
               </Box>
               <Box mb={2} display="inline-block">
@@ -164,7 +197,7 @@ const ViewGroupDialog = () => {
 
               <Box mr={2} mb={2} display="inline-block">
                 <Typography display="inline" color="textSecondary">
-                  status:
+                  Status:
                 </Typography>
               </Box>
               <Box mb={2} display="inline-block">
@@ -181,7 +214,7 @@ const ViewGroupDialog = () => {
               </Box>
               <Box mb={5} display="inline">
                 <Typography display="inline">
-                  {group ? new Date(group.creationDate).toUTCString() : ""}
+                  {group ? dateFormater(group.creationDate) : ""}
                 </Typography>
               </Box>
               <br />
@@ -192,14 +225,12 @@ const ViewGroupDialog = () => {
               </Box>
               <Box mb={5} display="inline">
                 <Typography display="inline">
-                  {group
-                    ? new Date(group.lastModificationDate).toUTCString()
-                    : ""}
+                  {group ? dateFormater(group.lastModificationDate) : ""}
                 </Typography>
               </Box>
               <br />
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={tabIndex} index={1}>
               <ViewMaterialTable
                 isLoading={groupLoading}
                 columns={usercolumns}
@@ -209,19 +240,21 @@ const ViewGroupDialog = () => {
                     icon: Delete,
                     tooltip:
                       "Delete user from a group should be done from Azure AD",
-                    disabled: true
+                    disabled: true,
+                    onClick: () => null
                   },
                   {
                     icon: () => <AddBox fontSize="large" />,
                     tooltip: "Add user to group should be done from Azure AD",
                     isFreeAction: true,
-                    disabled: true
+                    disabled: true,
+                    onClick: () => null
                   }
                 ]}
                 style={{ boxShadow: "0" }}
               />
             </TabPanel>
-            <TabPanel value={value} index={2}>
+            <TabPanel value={tabIndex} index={2}>
               <ViewMaterialTable
                 isLoading={groupLoading}
                 columns={smartLocksColumns}
@@ -232,7 +265,8 @@ const ViewGroupDialog = () => {
                     tooltip: "Delete",
                     onClick: (event, rowData) => {
                       event.stopPropagation();
-                      // handleDeleteSmartLockClick(rowData.id);
+                      console.log(rowData.id);
+                      handleDeleteSmartLockClick(rowData.id);
                     }
                   },
                   {
