@@ -126,27 +126,7 @@ namespace api.Controllers
 
             return mergedGroup;
         }
-
-        // PUT: api/groups/5
-        [HttpPut("{groupId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
-        {
-            var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return NotFound();
-
-            var groupEntity = _mapper.Map<Group>(group);
-            groupEntity.Id = groupId;
-            groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _groupRepository.UpdateGroup(groupEntity);
-            await _groupRepository.Save();
-
-            return NoContent();
-        }
-
+        
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
