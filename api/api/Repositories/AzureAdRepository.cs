@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Services;
 using Microsoft.Graph;
 
 namespace api.Repositories
@@ -66,16 +67,16 @@ namespace api.Repositories
             return userList;
         }
         
-        public async Task<Group> GetGroup(GraphServiceClient client, string groupId)
+        public async Task<Group> GetGroup(string groupId)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
             if (groupId == null)
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
+            
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+
+            
             var group = await client.Groups[groupId].Request().GetAsync();
 
             return group;
@@ -100,12 +101,10 @@ namespace api.Repositories
             return members;
         }
         
-        public async Task<IGraphServiceGroupsCollectionPage> GetGroups(GraphServiceClient client)
+        public async Task<IGraphServiceGroupsCollectionPage> GetGroups()
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            
             var groupList = await client.Groups.Request()
                 .Filter("securityEnabled eq true")
                 .GetAsync();

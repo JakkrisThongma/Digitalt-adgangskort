@@ -162,7 +162,7 @@ namespace api.Repositories
 
         public void DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
-            if (smartLockId == null)
+            if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }
@@ -231,7 +231,7 @@ namespace api.Repositories
 
         public void DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
-            if (smartLockId == null)
+            if (smartLockId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(smartLockId));
             }

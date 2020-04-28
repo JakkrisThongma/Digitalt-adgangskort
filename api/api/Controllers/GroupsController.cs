@@ -49,8 +49,7 @@ namespace api.Controllers
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
 
             var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
                 allGroupsFromAzureAd, _mapper);
@@ -67,10 +66,9 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
-                await _azureAdRepository.GetGroup(client, group.Id.ToString());
+                await _azureAdRepository.GetGroup(group.Id.ToString());
             }
             catch (ServiceException e)
             {
@@ -121,8 +119,7 @@ namespace api.Controllers
 
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
+            var groupFromAzureAd = await _azureAdRepository.GetGroup(groupId.ToString());
 
             var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo,
                 groupFromAzureAd, _mapper);
@@ -130,7 +127,6 @@ namespace api.Controllers
             return mergedGroup;
         }
         
-
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -200,10 +200,8 @@ namespace api.Controllers
         {
             try
             {
-                // Initialize the GraphServiceClient.
-                var client = await MicrosoftGraphClient.GetGraphServiceClient();
-
-                var groupList = await _azureAdRepository.GetGroups(client);
+                // Load groups profiles.
+                var groupList = await _azureAdRepository.GetGroups();
 
                 var groupListDto = _mapper.Map<IEnumerable<AzureAdGroupDto>>(groupList);
                 foreach (var azureAdGroupDto in groupListDto)
@@ -240,11 +238,8 @@ namespace api.Controllers
         {
             try
             {
-                // Initialize the GraphServiceClient.
-                var client = await MicrosoftGraphClient.GetGraphServiceClient();
-
                 // Load group profile.
-                var group = await _azureAdRepository.GetGroup(client, groupId);
+                var group = await _azureAdRepository.GetGroup(groupId);
                 var groupDto = _mapper.Map<AzureAdGroupDto>(group);
 
                 var groupExist = await _groupRepository.GroupExists(groupDto.Id);
