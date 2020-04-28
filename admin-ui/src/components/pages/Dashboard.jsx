@@ -5,7 +5,7 @@ import {
   TotalCount,
   StatisticTable,
   LastActivity
-} from "@/components/dashboard";
+} from "src/components/dashboard";
 
 const useStyles = makeStyles(theme => ({
   root: {

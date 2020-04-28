@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import SmartLock from "@/components/smartLock";
+import SmartLock from "src/components/smartLock";
 import { Grid } from "@material-ui/core";
 import { MemoryRouter, Route } from "react-router";
 import { Link } from "react-router-dom";

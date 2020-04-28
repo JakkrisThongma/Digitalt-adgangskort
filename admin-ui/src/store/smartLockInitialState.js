@@ -2,7 +2,7 @@ const smartLockInitialState = {
   smartLocks: [],
   smartLock: null,
   newSmartLock: null,
-  smartLockId: null,
+  selectedSmartLockId: null,
   newSmartLockUser: null,
   newSmartLockGroup: null,
   smartLockUsers: [],
@@ -15,11 +15,7 @@ const smartLockInitialState = {
   updateFailed: false,
   updateSucceed: false,
   deleteFailed: false,
-  deleteSucceed: false,
-  addUserFailed: false,
-  addUserSucceed: false,
-  addGroupFailed: false,
-  deleteGroupSucceed: false
+  deleteSucceed: false
 };
 
 export default smartLockInitialState;

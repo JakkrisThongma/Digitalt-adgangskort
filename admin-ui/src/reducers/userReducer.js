@@ -22,7 +22,16 @@ import {
   GET_USER_SMART_LOCKS_PENDING,
   GET_USER_GROUPS_FAILED,
   GET_USER_GROUPS_SUCCEEDED,
-  GET_USER_GROUPS_PENDING
+  GET_USER_GROUPS_PENDING,
+  CLOSE_VIEW_USER_DIALOG,
+  OPEN_VIEW_USER_DIALOG,
+  CLOSE_DELETE_USER_DIALOG,
+  OPEN_DELETE_USER_DIALOG,
+  CLOSE_EDIT_USER_DIALOG,
+  OPEN_EDIT_USER_DIALOG,
+  CLOSE_ADD_USER_DIALOG,
+  OPEN_ADD_USER_DIALOG,
+  SET_SELECTED_USER_ID
 } from "../actions/actionTypes";
 
 const userReducer = (state, action) => {
@@ -269,6 +278,72 @@ const userReducer = (state, action) => {
       didInvalidate: false
     };
   }
+
+  // Set selected user id
+  if (action.type === SET_SELECTED_USER_ID) {
+    return {
+      ...state,
+      selectedUserId: action.payload.userId
+    };
+  }
+
+  // Add group dialog
+  if (action.type === OPEN_ADD_USER_DIALOG) {
+    return {
+      ...state,
+      addDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_ADD_USER_DIALOG) {
+    return {
+      ...state,
+      addDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_EDIT_USER_DIALOG) {
+    return {
+      ...state,
+      editDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_EDIT_USER_DIALOG) {
+    return {
+      ...state,
+      editDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_DELETE_USER_DIALOG) {
+    return {
+      ...state,
+      deleteDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_DELETE_USER_DIALOG) {
+    return {
+      ...state,
+      deleteDialogOpen: false
+    };
+  }
+
+  if (action.type === OPEN_VIEW_USER_DIALOG) {
+    return {
+      ...state,
+      viewDialogOpen: true
+    };
+  }
+
+  if (action.type === CLOSE_VIEW_USER_DIALOG) {
+    return {
+      ...state,
+      viewDialogOpen: false
+    };
+  }
+
 
   return state;
 };

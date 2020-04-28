@@ -13,36 +13,25 @@ import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
+import { useSnackbar } from "notistack";
 import { addGroup, closeAddGroupDialog } from "../../actions/groupActions";
 
 import { getAzureAdGroups } from "../../actions/azureAdActions";
-
+import { closeAddDialog } from "../../actions/uiActions";
 import {
   azureAdContext,
   groupContext,
   smartLockContext,
-  statusOptions
+  statusOptions,
+  uiContext
 } from "../../store";
 import useDidMountEffect from "../../helpers/useDidMountEffect";
-import {useSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-
   form: {
     display: "flex",
     flexDirection: "column",
     margin: "auto"
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: "black",
-    backgroundColor: fade("#ffffff", 0.4)
   },
   chip: {
     margin: theme.spacing(0.5)
@@ -53,13 +42,13 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   status: "inactive",
-  groupId: "",
+  group: {},
   smartLocks: []
 };
 
 const validationSchema = object().shape({
   status: string(),
-  groupId: string()
+  group: object()
     .required("Group is required")
     .nullable(),
   smartLocks: array()
@@ -71,7 +60,7 @@ const AddGroupDialog = () => {
 
   const { azureAdGroups, azureAdError } = azureAdState;
   const [groupState, groupDispatch] = useContext(groupContext);
-  const { groupError, loading, addDialogOpen, addFailed, addSucceed } = groupState;
+  const { groupError, loading, addFailed, addSucceed } = groupState;
 
   const [openGroup, setOpenGroup] = useState(false);
   const [groupOptions, setGroupOptions] = useState([]);
@@ -81,19 +70,11 @@ const AddGroupDialog = () => {
   const { smartLocks, smartLockError } = smartLockState;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const [uiState, uiDispatch] = useContext(uiContext);
+  const { addDialogOpen } = uiState;
 
   useEffect(() => {
-    const optionList = azureAdGroups.map(u => {
-      let label = "";
-
-      if (u.displayName) label = `${u.displayName}`;
-      return {
-        label,
-        value: u.id,
-        addedToDb: u.addedToDb
-      };
-    });
-    setGroupOptions(optionList);
+    setGroupOptions(azureAdGroups);
   }, [azureAdGroups]);
 
   useEffect(() => {
@@ -126,17 +107,19 @@ const AddGroupDialog = () => {
   }, [addSucceed]);
 
   const handleCancelClick = () => {
-    groupDispatch(closeAddGroupDialog);
+    uiDispatch(closeAddDialog);
   };
 
   const handleAddClick = values => {
     const payload = {
-      id: values.groupId.value,
+      id: values.group.id,
       status: values.status,
-      smartLockGroups: values.smartLocks.map(smartLock => ({ smartLockId: smartLock.id }))
+      smartLockGroups: values.smartLocks.map(smartLock => ({
+        smartLockId: smartLock.id
+      }))
     };
     groupDispatch(dispatch => addGroup(dispatch, payload));
-    groupDispatch(closeAddGroupDialog);
+    uiDispatch(closeAddDialog);
   };
 
   return (
@@ -167,9 +150,12 @@ const AddGroupDialog = () => {
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
-                    name="groupId"
+                    name="group"
                     component={Autocomplete}
                     options={groupOptions}
+                    getOptionLabel={option =>
+                      option.displayName ? option.displayName : ""
+                    }
                     open={openGroup}
                     onOpen={() => {
                       setOpenGroup(true);

@@ -32,7 +32,16 @@ import {
   GET_USER_SMART_LOCKS_PENDING,
   GET_USER_GROUPS_FAILED,
   GET_USER_GROUPS_SUCCEEDED,
-  GET_USER_GROUPS_PENDING
+  GET_USER_GROUPS_PENDING,
+  SET_SELECTED_GROUP_ID,
+  OPEN_ADD_USER_DIALOG,
+  CLOSE_ADD_USER_DIALOG,
+  OPEN_EDIT_USER_DIALOG,
+  CLOSE_EDIT_USER_DIALOG,
+  OPEN_DELETE_USER_DIALOG,
+  CLOSE_DELETE_USER_DIALOG,
+  OPEN_VIEW_USER_DIALOG,
+  CLOSE_VIEW_USER_DIALOG
 } from "./actionTypes";
 
 const getUsers = dispatch => {
@@ -181,6 +190,56 @@ const getCurrentAuthenticatedUser = dispatch => {
     );
 };
 
+const setSelectedUserId = (dispatch, userId) => {
+  dispatch({
+    type: SET_SELECTED_GROUP_ID,
+    payload: { userId }
+  });
+};
+const openAddUserDialog = dispatch => {
+  dispatch({
+    type: OPEN_ADD_USER_DIALOG
+  });
+};
+const closeAddUserDialog = dispatch => {
+  dispatch({
+    type: CLOSE_ADD_USER_DIALOG
+  });
+};
+
+const openEditUserDialog = dispatch => {
+  dispatch({
+    type: OPEN_EDIT_USER_DIALOG
+  });
+};
+const closeEditUserDialog = dispatch => {
+  dispatch({
+    type: CLOSE_EDIT_USER_DIALOG
+  });
+};
+
+const openDeleteUserDialog = dispatch => {
+  dispatch({
+    type: OPEN_DELETE_USER_DIALOG
+  });
+};
+const closeDeleteUserDialog = dispatch => {
+  dispatch({
+    type: CLOSE_DELETE_USER_DIALOG
+  });
+};
+
+const openViewUserDialog = dispatch => {
+  dispatch({
+    type: OPEN_VIEW_USER_DIALOG
+  });
+};
+const closeViewUserDialog = dispatch => {
+  dispatch({
+    type: CLOSE_VIEW_USER_DIALOG
+  });
+};
+
 export {
   getUsers,
   addUSer,
@@ -189,5 +248,14 @@ export {
   deleteUser,
   getUserGroups,
   getUserSmartLocks,
-  getCurrentAuthenticatedUser
+  getCurrentAuthenticatedUser,
+  setSelectedUserId,
+  openAddUserDialog,
+  closeAddUserDialog,
+  openEditUserDialog,
+  closeEditUserDialog,
+  openDeleteUserDialog,
+  closeDeleteUserDialog,
+  openViewUserDialog,
+  closeViewUserDialog
 };

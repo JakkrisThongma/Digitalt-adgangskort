@@ -15,12 +15,17 @@ import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
-import { closeEditGroupDialog, updateGroup } from "../../actions/groupActions";
-
-import { groupContext, smartLockContext, statusOptions } from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
 import { useSnackbar } from "notistack";
+import { updateGroup } from "src/actions/groupActions";
 
+import {
+  groupContext,
+  smartLockContext,
+  statusOptions,
+  uiContext
+} from "src/store";
+import useDidMountEffect from "src/helpers/useDidMountEffect";
+import { closeEditDialog } from "src/actions/uiActions";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -59,8 +64,6 @@ const validationSchema = object().shape({
   smartLocks: array()
 });
 
-
-
 const EditGroupDialog = () => {
   const classes = useStyles();
   const [groupState, groupDispatch] = useContext(groupContext);
@@ -69,7 +72,6 @@ const EditGroupDialog = () => {
     groupError,
     groupSmartLocks,
     loading: groupLoading,
-    editDialogOpen,
     updateFailed,
     updateSucceed
   } = groupState;
@@ -79,7 +81,10 @@ const EditGroupDialog = () => {
 
   const [smartLockState] = useContext(smartLockContext);
   const { smartLocks } = smartLockState;
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [uiState, uiDispatch] = useContext(uiContext);
+  const { editDialogOpen } = uiState;
 
   useEffect(() => {
     setFormData({
@@ -114,7 +119,7 @@ const EditGroupDialog = () => {
   }, [updateSucceed]);
 
   const handleCancelClick = () => {
-    groupDispatch(closeEditGroupDialog);
+    uiDispatch(closeEditDialog);
   };
 
   const handleEditClick = values => {
@@ -135,7 +140,7 @@ const EditGroupDialog = () => {
     if (groupError) {
       console.log(groupError);
     }
-    groupDispatch(closeEditGroupDialog);
+    uiDispatch(closeEditDialog);
   };
 
   const onSmartLockListChange = val => {

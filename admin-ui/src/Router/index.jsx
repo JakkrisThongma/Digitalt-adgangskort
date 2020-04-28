@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Redirect } from "react-router-dom";
 
-import { RouteWithLayout, MainLayout } from "@/components/layout";
+import { RouteWithLayout, MainLayout } from "src/components/layout";
 
 import {
   Login,
@@ -9,8 +9,9 @@ import {
   UsersList,
   SmartLockList,
   GroupList,
+  Group,
   NotFound
-} from "@/components/pages";
+} from "src/components/pages";
 
 const Router = () => {
   return (
@@ -45,6 +46,12 @@ const Router = () => {
         exact
         layout={MainLayout}
         path="/groups"
+      />
+      <RouteWithLayout
+        component={Group}
+        exact
+        layout={MainLayout}
+        path="/groups/:id"
       />
       <RouteWithLayout
         component={NotFound}

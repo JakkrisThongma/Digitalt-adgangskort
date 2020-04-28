@@ -100,7 +100,7 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      "@": path.resolve("src"),
+      src: path.resolve("src"),
       "@material-ui/core": "@material-ui/core/es"
     }
   }

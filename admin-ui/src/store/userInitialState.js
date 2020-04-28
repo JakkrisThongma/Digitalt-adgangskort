@@ -2,6 +2,7 @@ const userInitialState = {
   users: [],
   user: null,
   newUser: null,
+  selectedUserId: null,
   userGroups: [],
   userSmartLocks: [],
   currentAuthenticatedUser: null,

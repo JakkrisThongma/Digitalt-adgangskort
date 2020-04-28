@@ -2,20 +2,14 @@ import React from "react";
 import MaterialTable from "material-table";
 import Paper from "@material-ui/core/Paper";
 import tableIcons from "./MaterialTableIcons";
+import EnhancedMaterialTable from "./EnhancedMaterialTable";
 
 const ViewMaterialTable = props => {
   return (
-    <MaterialTable
+    <EnhancedMaterialTable
       {...props}
-      title=""
-      icons={tableIcons}
       components={{
-        Container: props => <Paper {...props} elevation={0}/>
-      }}
-      options={{
-        actionsColumnIndex: -1,
-        draggable: false,
-        paging: false
+        Container: props => <Paper {...props} elevation={0} />
       }}
     />
   );

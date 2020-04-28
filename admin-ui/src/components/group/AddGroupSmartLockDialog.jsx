@@ -6,39 +6,30 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  Button,
-  Backdrop,
-  CircularProgress
+  Button
 } from "@material-ui/core";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
-import { object, string, array } from "yup";
-import { Autocomplete, Select } from "material-ui-formik-components";
-import { closeEditGroupDialog, updateGroup } from "../../actions/groupActions";
-
-import { groupContext, smartLockContext, statusOptions } from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
+import { object } from "yup";
+import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
+import { addGroup } from "src/actions/groupActions";
 
+import { closeAddDialog } from "src/actions/uiActions";
+import {
+  azureAdContext,
+  groupContext,
+  smartLockContext,
+  uiContext
+} from "src/store";
+import useDidMountEffect from "src/helpers/useDidMountEffect";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-
   form: {
     display: "flex",
     flexDirection: "column",
     margin: "auto"
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: "black",
-    backgroundColor: fade("#ffffff", 0.4)
   },
   chip: {
     margin: theme.spacing(0.5)
@@ -49,178 +40,118 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   group: {},
-  smartLocks: []
+  smartLocks: {}
 };
 
 const validationSchema = object().shape({
   group: object(),
-  smartLocks: array()
+  smartLocks: object()
 });
-
-
 
 const AddGroupSmartLockDialog = () => {
   const classes = useStyles();
-  const [groupState, groupDispatch] = useContext(groupContext);
-  const {
-    group,
-    groupError,
-    groupSmartLocks,
-    loading: groupLoading,
-    editDialogOpen,
-    updateFailed,
-    updateSucceed
-  } = groupState;
 
-  const [formData, setFormData] = useState(initialValues);
+  const [groupState, groupDispatch] = useContext(groupContext);
+  const { group, groupError, loading, addFailed, addSucceed } = groupState;
+
   const [groupOptions, setGroupOptions] = useState([]);
 
-  const [smartLockState] = useContext(smartLockContext);
-  const { smartLocks } = smartLockState;
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const { smartLocks, smartLockError } = smartLockState;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const [uiState, uiDispatch] = useContext(uiContext);
+  const { addDialogOpen } = uiState;
+
   useEffect(() => {
-    setFormData({
-      ...formData,
-      group: group || {},
-      status: group ? group.status.toLowerCase() : "inactive"
-    });
     setGroupOptions([group]);
   }, [group]);
 
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      smartLocks: groupSmartLocks
-    });
-  }, [groupSmartLocks]);
+
 
   useDidMountEffect(() => {
-    if (updateFailed) {
-      enqueueSnackbar("Update group failed", {
+    if (addFailed) {
+      enqueueSnackbar("Add group failed", {
         variant: "error"
       });
     }
-  }, [updateFailed]);
+  }, [addFailed]);
 
   useDidMountEffect(() => {
-    if (updateSucceed) {
-      enqueueSnackbar("Group updated successfully", {
+    if (addSucceed) {
+      enqueueSnackbar("Group added successfully", {
         variant: "success"
       });
     }
-  }, [updateSucceed]);
+  }, [addSucceed]);
 
   const handleCancelClick = () => {
-    groupDispatch(closeEditGroupDialog);
+    uiDispatch(closeAddDialog);
   };
 
-  const handleEditClick = values => {
-    const payload = [
-      {
-        value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
-        path: "/SmartLockGroups",
-        op: "replace"
-      },
-      {
-        value: values.status,
-        path: "/status",
-        op: "replace"
-      }
-    ];
-
-    groupDispatch(dispatch => updateGroup(dispatch, values.group.id, payload));
-    if (groupError) {
-      console.log(groupError);
-    }
-    groupDispatch(closeEditGroupDialog);
-  };
-
-  const onSmartLockListChange = val => {
-    setFormData({
-      ...formData,
-      smartLocks: val
-    });
-  };
-
-  const onGroupListChange = val => {
-    setFormData({
-      ...formData,
-      group: val
-    });
-  };
-
-  const onStatusListChange = event => {
-    setFormData({
-      ...formData,
-      status: event.target.value
-    });
+  const handleAddClick = values => {
+    const payload = {
+      id: values.group.id,
+      smartLockGroups: values.smartLocks.map(smartLock => ({
+        smartLockId: smartLock.id
+      }))
+    };
+    groupDispatch(dispatch => addGroup(dispatch, payload));
+    uiDispatch(closeAddDialog);
   };
 
   return (
     <div>
       <Dialog
-        open={editDialogOpen}
+        open={addDialogOpen}
         onClose={handleCancelClick}
-        aria-labelledby="edit-dialog-title"
+        aria-labelledby="form-dialog-title"
         maxWidth="sm"
         fullWidth>
-        <DialogTitle id="edit-dialog-title">
+        <DialogTitle id="form-dialog-title">
           <Grid container spacing={2}>
             <Grid item>
               <GroupAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Edit Group</Typography>
+              <Typography variant="h6">Add Azure Ad Group</Typography>
             </Grid>
           </Grid>
         </DialogTitle>
         <DialogContent>
           <div>
             <Formik
-              initialValues={formData}
+              initialValues={initialValues}
               validationSchema={validationSchema}
-              enableReinitialize
               validateOnChange
-              onSubmit={values => handleEditClick(values)}>
+              onSubmit={values => handleAddClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
                     name="group"
+                    component={Autocomplete}
+                    options={groupOptions}
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    component={Autocomplete}
-                    value={formData.group}
-                    options={groupOptions}
-                    disabled
-                    onChange={(e, v) => onGroupListChange(v)}
-                    getOptionSelected={(option, value) => {
-                      if (!option || !value) return {};
-                      return option.id === value.id;
-                    }}
+                    value={group ? group : {}}
                     size="small"
+                    disabled
                     textFieldProps={{
                       label: "Azure AD group",
                       required: true,
                       variant: "outlined"
                     }}
                   />
+
                   <Field
                     name="smartLocks"
                     getOptionLabel={option => option.title}
                     options={smartLocks}
-                    onChange={(e, v) => onSmartLockListChange(v)}
-                    value={formData.smartLocks}
-                    filterSelectedOptions
-                    getOptionSelected={(option, value) =>
-                      option.id === value.id
-                    }
-                    multiple
                     component={Autocomplete}
                     size="small"
                     textFieldProps={{
-                      label: "Smart lock(s)",
+                      label: "Smart lock",
                       variant: "outlined"
                     }}
                   />
@@ -237,16 +168,13 @@ const AddGroupSmartLockDialog = () => {
                       variant="contained"
                       color="primary"
                       type="submit">
-                      Edit
+                      Add
                     </Button>
                   </DialogActions>
                 </Form>
               )}
             </Formik>
           </div>
-          <Backdrop className={classes.backdrop} open={groupLoading}>
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </DialogContent>
       </Dialog>
     </div>

@@ -17,7 +17,7 @@ import {
   TableToolbar,
   TableHeader,
   AddUserDialog
-} from "@/components/usersList";
+} from "src/components/usersList";
 import initialState from "../../store/initialState";
 
 import {
