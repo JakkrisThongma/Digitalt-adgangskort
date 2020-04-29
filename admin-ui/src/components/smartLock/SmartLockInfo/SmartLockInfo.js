@@ -2,7 +2,7 @@ import { Box, Typography } from "@material-ui/core";
 import React from "react";
 import dateParser from "../../../helpers/dateParser";
 
-const GroupInfo = ({ group }) => {
+const SmartLockInfo = ({ smartLock }) => {
   return (
     <>
       <Box mr={2} mb={2} display="inline-block">
@@ -11,22 +11,35 @@ const GroupInfo = ({ group }) => {
         </Typography>
       </Box>
       <Box mb={2} display="inline-block">
-        <Typography display="inline">{group ? group.id : ""}</Typography>
+        <Typography display="inline">
+          {smartLock ? smartLock.id : ""}
+        </Typography>
       </Box>
       <br />
 
       <Box mr={2} mb={2} display="inline-block">
         <Typography display="inline" color="textSecondary">
-          Display name:
+          Manufacture ID:
         </Typography>
       </Box>
       <Box mb={2} display="inline-block">
         <Typography display="inline">
-          {group ? group.displayName : ""}
+          {smartLock ? smartLock.manufactureId : ""}
         </Typography>
       </Box>
       <br />
 
+      <Box mr={2} mb={2} display="inline-block">
+        <Typography display="inline" color="textSecondary">
+          Title:
+        </Typography>
+      </Box>
+      <Box mb={2} display="inline-block">
+        <Typography display="inline">
+          {smartLock ? smartLock.title : ""}
+        </Typography>
+      </Box>
+      <br />
       <Box mr={2} mb={2} display="inline-block">
         <Typography display="inline" color="textSecondary">
           Description:
@@ -34,7 +47,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={2} display="inline-block">
         <Typography display="inline">
-          {group ? group.description : ""}
+          {smartLock ? smartLock.description : ""}
         </Typography>
       </Box>
       <br />
@@ -45,7 +58,9 @@ const GroupInfo = ({ group }) => {
         </Typography>
       </Box>
       <Box mb={2} display="inline-block">
-        <Typography display="inline">{group ? group.status : ""}</Typography>
+        <Typography display="inline">
+          {smartLock ? smartLock.status : ""}
+        </Typography>
       </Box>
       <br />
 
@@ -56,7 +71,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={5} display="inline">
         <Typography display="inline">
-          {group ? dateParser(group.creationDate) : ""}
+          {smartLock ? dateParser(smartLock.creationDate) : ""}
         </Typography>
       </Box>
       <br />
@@ -67,7 +82,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={5} display="inline">
         <Typography display="inline">
-          {group ? dateParser(group.lastModificationDate) : ""}
+          {smartLock ? dateParser(smartLock.lastModificationDate) : ""}
         </Typography>
       </Box>
       <br />
@@ -75,4 +90,4 @@ const GroupInfo = ({ group }) => {
   );
 };
 
-export default GroupInfo;
+export default SmartLockInfo;

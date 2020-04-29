@@ -82,7 +82,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Digital tilgangskort",
+      title: "Digital Access Card",
       template: "public/index.html",
       inject: true,
       favicon: "./public/IN-logo.svg"
@@ -100,7 +100,7 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      src: path.resolve("src"),
+      "@": path.resolve("src"),
       "@material-ui/core": "@material-ui/core/es"
     }
   }

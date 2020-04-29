@@ -1,32 +1,32 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles, fade } from "@material-ui/core/styles";
-import { Tab, Tabs, Typography } from "@material-ui/core";
+import {Button, Tab, Tabs, Typography} from "@material-ui/core";
 import { Delete, AddBox } from "@material-ui/icons";
 
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
-  getGroupSmartLocks,
-  getGroup,
-  getGroupUsers,
-  setSelectedGroupId
-} from "src/actions/groupActions";
+  getUserSmartLocks,
+  getUser,
+  getUserGroups,
+  setSelectedUserId
+} from "@/actions/userActions";
 import {
   getSmartLocks,
   setSelectedSmartLockId
-} from "src/actions/smartLockActions";
-import { groupContext, smartLockContext, uiContext } from "../../store/Store";
-import ViewMaterialTable from "../common/ViewMaterialTable";
-import TabPanel from "../common/TabPanel";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
-import { openAddDialog, openDeleteDialog } from "../../actions/uiActions";
+} from "@/actions/smartLockActions";
+import { userContext, smartLockContext, uiContext } from "@/store";
+import ViewMaterialTable from "@/components/ViewMaterialTable";
+import TabPanel from "@/components/TabPanel";
+import useDidMountEffect from "@/helpers/useDidMountEffect";
+import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 
-import GroupInfo from "../group/GroupInfo/GroupInfo";
-import DeleteSmartLockDialog from "../group/DeleteSmartLockDialog";
-import AddGroupSmartLockDialog from "../group/AddGroupSmartLockDialog";
+import UserInfo from "@/components/usersList/UserInfo/UserInfo";
+import DeleteSmartLockDialog from "@/components/usersList/DeleteSmartLockDialog";
+import { AddUserSmartLockDialog } from "@/components/usersList";
 
-const userColumns = [
+const groupColumns = [
   { title: "User Id", field: "id", editable: "never", sorting: false },
   {
     title: "Name",
@@ -54,7 +54,8 @@ const smartLocksColumns = [
 ];
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%"
+    width: "100%",
+    padding: theme.spacing(3)
   },
   tabPanel: {
     width: "100%",
@@ -82,17 +83,17 @@ const useStyles = makeStyles(theme => ({
   option: { backgroundColor: "black" }
 }));
 
-const Group = ({ match }) => {
+const User = ({ match }) => {
   const classes = useStyles();
-  const [groupState, groupDispatch] = useContext(groupContext);
+  const [userState, userDispatch] = useContext(userContext);
   const {
-    group,
-    groupError,
-    selectedGroupId,
-    groupSmartLocks,
-    groupUsers,
-    loading: groupLoading
-  } = groupState;
+    user,
+    userError,
+    selectedUserId,
+    userSmartLocks,
+    userGroups,
+    loading: userLoading
+  } = userState;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError, didInvalidate } = smartLockState;
@@ -102,11 +103,11 @@ const Group = ({ match }) => {
   const [tabIndex, setTabIndex] = React.useState(0);
 
   useEffect(() => {
-    const groupId = match.params.id;
-    groupDispatch(dispatch => getGroup(dispatch, groupId));
-    groupDispatch(dispatch => getGroupSmartLocks(dispatch, groupId));
-    groupDispatch(dispatch => getGroupUsers(dispatch, groupId));
-    groupDispatch(dispatch => setSelectedGroupId(dispatch, groupId));
+    const userId = match.params.id;
+    userDispatch(dispatch => getUser(dispatch, userId));
+    userDispatch(dispatch => getUserSmartLocks(dispatch, userId));
+    userDispatch(dispatch => getUserGroups(dispatch, userId));
+    userDispatch(dispatch => setSelectedUserId(dispatch, userId));
   }, [match.params.id]);
 
   const handleTabChange = (event, newValue) => {
@@ -128,7 +129,7 @@ const Group = ({ match }) => {
 
   useDidMountEffect(() => {
     if (didInvalidate) {
-      groupDispatch(dispatch => getGroupSmartLocks(dispatch, selectedGroupId));
+      userDispatch(dispatch => getUserSmartLocks(dispatch, selectedUserId));
     }
   }, [didInvalidate]);
 
@@ -141,9 +142,15 @@ const Group = ({ match }) => {
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/Groups">Groups</RouterLink>
-        <Typography color="textPrimary">{match.params.id}</Typography>
+        <Button component={RouterLink} to="/dashboard">
+          Dashboard
+        </Button>
+        <Button component={RouterLink} to="/users">
+          Users
+        </Button>
+        <Button component={RouterLink} to={`/users/${match.params.id}`}>
+          {match.params.id}
+        </Button>
       </Breadcrumbs>
       <Paper className={classes.paper}>
         <div className={classes.tabPanel}>
@@ -154,28 +161,27 @@ const Group = ({ match }) => {
             aria-label="Vertical tabs example"
             className={classes.tabs}>
             <Tab label="Info" {...a11yProps(0)} />
-            <Tab label="Users" {...a11yProps(1)} />
+            <Tab label="Groups" {...a11yProps(1)} />
             <Tab label="Smart Locks" {...a11yProps(2)} />
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
-            <GroupInfo group={group} />
+            <UserInfo user={user} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <ViewMaterialTable
-              isLoading={groupLoading}
-              columns={userColumns}
-              data={groupUsers}
+              isLoading={userLoading}
+              columns={groupColumns}
+              data={userGroups}
               actions={[
                 {
                   icon: Delete,
-                  tooltip:
-                    "Delete user from a group should be done from Azure AD",
+                  tooltip: "Delete group should be done from Azure AD",
                   disabled: true,
                   onClick: () => null
                 },
                 {
                   icon: () => <AddBox fontSize="large" />,
-                  tooltip: "Add user to group should be done from Azure AD",
+                  tooltip: "Add group should be done from Azure AD",
                   isFreeAction: true,
                   disabled: true,
                   onClick: () => null
@@ -186,9 +192,9 @@ const Group = ({ match }) => {
           </TabPanel>
           <TabPanel value={tabIndex} index={2}>
             <ViewMaterialTable
-              isLoading={groupLoading}
+              isLoading={userLoading}
               columns={smartLocksColumns}
-              data={groupSmartLocks}
+              data={userSmartLocks}
               actions={[
                 {
                   icon: Delete,
@@ -211,9 +217,9 @@ const Group = ({ match }) => {
         </div>
       </Paper>
       <DeleteSmartLockDialog />
-      <AddGroupSmartLockDialog />
+      <AddUserSmartLockDialog />
     </div>
   );
 };
 
-export default Group;
+export default User;

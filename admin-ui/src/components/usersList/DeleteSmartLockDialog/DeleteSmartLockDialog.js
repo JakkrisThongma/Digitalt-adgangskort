@@ -4,15 +4,15 @@ import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
 import useDidMountEffect from "@/helpers/useDidMountEffect";
 import SlideTransition from "@/components/SlideTransition";
-import { groupContext, smartLockContext, uiContext } from "@/store";
-import { deleteSmartLockGroup } from "@/actions/smartLockActions";
+import { userContext, smartLockContext, uiContext } from "@/store";
+import { deleteSmartLockUser } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
 import DeleteDialog from "@/components/DeleteDialog";
 
 const DeleteSmartLockDialog = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [groupState] = useContext(groupContext);
-  const { selectedGroupId } = groupState;
+  const [userState] = useContext(userContext);
+  const { selectedUserId } = userState;
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { deleteDialogOpen } = uiState;
@@ -42,7 +42,7 @@ const DeleteSmartLockDialog = () => {
 
   const handleDeleteClick = () => {
     smartLockDispatch(dispatch =>
-      deleteSmartLockGroup(dispatch, selectedSmartLockId, selectedGroupId)
+      deleteSmartLockUser(dispatch, selectedSmartLockId, selectedUserId)
     );
     uiDispatch(closeDeleteDialog);
   };
@@ -61,7 +61,7 @@ const DeleteSmartLockDialog = () => {
   ];
   return (
     <DeleteDialog
-      title="Delete group smart lock"
+      title="Delete user smart lock"
       open={deleteDialogOpen}
       TransitionComponent={SlideTransition}
       keepMounted

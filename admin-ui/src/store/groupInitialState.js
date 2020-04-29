@@ -13,11 +13,7 @@ const groupInitialState = {
   updateFailed: false,
   updateSucceed: false,
   deleteFailed: false,
-  deleteSucceed: false,
-  addDialogOpen: false,
-  editDialogOpen: false,
-  deleteDialogOpen: false,
-  viewDialogOpen: false
+  deleteSucceed: false
 };
 
 export default groupInitialState;

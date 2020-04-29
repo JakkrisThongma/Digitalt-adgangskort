@@ -2,27 +2,24 @@
 
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
+import { deleteUser } from "@/actions/userActions";
+import { userContext, uiContext } from "@/store/Store";
 import useDidMountEffect from "@/helpers/useDidMountEffect";
-import SlideTransition from "@/components/SlideTransition";
-import { groupContext, smartLockContext, uiContext } from "@/store";
-import { deleteSmartLockGroup } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
 import DeleteDialog from "@/components/DeleteDialog";
+import SlideTransition from "@/components/SlideTransition";
 
-const DeleteSmartLockDialog = () => {
+const DeleteUserDialog = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [groupState] = useContext(groupContext);
-  const { selectedGroupId } = groupState;
+  const [userState, userDispatch] = useContext(userContext);
+  const { selectedUserId, deleteFailed, deleteSucceed } = userState;
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { deleteDialogOpen } = uiState;
 
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { selectedSmartLockId, deleteFailed, deleteSucceed } = smartLockState;
-
   useDidMountEffect(() => {
     if (deleteFailed) {
-      enqueueSnackbar("Delete smart lock failed", {
+      enqueueSnackbar("Delete user failed", {
         variant: "error"
       });
     }
@@ -30,7 +27,7 @@ const DeleteSmartLockDialog = () => {
 
   useDidMountEffect(() => {
     if (deleteSucceed) {
-      enqueueSnackbar("Smart lock deleted successfully", {
+      enqueueSnackbar("User deleted successfully", {
         variant: "success"
       });
     }
@@ -41,9 +38,8 @@ const DeleteSmartLockDialog = () => {
   };
 
   const handleDeleteClick = () => {
-    smartLockDispatch(dispatch =>
-      deleteSmartLockGroup(dispatch, selectedSmartLockId, selectedGroupId)
-    );
+    userDispatch(dispatch => deleteUser(dispatch, selectedUserId));
+
     uiDispatch(closeDeleteDialog);
   };
 
@@ -59,17 +55,18 @@ const DeleteSmartLockDialog = () => {
       onClick: handleDeleteClick
     }
   ];
+
   return (
     <DeleteDialog
-      title="Delete group smart lock"
+      title="Delete user"
       open={deleteDialogOpen}
       TransitionComponent={SlideTransition}
       keepMounted
       onClose={handleCancelClick}
       actions={actions}>
-      Are you sure you want to delete this smart lock?
+      Are you sure you want to delete this user?
     </DeleteDialog>
   );
 };
 
-export default DeleteSmartLockDialog;
+export default DeleteUserDialog;

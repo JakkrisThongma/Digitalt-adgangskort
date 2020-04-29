@@ -23,6 +23,7 @@
     "@material-ui/lab": "^4.0.0-alpha.45",
     "axios": "^0.19.2",
     "clsx": "^1.1.0",
+    "components": "^0.1.0",
     "delete": "^1.1.0",
     "eslint-import-resolver-webpack": "^0.12.1",
     "express": "^4.17.1",

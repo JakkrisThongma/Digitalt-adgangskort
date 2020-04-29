@@ -34,7 +34,7 @@ module.exports = {
     },
       "alias": {
         map: [
-          [ "src", "./src" ]
+          [ "@", "./src" ]
         ]
       }
     }

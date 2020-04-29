@@ -2,7 +2,7 @@ import { Box, Typography } from "@material-ui/core";
 import React from "react";
 import dateParser from "../../../helpers/dateParser";
 
-const GroupInfo = ({ group }) => {
+const UserInfo = ({user}) => {
   return (
     <>
       <Box mr={2} mb={2} display="inline-block">
@@ -11,7 +11,7 @@ const GroupInfo = ({ group }) => {
         </Typography>
       </Box>
       <Box mb={2} display="inline-block">
-        <Typography display="inline">{group ? group.id : ""}</Typography>
+        <Typography display="inline">{user ? user.id : ""}</Typography>
       </Box>
       <br />
 
@@ -22,19 +22,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={2} display="inline-block">
         <Typography display="inline">
-          {group ? group.displayName : ""}
-        </Typography>
-      </Box>
-      <br />
-
-      <Box mr={2} mb={2} display="inline-block">
-        <Typography display="inline" color="textSecondary">
-          Description:
-        </Typography>
-      </Box>
-      <Box mb={2} display="inline-block">
-        <Typography display="inline">
-          {group ? group.description : ""}
+          {user ? user.displayName : ""}
         </Typography>
       </Box>
       <br />
@@ -45,7 +33,7 @@ const GroupInfo = ({ group }) => {
         </Typography>
       </Box>
       <Box mb={2} display="inline-block">
-        <Typography display="inline">{group ? group.status : ""}</Typography>
+        <Typography display="inline">{user ? user.status : ""}</Typography>
       </Box>
       <br />
 
@@ -56,7 +44,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={5} display="inline">
         <Typography display="inline">
-          {group ? dateParser(group.creationDate) : ""}
+          {user ? dateParser(user.creationDate) : ""}
         </Typography>
       </Box>
       <br />
@@ -67,7 +55,7 @@ const GroupInfo = ({ group }) => {
       </Box>
       <Box mb={5} display="inline">
         <Typography display="inline">
-          {group ? dateParser(group.lastModificationDate) : ""}
+          {user ? dateParser(user.lastModificationDate) : ""}
         </Typography>
       </Box>
       <br />
@@ -75,4 +63,5 @@ const GroupInfo = ({ group }) => {
   );
 };
 
-export default GroupInfo;
+
+export default UserInfo;

@@ -1,8 +1,6 @@
 import React from "react";
-import MaterialTable from "material-table";
 import Paper from "@material-ui/core/Paper";
-import tableIcons from "./MaterialTableIcons";
-import EnhancedMaterialTable from "./EnhancedMaterialTable";
+import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
 
 const ViewMaterialTable = props => {
   return (

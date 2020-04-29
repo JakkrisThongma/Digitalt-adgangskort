@@ -76,7 +76,7 @@ const Header = () => {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Digital adgangskort
+            Digital Access Card
           </Typography>
           <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
             <Button

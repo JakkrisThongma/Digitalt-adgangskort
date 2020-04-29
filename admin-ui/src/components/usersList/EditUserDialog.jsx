@@ -6,34 +6,44 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  Button
+  Button,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import { PersonAdd as UserAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
-
 import { useSnackbar } from "notistack";
-
-import { getAzureAdUsers } from "@/actions/azureAdActions";
-import { closeAddDialog } from "@/actions/uiActions";
-import { addUser } from "@/actions/userActions";
+import { updateUser } from "@/actions/userActions";
 
 import {
-  azureAdContext,
   userContext,
   smartLockContext,
   statusOptions,
   uiContext
-} from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
+} from "@/store";
+import useDidMountEffect from "@/helpers/useDidMountEffect";
+import { closeEditDialog } from "@/actions/uiActions";
 
 const useStyles = makeStyles(theme => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+
   form: {
     display: "flex",
     flexDirection: "column",
     margin: "auto"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "black",
+    backgroundColor: fade("#ffffff", 0.4)
   },
   chip: {
     margin: theme.spacing(0.5)
@@ -50,136 +60,166 @@ const initialValues = {
 
 const validationSchema = object().shape({
   status: string(),
-  user: object()
-    .required("User is required")
-    .nullable(),
+  user: object(),
   smartLocks: array()
 });
 
-const AddUserDialog = () => {
+const EditUserDialog = () => {
   const classes = useStyles();
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
-
-  const { azureAdUsers, azureAdError } = azureAdState;
   const [userState, userDispatch] = useContext(userContext);
-  const { userError, loading, addFailed, addSucceed } = userState;
+  const {
+    user,
+    userError,
+    userSmartLocks,
+    loading: userLoading,
+    updateFailed,
+    updateSucceed
+  } = userState;
 
-  const [openUser, setOpenUser] = useState(false);
+  const [formData, setFormData] = useState(initialValues);
   const [userOptions, setUserOptions] = useState([]);
-  const userLoading = openUser && userOptions.length === 0;
 
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError } = smartLockState;
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [smartLockState] = useContext(smartLockContext);
+  const { smartLocks } = smartLockState;
+  const { enqueueSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
-  const { addDialogOpen } = uiState;
+  const { editDialogOpen } = uiState;
 
   useEffect(() => {
-    setUserOptions(azureAdUsers);
-  }, [azureAdUsers]);
+    setFormData({
+      ...formData,
+      user: user || {},
+      status: user ? user.status.toLowerCase() : "inactive"
+    });
+    setUserOptions([user]);
+  }, [user]);
 
   useEffect(() => {
-    if (!userLoading) {
-      return undefined;
-    }
-    azureAdDispatch(getAzureAdUsers);
-  }, [userLoading]);
-
-  useEffect(() => {
-    if (!openUser) {
-      setUserOptions([]);
-    }
-  }, [openUser]);
+    setFormData({
+      ...formData,
+      smartLocks: userSmartLocks
+    });
+  }, [userSmartLocks]);
 
   useDidMountEffect(() => {
-    if (addFailed) {
-      enqueueSnackbar("Add user failed", {
+    if (updateFailed) {
+      enqueueSnackbar("Update user failed", {
         variant: "error"
       });
     }
-  }, [addFailed]);
+  }, [updateFailed]);
 
   useDidMountEffect(() => {
-    if (addSucceed) {
-      enqueueSnackbar("User added successfully", {
+    if (updateSucceed) {
+      enqueueSnackbar("User updated successfully", {
         variant: "success"
       });
     }
-  }, [addSucceed]);
+  }, [updateSucceed]);
 
   const handleCancelClick = () => {
-    uiDispatch(closeAddDialog);
+    uiDispatch(closeEditDialog);
   };
 
-  const handleAddClick = values => {
-    const payload = {
-      id: values.user.id,
-      status: values.status,
-      smartLockUsers: values.smartLocks.map(smartLock => ({
-        smartLockId: smartLock.id
-      }))
-    };
-    console.log(payload);
-    userDispatch(dispatch => addUser(dispatch, payload));
-    uiDispatch(closeAddDialog);
+  const handleEditClick = values => {
+    const payload = [
+      {
+        value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
+        path: "/SmartLockUsers",
+        op: "replace"
+      },
+      {
+        value: values.status,
+        path: "/status",
+        op: "replace"
+      }
+    ];
+
+    userDispatch(dispatch => updateUser(dispatch, values.user.id, payload));
+    if (userError) {
+      console.log(userError);
+    }
+    uiDispatch(closeEditDialog);
+  };
+
+  const onSmartLockListChange = val => {
+    setFormData({
+      ...formData,
+      smartLocks: val
+    });
+  };
+
+  const onUserListChange = val => {
+    setFormData({
+      ...formData,
+      user: val
+    });
+  };
+
+  const onStatusListChange = event => {
+    setFormData({
+      ...formData,
+      status: event.target.value
+    });
   };
 
   return (
     <div>
       <Dialog
-        open={addDialogOpen}
+        open={editDialogOpen}
         onClose={handleCancelClick}
-        aria-labelledby="form-dialog-title"
+        aria-labelledby="edit-dialog-title"
         maxWidth="sm"
         fullWidth>
-        <DialogTitle id="form-dialog-title">
+        <DialogTitle id="edit-dialog-title">
           <Grid container spacing={2}>
             <Grid item>
               <UserAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add Azure Ad User</Typography>
+              <Typography variant="h6">Edit User</Typography>
             </Grid>
           </Grid>
         </DialogTitle>
         <DialogContent>
           <div>
             <Formik
-              initialValues={initialValues}
+              initialValues={formData}
               validationSchema={validationSchema}
+              enableReinitialize
               validateOnChange
-              onSubmit={values => handleAddClick(values)}>
+              onSubmit={values => handleEditClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
                     name="user"
-                    component={Autocomplete}
-                    options={userOptions}
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    open={openUser}
-                    onOpen={() => {
-                      setOpenUser(true);
+                    component={Autocomplete}
+                    value={formData.user}
+                    options={userOptions}
+                    disabled
+                    onChange={(e, v) => onUserListChange(v)}
+                    getOptionSelected={(option, value) => {
+                      if (!option || !value) return {};
+                      return option.id === value.id;
                     }}
-                    onClose={() => {
-                      setOpenUser(false);
-                    }}
-                    loading={userLoading}
                     size="small"
                     textFieldProps={{
                       label: "Azure AD user",
                       required: true,
                       variant: "outlined"
                     }}
-                    getOptionDisabled={option => option.addedToDb === true}
                   />
                   <Field
                     name="status"
                     label="Status"
                     component={Select}
                     options={statusOptions}
+                    value={formData.status}
+                    onChange={e => onStatusListChange(e)}
                     size="small"
                     variant="outlined"
                   />
@@ -187,9 +227,14 @@ const AddUserDialog = () => {
                     name="smartLocks"
                     getOptionLabel={option => option.title}
                     options={smartLocks}
-                    component={Autocomplete}
+                    onChange={(e, v) => onSmartLockListChange(v)}
+                    value={formData.smartLocks}
                     filterSelectedOptions
+                    getOptionSelected={(option, value) =>
+                      option.id === value.id
+                    }
                     multiple
+                    component={Autocomplete}
                     size="small"
                     textFieldProps={{
                       label: "Smart lock(s)",
@@ -208,19 +253,21 @@ const AddUserDialog = () => {
                       className={classes.button}
                       variant="contained"
                       color="primary"
-                      disabled={!formik.dirty}
                       type="submit">
-                      Add
+                      Edit
                     </Button>
                   </DialogActions>
                 </Form>
               )}
             </Formik>
           </div>
+          <Backdrop className={classes.backdrop} open={userLoading}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default AddUserDialog;
+export default EditUserDialog;

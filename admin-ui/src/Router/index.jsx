@@ -1,17 +1,19 @@
 import React from "react";
 import { Switch, Redirect } from "react-router-dom";
 
-import { RouteWithLayout, MainLayout } from "src/components/layout";
+import { RouteWithLayout, MainLayout } from "@/components/layout";
 
 import {
   Login,
   Dashboard,
-  UsersList,
-  SmartLockList,
-  GroupList,
+  Users,
+  SmartLocks,
+  Groups,
   Group,
-  NotFound
-} from "src/components/pages";
+  User,
+  NotFound,
+  SmartLock
+} from "@/scenes";
 
 const Router = () => {
   return (
@@ -30,19 +32,31 @@ const Router = () => {
         path="/dashboard"
       />
       <RouteWithLayout
-        component={UsersList}
+        component={Users}
         exact
         layout={MainLayout}
         path="/users"
       />
       <RouteWithLayout
-        component={SmartLockList}
+        component={User}
+        exact
+        layout={MainLayout}
+        path="/users/:id"
+      />
+      <RouteWithLayout
+        component={SmartLocks}
         exact
         layout={MainLayout}
         path="/smart-locks"
       />
       <RouteWithLayout
-        component={GroupList}
+        component={SmartLock}
+        exact
+        layout={MainLayout}
+        path="/smart-locks/:id"
+      />
+      <RouteWithLayout
+        component={Groups}
         exact
         layout={MainLayout}
         path="/groups"

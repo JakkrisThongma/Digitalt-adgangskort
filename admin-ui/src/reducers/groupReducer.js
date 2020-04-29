@@ -20,15 +20,7 @@ import {
   GET_GROUP_USERS_FAILED,
   GET_GROUP_USERS_SUCCEEDED,
   GET_GROUP_USERS_PENDING,
-  OPEN_ADD_GROUP_DIALOG,
-  CLOSE_ADD_GROUP_DIALOG,
-  OPEN_EDIT_GROUP_DIALOG,
-  CLOSE_EDIT_GROUP_DIALOG,
-  OPEN_DELETE_GROUP_DIALOG,
-  CLOSE_DELETE_GROUP_DIALOG,
-  SET_SELECTED_GROUP_ID,
-  OPEN_VIEW_GROUP_DIALOG,
-  CLOSE_VIEW_GROUP_DIALOG
+  SET_SELECTED_GROUP_ID
 } from "../actions/actionTypes";
 
 const groupReducer = (state, action) => {
@@ -241,63 +233,6 @@ const groupReducer = (state, action) => {
     return {
       ...state,
       selectedGroupId: action.payload.groupId
-    };
-  }
-
-  // Add group dialog
-  if (action.type === OPEN_ADD_GROUP_DIALOG) {
-    return {
-      ...state,
-      addDialogOpen: true
-    };
-  }
-
-  if (action.type === CLOSE_ADD_GROUP_DIALOG) {
-    return {
-      ...state,
-      addDialogOpen: false
-    };
-  }
-
-  if (action.type === OPEN_EDIT_GROUP_DIALOG) {
-    return {
-      ...state,
-      editDialogOpen: true
-    };
-  }
-
-  if (action.type === CLOSE_EDIT_GROUP_DIALOG) {
-    return {
-      ...state,
-      editDialogOpen: false
-    };
-  }
-
-  if (action.type === OPEN_DELETE_GROUP_DIALOG) {
-    return {
-      ...state,
-      deleteDialogOpen: true
-    };
-  }
-
-  if (action.type === CLOSE_DELETE_GROUP_DIALOG) {
-    return {
-      ...state,
-      deleteDialogOpen: false
-    };
-  }
-
-  if (action.type === OPEN_VIEW_GROUP_DIALOG) {
-    return {
-      ...state,
-      viewDialogOpen: true
-    };
-  }
-
-  if (action.type === CLOSE_VIEW_GROUP_DIALOG) {
-    return {
-      ...state,
-      viewDialogOpen: false
     };
   }
 

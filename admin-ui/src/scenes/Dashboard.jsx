@@ -1,15 +1,20 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   TotalCount,
   StatisticTable,
   LastActivity
-} from "src/components/dashboard";
+} from "@/components/dashboard";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3)
+  },
+  paper: {
+    marginBottom: theme.spacing(3),
   }
 }));
 const Dashboard = () => {
@@ -17,7 +22,15 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      <h1>Dashboard</h1>
+      <div className={classes.paper}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Breadcrumbs aria-label="breadcrumb">
+            <Button component={RouterLink} to="/dashboard">
+              Dashboard
+            </Button>
+          </Breadcrumbs>
+        </Breadcrumbs>
+      </div>
       <Grid container spacing={4} justify="space-between">
         <Grid item md={4} xs={12}>
           <TotalCount title="Active users" total={199} iconTitle="People" />

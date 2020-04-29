@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialTable from "material-table";
-import tableIcons from "./MaterialTableIcons";
+import tableIcons from "@/components/MaterialTableIcons";
 
 const EnhancedMaterialTable = props => {
   return (

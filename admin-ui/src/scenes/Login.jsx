@@ -47,26 +47,6 @@ const Login = () => {
           className={classes.form}
           noValidate
           onSubmit={e => e.preventDefault()}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-          />
 
           <Button
             type="submit"
@@ -74,7 +54,7 @@ const Login = () => {
             variant="contained"
             color="primary"
             className={classes.submit}>
-            Sign In
+            Sign In with IN account
           </Button>
         </form>
       </Paper>

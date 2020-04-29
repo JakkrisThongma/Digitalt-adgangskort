@@ -16,16 +16,16 @@ import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
-import { updateGroup } from "src/actions/groupActions";
+import { updateGroup } from "@/actions/groupActions";
 
 import {
   groupContext,
   smartLockContext,
   statusOptions,
   uiContext
-} from "src/store";
-import useDidMountEffect from "src/helpers/useDidMountEffect";
-import { closeEditDialog } from "src/actions/uiActions";
+} from "@/store";
+import useDidMountEffect from "@/helpers/useDidMountEffect";
+import { closeEditDialog } from "@/actions/uiActions";
 
 const useStyles = makeStyles(theme => ({
   paper: {

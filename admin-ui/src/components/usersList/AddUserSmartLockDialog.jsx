@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Grid,
   Typography,
@@ -11,23 +11,13 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { PersonAdd as UserAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
-import { object, string, array } from "yup";
-import { Autocomplete, Select } from "material-ui-formik-components";
-
+import { object } from "yup";
+import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
-
-import { getAzureAdUsers } from "@/actions/azureAdActions";
 import { closeAddDialog } from "@/actions/uiActions";
-import { addUser } from "@/actions/userActions";
-
-import {
-  azureAdContext,
-  userContext,
-  smartLockContext,
-  statusOptions,
-  uiContext
-} from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
+import { userContext, smartLockContext, uiContext } from "@/store";
+import useDidMountEffect from "@/helpers/useDidMountEffect";
+import { addSmartLockUser } from "@/actions/smartLockActions";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -43,58 +33,60 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const initialValues = {
-  status: "inactive",
   user: {},
-  smartLocks: []
+  smartLock: {}
 };
 
 const validationSchema = object().shape({
-  status: string(),
-  user: object()
-    .required("User is required")
-    .nullable(),
-  smartLocks: array()
+  user: object(),
+  smartLock: object()
+    .required("Smart lock is required")
+    .nullable()
 });
 
-const AddUserDialog = () => {
+const filterOptions = (arr1, arr2) => {
+  return arr1.filter(el1 => {
+    return (
+      arr2.filter(el2 => {
+        return el2.id === el1.id;
+      }).length === 0
+    );
+  });
+};
+const AddUserSmartLockDialog = () => {
   const classes = useStyles();
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
 
-  const { azureAdUsers, azureAdError } = azureAdState;
   const [userState, userDispatch] = useContext(userContext);
-  const { userError, loading, addFailed, addSucceed } = userState;
+  const { user, userError, userSmartLocks } = userState;
 
-  const [openUser, setOpenUser] = useState(false);
   const [userOptions, setUserOptions] = useState([]);
-  const userLoading = openUser && userOptions.length === 0;
+  const [smartLockOptions, setsmartLockOptions] = useState([]);
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError } = smartLockState;
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const {
+    smartLocks,
+    error: smartLockError,
+    addFailed,
+    addSucceed
+  } = smartLockState;
+  const { enqueueSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;
 
-  useEffect(() => {
-    setUserOptions(azureAdUsers);
-  }, [azureAdUsers]);
-
-  useEffect(() => {
-    if (!userLoading) {
-      return undefined;
-    }
-    azureAdDispatch(getAzureAdUsers);
-  }, [userLoading]);
-
-  useEffect(() => {
-    if (!openUser) {
-      setUserOptions([]);
-    }
-  }, [openUser]);
+  useDidMountEffect(() => {
+    setUserOptions([user]);
+  }, [user]);
 
   useDidMountEffect(() => {
+    const filterdOptions = filterOptions(smartLocks, userSmartLocks);
+    setsmartLockOptions(filterdOptions);
+  }, [smartLocks]);
+
+  useDidMountEffect(() => {
+    const msg = smartLockError.message;
     if (addFailed) {
-      enqueueSnackbar("Add user failed", {
+      enqueueSnackbar(`Error: ${msg}`, {
         variant: "error"
       });
     }
@@ -102,9 +94,10 @@ const AddUserDialog = () => {
 
   useDidMountEffect(() => {
     if (addSucceed) {
-      enqueueSnackbar("User added successfully", {
+      enqueueSnackbar("Smart lock added successfully", {
         variant: "success"
       });
+      uiDispatch(closeAddDialog);
     }
   }, [addSucceed]);
 
@@ -114,15 +107,13 @@ const AddUserDialog = () => {
 
   const handleAddClick = values => {
     const payload = {
-      id: values.user.id,
-      status: values.status,
-      smartLockUsers: values.smartLocks.map(smartLock => ({
-        smartLockId: smartLock.id
-      }))
+      userId: user.id
     };
-    console.log(payload);
-    userDispatch(dispatch => addUser(dispatch, payload));
-    uiDispatch(closeAddDialog);
+    smartLockDispatch(dispatch =>
+      addSmartLockUser(dispatch, values.smartLock.id, payload)
+    );
+    const filterdOptions = filterOptions(smartLocks, userSmartLocks);
+    setsmartLockOptions(filterdOptions);
   };
 
   return (
@@ -149,6 +140,7 @@ const AddUserDialog = () => {
               initialValues={initialValues}
               validationSchema={validationSchema}
               validateOnChange
+              enableReinitialize
               onSubmit={values => handleAddClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
@@ -159,40 +151,23 @@ const AddUserDialog = () => {
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    open={openUser}
-                    onOpen={() => {
-                      setOpenUser(true);
-                    }}
-                    onClose={() => {
-                      setOpenUser(false);
-                    }}
-                    loading={userLoading}
+                    value={user || {}}
                     size="small"
+                    disabled
                     textFieldProps={{
                       label: "Azure AD user",
                       required: true,
                       variant: "outlined"
                     }}
-                    getOptionDisabled={option => option.addedToDb === true}
                   />
                   <Field
-                    name="status"
-                    label="Status"
-                    component={Select}
-                    options={statusOptions}
-                    size="small"
-                    variant="outlined"
-                  />
-                  <Field
-                    name="smartLocks"
+                    name="smartLock"
                     getOptionLabel={option => option.title}
-                    options={smartLocks}
+                    options={smartLockOptions}
                     component={Autocomplete}
-                    filterSelectedOptions
-                    multiple
                     size="small"
                     textFieldProps={{
-                      label: "Smart lock(s)",
+                      label: "Smart lock",
                       variant: "outlined"
                     }}
                   />
@@ -223,4 +198,4 @@ const AddUserDialog = () => {
   );
 };
 
-export default AddUserDialog;
+export default AddUserSmartLockDialog;

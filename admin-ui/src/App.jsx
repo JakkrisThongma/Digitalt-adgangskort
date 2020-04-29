@@ -5,7 +5,7 @@ import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { theme } from "./styles";
 import Routes from "./Router";
-import "src/styles/App.css";
+import "@/styles/App.css";
 import { Store } from "./store";
 
 const browserHistory = createBrowserHistory();

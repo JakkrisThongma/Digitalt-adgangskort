@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Grid,
   Typography,
@@ -8,22 +8,16 @@ import {
   Dialog,
   Button
 } from "@material-ui/core";
-import { makeStyles, fade } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
 import { Formik, Form, Field } from "formik";
 import { object } from "yup";
 import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
-import { addGroup } from "src/actions/groupActions";
-
-import { closeAddDialog } from "src/actions/uiActions";
-import {
-  azureAdContext,
-  groupContext,
-  smartLockContext,
-  uiContext
-} from "src/store";
-import useDidMountEffect from "src/helpers/useDidMountEffect";
+import { closeAddDialog } from "@/actions/uiActions";
+import { groupContext, smartLockContext, uiContext } from "@/store";
+import useDidMountEffect from "@/helpers/useDidMountEffect";
+import { addSmartLockGroup } from "@/actions/smartLockActions";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -40,38 +34,59 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   group: {},
-  smartLocks: {}
+  smartLock: {}
 };
 
 const validationSchema = object().shape({
   group: object(),
-  smartLocks: object()
+  smartLock: object()
+    .required("Smart lock is required")
+    .nullable()
 });
 
+const filterOptions = (arr1, arr2) => {
+  return arr1.filter(el1 => {
+    return (
+      arr2.filter(el2 => {
+        return el2.id === el1.id;
+      }).length === 0
+    );
+  });
+};
 const AddGroupSmartLockDialog = () => {
   const classes = useStyles();
 
   const [groupState, groupDispatch] = useContext(groupContext);
-  const { group, groupError, loading, addFailed, addSucceed } = groupState;
+  const { group, groupError, groupSmartLocks } = groupState;
 
   const [groupOptions, setGroupOptions] = useState([]);
+  const [smartLockOptions, setsmartLockOptions] = useState([]);
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError } = smartLockState;
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const {
+    smartLocks,
+    error: smartLockError,
+    addFailed,
+    addSucceed
+  } = smartLockState;
+  const { enqueueSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     setGroupOptions([group]);
   }, [group]);
 
-
+  useDidMountEffect(() => {
+    const filterdOptions = filterOptions(smartLocks, groupSmartLocks);
+    setsmartLockOptions(filterdOptions);
+  }, [smartLocks]);
 
   useDidMountEffect(() => {
+    const msg = smartLockError.message;
     if (addFailed) {
-      enqueueSnackbar("Add group failed", {
+      enqueueSnackbar(`Error: ${msg}`, {
         variant: "error"
       });
     }
@@ -79,9 +94,10 @@ const AddGroupSmartLockDialog = () => {
 
   useDidMountEffect(() => {
     if (addSucceed) {
-      enqueueSnackbar("Group added successfully", {
+      enqueueSnackbar("Smart lock added successfully", {
         variant: "success"
       });
+      uiDispatch(closeAddDialog);
     }
   }, [addSucceed]);
 
@@ -91,13 +107,13 @@ const AddGroupSmartLockDialog = () => {
 
   const handleAddClick = values => {
     const payload = {
-      id: values.group.id,
-      smartLockGroups: values.smartLocks.map(smartLock => ({
-        smartLockId: smartLock.id
-      }))
+      groupId: group.id
     };
-    groupDispatch(dispatch => addGroup(dispatch, payload));
-    uiDispatch(closeAddDialog);
+    smartLockDispatch(dispatch =>
+      addSmartLockGroup(dispatch, values.smartLock.id, payload)
+    );
+    const filterdOptions = filterOptions(smartLocks, groupSmartLocks);
+    setsmartLockOptions(filterdOptions);
   };
 
   return (
@@ -124,6 +140,7 @@ const AddGroupSmartLockDialog = () => {
               initialValues={initialValues}
               validationSchema={validationSchema}
               validateOnChange
+              enableReinitialize
               onSubmit={values => handleAddClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
@@ -134,7 +151,7 @@ const AddGroupSmartLockDialog = () => {
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    value={group ? group : {}}
+                    value={group || {}}
                     size="small"
                     disabled
                     textFieldProps={{
@@ -143,11 +160,10 @@ const AddGroupSmartLockDialog = () => {
                       variant: "outlined"
                     }}
                   />
-
                   <Field
-                    name="smartLocks"
+                    name="smartLock"
                     getOptionLabel={option => option.title}
-                    options={smartLocks}
+                    options={smartLockOptions}
                     component={Autocomplete}
                     size="small"
                     textFieldProps={{
@@ -167,6 +183,7 @@ const AddGroupSmartLockDialog = () => {
                       className={classes.button}
                       variant="contained"
                       color="primary"
+                      disabled={!formik.dirty}
                       type="submit">
                       Add
                     </Button>

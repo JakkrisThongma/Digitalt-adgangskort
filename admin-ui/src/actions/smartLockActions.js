@@ -45,15 +45,7 @@ import {
   DELETE_SMART_LOCK_USER_FAILED,
   DELETE_SMART_LOCK_USER_PENDING,
   DELETE_SMART_LOCK_USER_SUCCEEDED,
-  SET_SELECTED_SMART_LOCK_ID,
-  OPEN_ADD_SMART_LOCK_DIALOG,
-  CLOSE_ADD_SMART_LOCK_DIALOG,
-  OPEN_EDIT_SMART_LOCK_DIALOG,
-  CLOSE_EDIT_SMART_LOCK_DIALOG,
-  OPEN_DELETE_SMART_LOCK_DIALOG,
-  CLOSE_DELETE_SMART_LOCK_DIALOG,
-  OPEN_VIEW_SMART_LOCK_DIALOG,
-  CLOSE_VIEW_SMART_LOCK_DIALOG
+  SET_SELECTED_SMART_LOCK_ID
 } from "./actionTypes";
 
 const getSmartLocks = dispatch => {
@@ -268,50 +260,6 @@ const setSelectedSmartLockId = (dispatch, smartLockId) => {
   });
 };
 
-const openAddSmartLockDialog = dispatch => {
-  dispatch({
-    type: OPEN_ADD_SMART_LOCK_DIALOG
-  });
-};
-const closeAddSmartLockDialog = dispatch => {
-  dispatch({
-    type: CLOSE_ADD_SMART_LOCK_DIALOG
-  });
-};
-
-const openEditSmartLockDialog = dispatch => {
-  dispatch({
-    type: OPEN_EDIT_SMART_LOCK_DIALOG
-  });
-};
-const closeEditSmartLockDialog = dispatch => {
-  dispatch({
-    type: CLOSE_EDIT_SMART_LOCK_DIALOG
-  });
-};
-
-const openDeleteSmartLockDialog = dispatch => {
-  dispatch({
-    type: OPEN_DELETE_SMART_LOCK_DIALOG
-  });
-};
-const closeDeleteSmartLockDialog = dispatch => {
-  dispatch({
-    type: CLOSE_DELETE_SMART_LOCK_DIALOG
-  });
-};
-
-const openViewSmartLockDialog = dispatch => {
-  dispatch({
-    type: OPEN_VIEW_SMART_LOCK_DIALOG
-  });
-};
-const closeViewSmartLockDialog = dispatch => {
-  dispatch({
-    type: CLOSE_VIEW_SMART_LOCK_DIALOG
-  });
-};
-
 export {
   getSmartLocks,
   addSmartLock,
@@ -324,13 +272,5 @@ export {
   getSmartLockGroups,
   addSmartLockGroup,
   deleteSmartLockGroup,
-  setSelectedSmartLockId,
-  openAddSmartLockDialog,
-  closeAddSmartLockDialog,
-  openEditSmartLockDialog,
-  closeEditSmartLockDialog,
-  openDeleteSmartLockDialog,
-  closeDeleteSmartLockDialog,
-  openViewSmartLockDialog,
-  closeViewSmartLockDialog
+  setSelectedSmartLockId
 };
