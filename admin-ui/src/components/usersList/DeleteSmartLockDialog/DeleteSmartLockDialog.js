@@ -2,7 +2,7 @@
 
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import SlideTransition from "@/components/SlideTransition";
 import { userContext, smartLockContext, uiContext } from "@/store";
 import { deleteSmartLockUser } from "@/actions/smartLockActions";

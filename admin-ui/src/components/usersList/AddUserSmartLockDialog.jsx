@@ -16,9 +16,11 @@ import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
 import { closeAddDialog } from "@/actions/uiActions";
 import { userContext, smartLockContext, uiContext } from "@/store";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { addSmartLockUser } from "@/actions/smartLockActions";
+import helpers from "@/helpers";
 
+const { filterOptions } = helpers;
 const useStyles = makeStyles(theme => ({
   form: {
     display: "flex",
@@ -44,15 +46,6 @@ const validationSchema = object().shape({
     .nullable()
 });
 
-const filterOptions = (arr1, arr2) => {
-  return arr1.filter(el1 => {
-    return (
-      arr2.filter(el2 => {
-        return el2.id === el1.id;
-      }).length === 0
-    );
-  });
-};
 const AddUserSmartLockDialog = () => {
   const classes = useStyles();
 
@@ -168,7 +161,8 @@ const AddUserSmartLockDialog = () => {
                     size="small"
                     textFieldProps={{
                       label: "Smart lock",
-                      variant: "outlined"
+                      variant: "outlined",
+                      required: true
                     }}
                   />
                   <DialogActions>

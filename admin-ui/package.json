@@ -29,6 +29,7 @@
     "express": "^4.17.1",
     "formik": "^2.1.4",
     "formik-material-ui": "^2.0.0-beta.1",
+    "lodash": "^4.17.15",
     "material-table": "^1.57.2",
     "material-ui-chip-input": "^1.1.0",
     "material-ui-formik-components": "^0.6.1",

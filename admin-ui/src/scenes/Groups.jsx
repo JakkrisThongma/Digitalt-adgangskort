@@ -11,7 +11,7 @@ import {
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { useSnackbar } from "notistack";
 import {
   AddGroupDialog,

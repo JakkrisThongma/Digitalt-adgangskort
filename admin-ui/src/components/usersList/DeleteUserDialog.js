@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
 import { deleteUser } from "@/actions/userActions";
 import { userContext, uiContext } from "@/store/Store";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { closeDeleteDialog } from "@/actions/uiActions";
 import DeleteDialog from "@/components/DeleteDialog";
 import SlideTransition from "@/components/SlideTransition";

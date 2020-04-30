@@ -4,25 +4,25 @@ import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
 import useDidMountEffect from "@/extensions/useDidMountEffect";
 import SlideTransition from "@/components/SlideTransition";
-import { groupContext, smartLockContext, uiContext } from "@/store";
-import { deleteSmartLockGroup } from "@/actions/smartLockActions";
+import { smartLockContext, userContext, uiContext } from "@/store";
+import { deleteSmartLockUser } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
 import DeleteDialog from "@/components/DeleteDialog";
 
-const DeleteSmartLockDialog = () => {
+const DeleteSmartLockUserDialog = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [groupState] = useContext(groupContext);
-  const { selectedGroupId } = groupState;
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const { selectedSmartLockId, deleteFailed, deleteSucceed } = smartLockState;
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { deleteDialogOpen } = uiState;
 
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { selectedSmartLockId, deleteFailed, deleteSucceed } = smartLockState;
+  const [userState, userDispatch] = useContext(userContext);
+  const { selectedUserId } = userState;
 
   useDidMountEffect(() => {
     if (deleteFailed) {
-      enqueueSnackbar("Delete smart lock failed", {
+      enqueueSnackbar("Delete user failed", {
         variant: "error"
       });
     }
@@ -30,7 +30,7 @@ const DeleteSmartLockDialog = () => {
 
   useDidMountEffect(() => {
     if (deleteSucceed) {
-      enqueueSnackbar("Smart lock deleted successfully", {
+      enqueueSnackbar("User deleted successfully", {
         variant: "success"
       });
     }
@@ -42,7 +42,7 @@ const DeleteSmartLockDialog = () => {
 
   const handleDeleteClick = () => {
     smartLockDispatch(dispatch =>
-      deleteSmartLockGroup(dispatch, selectedSmartLockId, selectedGroupId)
+      deleteSmartLockUser(dispatch, selectedSmartLockId, selectedUserId)
     );
     uiDispatch(closeDeleteDialog);
   };
@@ -61,15 +61,15 @@ const DeleteSmartLockDialog = () => {
   ];
   return (
     <DeleteDialog
-      title="Delete group smart lock"
+      title="Delete user"
       open={deleteDialogOpen}
       TransitionComponent={SlideTransition}
       keepMounted
       onClose={handleCancelClick}
       actions={actions}>
-      Are you sure you want to delete this smart lock?
+      Are you sure you want to delete this user from smart lock?
     </DeleteDialog>
   );
 };
 
-export default DeleteSmartLockDialog;
+export default DeleteSmartLockUserDialog;

@@ -14,18 +14,18 @@ import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
-import { addGroup, closeAddGroupDialog } from "../../actions/groupActions";
+import { addGroup, closeAddGroupDialog } from "@/actions/groupActions";
 
-import { getAzureAdGroups } from "../../actions/azureAdActions";
-import { closeAddDialog } from "../../actions/uiActions";
+import { getAzureAdGroups } from "@/actions/azureAdActions";
+import { closeAddDialog } from "@/actions/uiActions";
 import {
   azureAdContext,
   groupContext,
   smartLockContext,
   statusOptions,
   uiContext
-} from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
+} from "@/store";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 
 const useStyles = makeStyles(theme => ({
   form: {

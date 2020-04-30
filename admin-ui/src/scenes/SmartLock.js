@@ -10,24 +10,29 @@ import {
   getSmartLock,
   getSmartLockUsers,
   setSelectedSmartLockId,
-  getSmartLocks,
   getSmartLockGroups
 } from "@/actions/smartLockActions";
 
-import { groupContext, smartLockContext, uiContext } from "@/store";
+import {
+  groupContext,
+  smartLockContext,
+  uiContext,
+  userContext
+} from "@/store";
 import ViewMaterialTable from "@/components/ViewMaterialTable";
 import TabPanel from "@/components/TabPanel";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 
 import SmartLockInfo from "@/components/smartLock/SmartLockInfo/SmartLockInfo";
+import { getGroups, setSelectedGroupId } from "@/actions/groupActions";
+import DeleteSmartLockGroupDialog from "@/components/smartLock/DeleteSmartLockGroupDialog";
+import DeleteSmartLockUserDialog from "@/components/smartLock/DeleteSmartLockUserDialog";
+import { getUsers, setSelectedUserId } from "@/actions/userActions";
 import {
-  getGroup,
-  getGroups,
-  setSelectedGroupId
-} from "@/actions/groupActions";
-// import DeleteSmartLockDialog from "@/components/smartLock/DeleteSmartLockDialog";
-// import AddSmartLockSmartLockDialog from "@/components/smartLock/AddSmartLockSmartLockDialog";
+  AddSmartLockGroupDialog,
+  AddSmartLockUserDialog
+} from "@/components/smartLock";
 
 const userColumns = [
   { title: "User Id", field: "id", editable: "never", sorting: false },
@@ -94,11 +99,12 @@ const SmartLock = ({ match }) => {
     selectedSmartLockId,
     smartLockGroups,
     smartLockUsers,
-    loading: smartLockLoading
+    loading: smartLockLoading,
+    didInvalidate
   } = smartLockState;
 
-  const [groupState, groupDispatch, didInvalidate] = useContext(groupContext);
-  const { smartLocks, smartLockError } = smartLockState;
+  const [groupState, groupDispatch] = useContext(groupContext);
+  const [userState, userDispatch] = useContext(userContext);
 
   const [uiState, uiDispatch] = useContext(uiContext);
 
@@ -123,9 +129,20 @@ const SmartLock = ({ match }) => {
     uiDispatch(openDeleteDialog);
   };
 
+  const handleDeleteUserClick = userId => {
+    userDispatch(dispatch => setSelectedUserId(dispatch, userId));
+    uiDispatch(openDeleteDialog);
+  };
+
   const handleAddGroupClick = event => {
     event.stopPropagation();
     groupDispatch(getGroups);
+    uiDispatch(openAddDialog);
+  };
+
+  const handleAddUserClick = event => {
+    event.stopPropagation();
+    userDispatch(getUsers);
     uiDispatch(openAddDialog);
   };
 
@@ -133,6 +150,10 @@ const SmartLock = ({ match }) => {
     if (didInvalidate) {
       smartLockDispatch(dispatch =>
         getSmartLockGroups(dispatch, selectedSmartLockId)
+      );
+
+      smartLockDispatch(dispatch =>
+        getSmartLockUsers(dispatch, selectedSmartLockId)
       );
     }
   }, [didInvalidate]);
@@ -181,19 +202,23 @@ const SmartLock = ({ match }) => {
               actions={[
                 {
                   icon: Delete,
-                  tooltip:
-                    "Delete",
-                  onClick: () => null
+                  tooltip: "Delete",
+                  onClick: (event, rowData) => {
+                    event.stopPropagation();
+                    handleDeleteUserClick(rowData.id);
+                  }
                 },
                 {
                   icon: () => <AddBox fontSize="large" />,
                   tooltip: "Add",
                   isFreeAction: true,
-                  onClick: () => null
+                  onClick: event => handleAddUserClick(event)
                 }
               ]}
               style={{ boxShadow: "0" }}
             />
+            <DeleteSmartLockUserDialog />
+            <AddSmartLockUserDialog />
           </TabPanel>
           <TabPanel value={tabIndex} index={2}>
             <ViewMaterialTable
@@ -218,11 +243,12 @@ const SmartLock = ({ match }) => {
               ]}
               style={{ boxShadow: "0" }}
             />
+
+            <AddSmartLockGroupDialog />
+            <DeleteSmartLockGroupDialog />
           </TabPanel>
         </div>
       </Paper>
-      {/* <DeleteSmartLockDialog /> */}
-      {/* <AddSmartLockSmartLockDialog /> */}
     </div>
   );
 };

@@ -6,9 +6,7 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  Button,
-  Backdrop,
-  CircularProgress
+  Button
 } from "@material-ui/core";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import { GroupAdd as GroupAddIcon } from "@material-ui/icons";
@@ -24,8 +22,10 @@ import {
   statusOptions,
   uiContext
 } from "@/store";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { closeEditDialog } from "@/actions/uiActions";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -86,21 +86,15 @@ const EditGroupDialog = () => {
   const [uiState, uiDispatch] = useContext(uiContext);
   const { editDialogOpen } = uiState;
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     setFormData({
       ...formData,
       group: group || {},
-      status: group ? group.status.toLowerCase() : "inactive"
+      status: group ? group.status.toLowerCase() : "inactive",
+      smartLocks: groupSmartLocks || []
     });
     setGroupOptions([group]);
-  }, [group]);
-
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      smartLocks: groupSmartLocks
-    });
-  }, [groupSmartLocks]);
+  }, [group, groupSmartLocks]);
 
   useDidMountEffect(() => {
     if (updateFailed) {
@@ -126,7 +120,7 @@ const EditGroupDialog = () => {
     const payload = [
       {
         value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
-        path: "/SmartLockGroups",
+        path: "/smartLockGroups",
         op: "replace"
       },
       {
@@ -261,7 +255,9 @@ const EditGroupDialog = () => {
               )}
             </Formik>
           </div>
-          <Backdrop className={classes.backdrop} open={groupLoading}>
+          <Backdrop
+              className={classes.backdrop}
+              open={groupLoading && editDialogOpen}>
             <CircularProgress color="inherit" />
           </Backdrop>
         </DialogContent>

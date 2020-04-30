@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import useApiRequest from "../reducers/useApiRequest";
+import useApiRequest from "@/extensions/useApiRequest";
 import userReducer from "../reducers/userReducer";
 import groupReducer from "../reducers/groupReducer";
 import smartLockReducer from "../reducers/smartLockReducer";

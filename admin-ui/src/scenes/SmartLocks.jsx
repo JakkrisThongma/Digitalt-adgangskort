@@ -3,14 +3,19 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 import { AddBox, Edit, Delete } from "@material-ui/icons";
 import { Breadcrumbs, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { smartLockContext, groupContext, uiContext } from "@/store";
+import {
+  smartLockContext,
+  groupContext,
+  uiContext,
+  userContext
+} from "@/store";
 import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { useSnackbar } from "notistack";
 
 import {
@@ -18,9 +23,16 @@ import {
   getSmartLocks,
   getSmartLockGroups,
   getSmartLockUsers,
-  setSelectedSmartLockId
+  setSelectedSmartLockId,
+  restSmartLockField
 } from "@/actions/smartLockActions";
-import {getGroups} from "@/actions/groupActions";
+import { getGroups } from "@/actions/groupActions";
+import {
+  DeleteSmartLockDialog,
+  EditSmartLockDialog,
+  AddSmartLockDialog
+} from "@/components/smartLock";
+import { getUsers } from "@/actions/userActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,6 +74,7 @@ const SmartLocks = () => {
     selectedSmartLockId,
     error: smartLockError
   } = smartLockState;
+  const [userState, userDispatch] = useContext(userContext);
   const [groupState, groupDispatch] = useContext(groupContext);
 
   const [uiState, uiDispatch] = useContext(uiContext);
@@ -70,6 +83,7 @@ const SmartLocks = () => {
 
   const handleAddSmartLockClick = () => {
     uiDispatch(openAddDialog);
+    userDispatch(getUsers);
     groupDispatch(getGroups);
   };
 
@@ -85,9 +99,10 @@ const SmartLocks = () => {
       setSelectedSmartLockId(dispatch, smartLockId)
     );
     smartLockDispatch(dispatch => getSmartLock(dispatch, smartLockId));
+    smartLockDispatch(dispatch => getSmartLockUsers(dispatch, smartLockId));
     smartLockDispatch(dispatch => getSmartLockGroups(dispatch, smartLockId));
-    smartLockDispatch(getSmartLocks);
-
+    userDispatch(getUsers);
+    groupDispatch(getGroups);
     uiDispatch(openEditDialog);
   };
 
@@ -161,9 +176,10 @@ const SmartLocks = () => {
                 handleViewSmartLockClick(rowData.id);
               }}
             />
-            {/* <AddsmartLockDialog /> */}
-            {/* <EditsmartLockDialog /> */}
-            {/* <DeletesmartLockDialog /> */}
+
+            <AddSmartLockDialog />
+            <EditSmartLockDialog />
+            <DeleteSmartLockDialog />
           </div>
         </div>
       ) : (

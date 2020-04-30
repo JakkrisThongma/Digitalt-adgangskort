@@ -21,6 +21,7 @@ import { addSmartLockGroup } from "@/actions/smartLockActions";
 import helpers from "@/helpers";
 
 const { filterOptions } = helpers;
+
 const useStyles = makeStyles(theme => ({
   form: {
     display: "flex",
@@ -35,46 +36,48 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const initialValues = {
-  group: {},
-  smartLock: {}
+  smartLock: {},
+  group: {}
 };
 
 const validationSchema = object().shape({
-  group: object(),
-  smartLock: object()
-    .required("Smart lock is required")
+  smartLock: object(),
+  group: object()
+    .required("Group is required")
     .nullable()
 });
 
-const AddGroupSmartLockDialog = () => {
+
+const AddSmartLockGroupDialog = () => {
   const classes = useStyles();
 
-  const [groupState, groupDispatch] = useContext(groupContext);
-  const { group, groupError, groupSmartLocks } = groupState;
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const {
+    smartLock,
+    smartLockError,
+    smartLockGroups,
+    addFailed,
+    addSucceed
+  } = smartLockState;
 
   const [groupOptions, setGroupOptions] = useState([]);
   const [smartLockOptions, setSmartLockOptions] = useState([]);
 
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const {
-    smartLocks,
-    error: smartLockError,
-    addFailed,
-    addSucceed
-  } = smartLockState;
+  const [groupState, groupDispatch] = useContext(groupContext);
+  const { groups, error: groupError } = groupState;
   const { enqueueSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;
 
   useDidMountEffect(() => {
-    setGroupOptions([group]);
-  }, [group]);
+    setSmartLockOptions([smartLock]);
+  }, [smartLock]);
 
   useDidMountEffect(() => {
-    const filterdOptions = filterOptions(smartLocks, groupSmartLocks);
-    setSmartLockOptions(filterdOptions);
-  }, [smartLocks]);
+    const filterdOptions = filterOptions(groups, smartLockGroups);
+    setGroupOptions(filterdOptions);
+  }, [groups]);
 
   useDidMountEffect(() => {
     const msg = smartLockError.message;
@@ -87,7 +90,7 @@ const AddGroupSmartLockDialog = () => {
 
   useDidMountEffect(() => {
     if (addSucceed) {
-      enqueueSnackbar("Smart lock added successfully", {
+      enqueueSnackbar("Group added successfully", {
         variant: "success"
       });
       uiDispatch(closeAddDialog);
@@ -100,13 +103,13 @@ const AddGroupSmartLockDialog = () => {
 
   const handleAddClick = values => {
     const payload = {
-      groupId: group.id
+      groupId: values.group.id
     };
     smartLockDispatch(dispatch =>
-      addSmartLockGroup(dispatch, values.smartLock.id, payload)
+      addSmartLockGroup(dispatch, smartLock.id, payload)
     );
-    const filterdOptions = filterOptions(smartLocks, groupSmartLocks);
-    setSmartLockOptions(filterdOptions);
+    const filterdOptions = filterOptions(groups, smartLockGroups);
+    setGroupOptions(filterdOptions);
   };
 
   return (
@@ -123,7 +126,7 @@ const AddGroupSmartLockDialog = () => {
               <GroupAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add Azure Ad Group</Typography>
+              <Typography variant="h6">Add Group</Typography>
             </Grid>
           </Grid>
         </DialogTitle>
@@ -138,30 +141,29 @@ const AddGroupSmartLockDialog = () => {
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
-                    name="group"
+                    name="smartLock"
                     component={Autocomplete}
-                    options={groupOptions}
+                    options={smartLockOptions}
                     getOptionLabel={option =>
-                      option.displayName ? option.displayName : ""
+                      option.title ? option.title : ""
                     }
-                    value={group || {}}
+                    value={smartLock || {}}
                     size="small"
                     disabled
                     textFieldProps={{
-                      label: "Azure AD group",
+                      label: "Smart lock",
                       required: true,
                       variant: "outlined"
                     }}
                   />
                   <Field
-                    name="smartLock"
-                    getOptionLabel={option => option.title}
-                    options={smartLockOptions}
+                    name="group"
+                    getOptionLabel={option => option.displayName}
+                    options={groupOptions}
                     component={Autocomplete}
                     size="small"
                     textFieldProps={{
-                      label: "Smart lock",
-                      required: true,
+                      label: "Group",
                       variant: "outlined"
                     }}
                   />
@@ -192,4 +194,4 @@ const AddGroupSmartLockDialog = () => {
   );
 };
 
-export default AddGroupSmartLockDialog;
+export default AddSmartLockGroupDialog;

@@ -19,7 +19,7 @@ import {
 import { groupContext, smartLockContext, uiContext } from "@/store";
 import ViewMaterialTable from "@/components/ViewMaterialTable";
 import TabPanel from "@/components/TabPanel";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 
 import GroupInfo from "@/components/group/GroupInfo/GroupInfo";

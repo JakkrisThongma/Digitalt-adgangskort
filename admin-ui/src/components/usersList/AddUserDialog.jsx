@@ -26,8 +26,8 @@ import {
   smartLockContext,
   statusOptions,
   uiContext
-} from "../../store";
-import useDidMountEffect from "../../helpers/useDidMountEffect";
+} from "@/store";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 
 const useStyles = makeStyles(theme => ({
   form: {

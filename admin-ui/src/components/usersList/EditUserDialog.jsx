@@ -6,9 +6,7 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  Button,
-  Backdrop,
-  CircularProgress
+  Button
 } from "@material-ui/core";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import { PersonAdd as UserAddIcon } from "@material-ui/icons";
@@ -24,8 +22,10 @@ import {
   statusOptions,
   uiContext
 } from "@/store";
-import useDidMountEffect from "@/helpers/useDidMountEffect";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { closeEditDialog } from "@/actions/uiActions";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "black",
-    backgroundColor: fade("#ffffff", 0.4)
+    backgroundColor: fade("#ffffff", 0.0)
   },
   chip: {
     margin: theme.spacing(0.5)
@@ -86,21 +86,15 @@ const EditUserDialog = () => {
   const [uiState, uiDispatch] = useContext(uiContext);
   const { editDialogOpen } = uiState;
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     setFormData({
       ...formData,
       user: user || {},
-      status: user ? user.status.toLowerCase() : "inactive"
+      status: user ? user.status.toLowerCase() : "inactive",
+      smartLocks: userSmartLocks || []
     });
     setUserOptions([user]);
-  }, [user]);
-
-  useEffect(() => {
-    setFormData({
-      ...formData,
-      smartLocks: userSmartLocks
-    });
-  }, [userSmartLocks]);
+  }, [user, userSmartLocks]);
 
   useDidMountEffect(() => {
     if (updateFailed) {
@@ -126,7 +120,7 @@ const EditUserDialog = () => {
     const payload = [
       {
         value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
-        path: "/SmartLockUsers",
+        path: "/smartLockUsers",
         op: "replace"
       },
       {
@@ -261,7 +255,9 @@ const EditUserDialog = () => {
               )}
             </Formik>
           </div>
-          <Backdrop className={classes.backdrop} open={userLoading}>
+          <Backdrop
+            className={classes.backdrop}
+            open={userLoading && editDialogOpen}>
             <CircularProgress color="inherit" />
           </Backdrop>
         </DialogContent>

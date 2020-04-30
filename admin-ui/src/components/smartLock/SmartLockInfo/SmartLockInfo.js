@@ -1,6 +1,8 @@
 import { Box, Typography } from "@material-ui/core";
 import React from "react";
-import dateParser from "../../../helpers/dateParser";
+import helpers from "@/helpers";
+
+const { dateParser } = helpers;
 
 const SmartLockInfo = ({ smartLock }) => {
   return (

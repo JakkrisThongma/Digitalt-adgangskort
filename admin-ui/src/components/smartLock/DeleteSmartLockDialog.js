@@ -2,23 +2,20 @@
 
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
+import { deleteSmartLock } from "@/actions/smartLockActions";
+import { smartLockContext, uiContext } from "@/store";
 import useDidMountEffect from "@/extensions/useDidMountEffect";
-import SlideTransition from "@/components/SlideTransition";
-import { groupContext, smartLockContext, uiContext } from "@/store";
-import { deleteSmartLockGroup } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
 import DeleteDialog from "@/components/DeleteDialog";
+import SlideTransition from "@/components/SlideTransition";
 
 const DeleteSmartLockDialog = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [groupState] = useContext(groupContext);
-  const { selectedGroupId } = groupState;
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const { selectedSmartLockId, deleteFailed, deleteSucceed } = smartLockState;
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { deleteDialogOpen } = uiState;
-
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { selectedSmartLockId, deleteFailed, deleteSucceed } = smartLockState;
 
   useDidMountEffect(() => {
     if (deleteFailed) {
@@ -42,8 +39,9 @@ const DeleteSmartLockDialog = () => {
 
   const handleDeleteClick = () => {
     smartLockDispatch(dispatch =>
-      deleteSmartLockGroup(dispatch, selectedSmartLockId, selectedGroupId)
+      deleteSmartLock(dispatch, selectedSmartLockId)
     );
+
     uiDispatch(closeDeleteDialog);
   };
 
@@ -59,9 +57,10 @@ const DeleteSmartLockDialog = () => {
       onClick: handleDeleteClick
     }
   ];
+
   return (
     <DeleteDialog
-      title="Delete group smart lock"
+      title="Delete smartLock"
       open={deleteDialogOpen}
       TransitionComponent={SlideTransition}
       keepMounted
