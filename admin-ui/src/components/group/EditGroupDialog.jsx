@@ -26,6 +26,10 @@ import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { closeEditDialog } from "@/actions/uiActions";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { isEqual } from "lodash";
+import helpers from "@/helpers";
+
+const { isArrayEqual } = helpers;
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -77,6 +81,8 @@ const EditGroupDialog = () => {
   } = groupState;
 
   const [formData, setFormData] = useState(initialValues);
+  const [oldFormData, setOldFormData] = useState(initialValues);
+
   const [groupOptions, setGroupOptions] = useState([]);
 
   const [smartLockState] = useContext(smartLockContext);
@@ -87,12 +93,14 @@ const EditGroupDialog = () => {
   const { editDialogOpen } = uiState;
 
   useDidMountEffect(() => {
-    setFormData({
+    const newFormData = {
       ...formData,
       group: group || {},
       status: group ? group.status.toLowerCase() : "inactive",
       smartLocks: groupSmartLocks || []
-    });
+    };
+    setFormData(newFormData);
+    setOldFormData(newFormData);
     setGroupOptions([group]);
   }, [group, groupSmartLocks]);
 
@@ -117,18 +125,26 @@ const EditGroupDialog = () => {
   };
 
   const handleEditClick = values => {
-    const payload = [
-      {
-        value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
-        path: "/smartLockGroups",
-        op: "replace"
-      },
-      {
-        value: values.status,
-        path: "/status",
-        op: "replace"
-      }
-    ];
+    if (isEqual(oldFormData, formData)) return;
+
+    const payload = [];
+    const statusPayload = {
+      value: values.status,
+      path: "/status",
+      op: "replace"
+    };
+    const smartLocksPayload = {
+      value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
+      path: "/smartLockGroups",
+      op: "replace"
+    };
+
+    if (oldFormData.status !== formData.status) payload.push(statusPayload);
+
+    if (!isArrayEqual(oldFormData.smartLocks, formData.smartLocks))
+      payload.push(smartLocksPayload);
+
+    if (payload.length === 0) return;
 
     groupDispatch(dispatch => updateGroup(dispatch, values.group.id, payload));
     if (groupError) {
@@ -256,8 +272,8 @@ const EditGroupDialog = () => {
             </Formik>
           </div>
           <Backdrop
-              className={classes.backdrop}
-              open={groupLoading && editDialogOpen}>
+            className={classes.backdrop}
+            open={groupLoading && editDialogOpen}>
             <CircularProgress color="inherit" />
           </Backdrop>
         </DialogContent>

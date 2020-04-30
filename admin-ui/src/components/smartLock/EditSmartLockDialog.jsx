@@ -14,10 +14,7 @@ import { Formik, Form, Field } from "formik";
 import { object, string, array } from "yup";
 import { Autocomplete, Select, TextField } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
-import {
-  setSelectedSmartLockId,
-  updateSmartLock
-} from "@/actions/smartLockActions";
+import { updateSmartLock } from "@/actions/smartLockActions";
 import { closeEditDialog } from "@/actions/uiActions";
 import {
   groupContext,
@@ -29,6 +26,7 @@ import {
 import useDidMountEffect from "@/extensions/useDidMountEffect";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { isEqual } from "lodash";
 import helpers from "@/helpers";
 
 const { isArrayEqual } = helpers;
@@ -89,7 +87,6 @@ const EditSmartLockDialog = () => {
 
   const [formData, setFormData] = useState(initialValues);
   const [oldFormData, setOldFormData] = useState(initialValues);
-  const oldFormRef = useRef();
   const [userState, userDispatch] = useContext(userContext);
   const { users, loading: userLoading } = userState;
 

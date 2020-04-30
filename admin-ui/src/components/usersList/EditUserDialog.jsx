@@ -15,6 +15,7 @@ import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
 import { updateUser } from "@/actions/userActions";
+import helpers from "@/helpers";
 
 import {
   userContext,
@@ -26,6 +27,9 @@ import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { closeEditDialog } from "@/actions/uiActions";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { isEqual } from "lodash";
+
+const { isArrayEqual } = helpers;
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -77,6 +81,7 @@ const EditUserDialog = () => {
   } = userState;
 
   const [formData, setFormData] = useState(initialValues);
+  const [oldFormData, setOldFormData] = useState(initialValues);
   const [userOptions, setUserOptions] = useState([]);
 
   const [smartLockState] = useContext(smartLockContext);
@@ -87,12 +92,14 @@ const EditUserDialog = () => {
   const { editDialogOpen } = uiState;
 
   useDidMountEffect(() => {
-    setFormData({
+    const newFormData = {
       ...formData,
       user: user || {},
       status: user ? user.status.toLowerCase() : "inactive",
       smartLocks: userSmartLocks || []
-    });
+    };
+    setFormData(newFormData);
+    setOldFormData(newFormData);
     setUserOptions([user]);
   }, [user, userSmartLocks]);
 
@@ -117,23 +124,27 @@ const EditUserDialog = () => {
   };
 
   const handleEditClick = values => {
-    const payload = [
-      {
-        value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
-        path: "/smartLockUsers",
-        op: "replace"
-      },
-      {
-        value: values.status,
-        path: "/status",
-        op: "replace"
-      }
-    ];
+    if (isEqual(oldFormData, formData)) return;
+    const payload = [];
+    const smartLocksPayload = {
+      value: values.smartLocks.map(sl => ({ smartLockId: sl.id })),
+      path: "/smartLockUsers",
+      op: "replace"
+    };
+
+    const statusPayload = {
+      value: values.status,
+      path: "/status",
+      op: "replace"
+    };
+    if (oldFormData.status !== formData.status) payload.push(statusPayload);
+
+    if (!isArrayEqual(oldFormData.smartLocks, formData.smartLocks))
+      payload.push(smartLocksPayload);
+
+    if (payload.length === 0) return;
 
     userDispatch(dispatch => updateUser(dispatch, values.user.id, payload));
-    if (userError) {
-      console.log(userError);
-    }
     uiDispatch(closeEditDialog);
   };
 
