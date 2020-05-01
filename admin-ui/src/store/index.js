@@ -4,6 +4,7 @@ export {
   groupContext,
   smartLockContext,
   azureAdContext,
-  uiContext
+  uiContext,
+  accessLogContext
 } from "./Store";
 export { default as statusOptions } from "./statusOptions";

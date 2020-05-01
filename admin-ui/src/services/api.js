@@ -270,6 +270,14 @@ export function getAzureAdGroupMembers(groupId) {
   }).then(res => Promise.resolve(res.data));
 }
 
+// Access Log
+export function getAccessLog() {
+  return http({
+    method: "GET",
+    url: "access-log"
+  }).then(res => Promise.resolve(res.data));
+}
+
 // Operational endpoints
 export function checkApiHealth() {
   return http({

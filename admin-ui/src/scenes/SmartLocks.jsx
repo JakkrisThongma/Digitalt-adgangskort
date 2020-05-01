@@ -24,7 +24,6 @@ import {
   getSmartLockGroups,
   getSmartLockUsers,
   setSelectedSmartLockId,
-  restSmartLockField
 } from "@/actions/smartLockActions";
 import { getGroups } from "@/actions/groupActions";
 import {
@@ -47,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const smartLockColumns = [
-  { title: "smartLock Id", field: "id", sorting: false },
+  { title: "SmartLock Id", field: "id", sorting: false },
   {
     title: "Title",
     field: "title",
