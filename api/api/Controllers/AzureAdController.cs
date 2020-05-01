@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using api.Constants;
 using api.Helpers;
 using api.Models;
 using api.Repositories;
@@ -86,7 +85,7 @@ namespace api.Controllers
         }
 
 
-        [HttpGet("users/{userId}", Name = RouteNames.UserById)]
+        [HttpGet("users/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -129,7 +128,7 @@ namespace api.Controllers
             }
         }
 
-        [HttpGet("users/{userId}/photo", Name = RouteNames.PhotoByUserId)]
+        [HttpGet("users/{userId}/photo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -230,7 +229,7 @@ namespace api.Controllers
         }
 
 
-        [HttpGet("groups/{groupId}", Name = RouteNames.GroupById)]
+        [HttpGet("groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -264,7 +263,7 @@ namespace api.Controllers
             }
         }
 
-        [HttpGet("groups/{groupId}/members", Name = RouteNames.GroupMembersByGroupId)]
+        [HttpGet("groups/{groupId}/members")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

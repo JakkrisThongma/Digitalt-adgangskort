@@ -225,6 +225,23 @@ namespace api.Services
                     SmartLockId = smartLock6.Id
                 });
 
+            var accessLog1 = new Access
+            {
+                UserId = Guid.Parse("48984ABA-64E1-4EEF-B2BD-AF2061CB2616"),
+                SmartLockId = Guid.Parse("0F90217C-1709-4771-8669-57C89FCA2F3D"),
+                IsValid = true
+            };
+            
+            var accessLog2 = new Access
+            {
+                UserId = Guid.Parse("48984aba-64e1-4eef-b2bd-af2061cb2616"),
+                GroupId = Guid.Parse("1933c967-2e14-4e95-bdb0-54723595672d"),
+                SmartLockId = Guid.Parse("064259D2-237F-4237-9127-1683573E1190"),
+                IsValid = true
+            };
+            
+            context.AccessLog.AddRange(accessLog1, accessLog2);
+
             context.SaveChanges();
         }
     }
