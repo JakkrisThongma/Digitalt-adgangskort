@@ -4,7 +4,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { theme } from "./styles";
-import Routes from "./Router";
+import Routes from "./router";
 import "@/styles/App.css";
 import { Store } from "./store";
 
