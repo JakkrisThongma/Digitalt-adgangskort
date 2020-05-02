@@ -2,11 +2,11 @@ import React from "react";
 import MaterialTable from "material-table";
 import tableIcons from "@/components/MaterialTableIcons";
 
-const EnhancedMaterialTable = props => {
+const EnhancedMaterialTable = ({ title, ...rest }) => {
   return (
     <MaterialTable
-      {...props}
-      title=""
+      {...rest}
+      title={title || ""}
       icons={tableIcons}
       options={{
         actionsColumnIndex: -1,
