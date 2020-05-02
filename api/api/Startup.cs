@@ -108,16 +108,17 @@ namespace api
                 });
             });
             services.AddSwaggerGenNewtonsoftSupport();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityService, AzureAdIdentityService>();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IAccessesService, AccessesService>();
             
             services.AddScoped<IAzureAdRepository, AzureAdRepository>();
             services.AddScoped<ISmartLockRepository, SmartLockRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
-            services.AddScoped<IAccessLogRepository, AccessLogRepository>();
+            services.AddScoped<IAccessRepository, AccessRepository>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddDbContext<ApiContext>(opt =>
