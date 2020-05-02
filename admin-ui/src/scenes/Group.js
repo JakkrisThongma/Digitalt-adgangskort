@@ -67,6 +67,9 @@ const useStyles = makeStyles(theme => ({
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`
   },
+  tab: {
+    marginRight: theme.spacing(3)
+  },
   paper: {
     marginTop: theme.spacing(3),
     display: "flex",
@@ -165,9 +168,13 @@ const Group = ({ match }) => {
             onChange={handleTabChange}
             aria-label="Vertical tabs example"
             className={classes.tabs}>
-            <Tab label="Info" {...a11yProps(0)} />
-            <Tab label="Users" {...a11yProps(1)} />
-            <Tab label="Smart Locks" {...a11yProps(2)} />
+            <Tab className={classes.tab} label="Info" {...a11yProps(0)} />
+            <Tab className={classes.tab} label="Users" {...a11yProps(1)} />
+            <Tab
+              className={classes.tab}
+              label="Smart Locks"
+              {...a11yProps(2)}
+            />
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
             <GroupInfo group={group} />
