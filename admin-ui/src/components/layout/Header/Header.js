@@ -13,9 +13,6 @@ import { Link as RouterLink } from "react-router-dom";
 import Sidebar from "../Sidebar";
 
 const useStyles = makeStyles(theme => ({
-  grow: {
-    flexGrow: 1
-  },
   appBar: {
     backgroundColor: theme.palette.background.paper
   },
@@ -62,51 +59,49 @@ const Header = () => {
   };
 
   return (
-    <div className={classes.grow}>
-      <AppBar position="static" className={classes.appBar}>
-        <Toolbar>
-          <Sidebar open={open} toggleDrawer={toggleDrawer} />
+    <AppBar position="static" className={classes.appBar}>
+      <Toolbar>
+        <Sidebar open={open} toggleDrawer={toggleDrawer} />
 
-          <IconButton
-            edge="start"
-            className={clsx(classes.sectionMobile, classes.menuButton)}
-            color="inherit"
-            aria-label="open drawer"
-            onClick={toggleDrawer()}>
-            <MenuIcon />
-          </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
-            Digital Access Card
-          </Typography>
-          <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
-            <Button
-              className={classes.navElement}
-              component={RouterLink}
-              to="/dashboard">
-              Dashboard
-            </Button>
-            <Button
-              className={classes.navElement}
-              component={RouterLink}
-              to="/users">
-              Users
-            </Button>
-            <Button
-              className={classes.navElement}
-              component={RouterLink}
-              to="/groups">
-              Groups
-            </Button>
-            <Button
-              className={classes.navElement}
-              component={RouterLink}
-              to="/smart-locks">
-              Smart locks
-            </Button>
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
+        <IconButton
+          edge="start"
+          className={clsx(classes.sectionMobile, classes.menuButton)}
+          color="inherit"
+          aria-label="open drawer"
+          onClick={toggleDrawer()}>
+          <MenuIcon />
+        </IconButton>
+        <Typography className={classes.title} variant="h6" noWrap>
+          Digital Access Card
+        </Typography>
+        <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
+          <Button
+            className={classes.navElement}
+            component={RouterLink}
+            to="/dashboard">
+            Dashboard
+          </Button>
+          <Button
+            className={classes.navElement}
+            component={RouterLink}
+            to="/users">
+            Users
+          </Button>
+          <Button
+            className={classes.navElement}
+            component={RouterLink}
+            to="/groups">
+            Groups
+          </Button>
+          <Button
+            className={classes.navElement}
+            component={RouterLink}
+            to="/smart-locks">
+            Smart locks
+          </Button>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 

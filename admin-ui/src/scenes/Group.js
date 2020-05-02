@@ -56,8 +56,7 @@ const smartLocksColumns = [
 ];
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%",
-    padding: theme.spacing(3)
+    width: "100%"
   },
   tabPanel: {
     width: "100%",

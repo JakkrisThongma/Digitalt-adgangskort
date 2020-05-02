@@ -25,9 +25,7 @@ import { getGroups } from "@/actions/groupActions";
 import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3)
-  },
+  root: {},
   paper: {
     marginBottom: theme.spacing(3)
   }

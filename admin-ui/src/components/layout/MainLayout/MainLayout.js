@@ -6,22 +6,14 @@ import Footer from "../Footer";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
     backgroundColor: theme.palette.background.default
   },
   content: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(7),
     backgroundColor: theme.palette.background.default
-  },
-  footer: {
-    position: "fixed",
-    width: "100%",
-    bottom: 0
-  },
-  phantom: {
-    display: "block",
-    height: "60px",
-    width: "100%"
   }
 }));
 
@@ -34,11 +26,7 @@ const Main = props => {
     <div className={classes.root}>
       <Header />
       <main className={classes.content}>{children}</main>
-      <div className={classes.phantom}>
-        <div className={classes.footer}>
-          <Footer />
-        </div>
-      </div>
+      <Footer />
     </div>
   );
 };

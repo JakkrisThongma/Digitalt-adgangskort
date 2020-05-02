@@ -1,39 +1,37 @@
 import React from "react";
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    height: 40,
-    backgroundColor: theme.palette.background.paper
-  },
-  item: {
-    height: "100%",
-    textAlign: "center",
-    color: theme.palette.text.secondary
+  footer: {
+    padding: theme.spacing(2),
+    marginTop: "auto",
+    backgroundColor: "white"
   }
 }));
 
+function Copyright() {
+  return (
+    <Typography align="center" variant="body2" color="textSecondary">
+      {"Copyright © "}
+      <Link color="inherit" href="https://www.innovasjonnorge.no//">
+        Innovation Norway
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 const Footer = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <Typography variant="body1" className={classes.item}>
-        <Link
-          className={classes.item}
-          color="secondary"
-          href="https://www.innovasjonnorge.no/"
-          target="_blank">
-          Innovasjon Norge
-        </Link>
-        &copy; {new Date().getFullYear()}
-      </Typography>
-    </div>
+    <footer className={classes.footer}>
+      <Container maxWidth="sm">
+        <Copyright />
+      </Container>
+    </footer>
   );
 };
 
