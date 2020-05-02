@@ -1,7 +1,7 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import palette from "./palette";
 
-const theme = createMuiTheme({
+const themeConfing = createMuiTheme({
   palette,
   overrides: {
     MuiTableRow: {
@@ -19,5 +19,7 @@ const theme = createMuiTheme({
     }
   }
 });
+
+const theme = responsiveFontSizes(themeConfing);
 
 export default theme;
