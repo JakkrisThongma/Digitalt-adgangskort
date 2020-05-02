@@ -71,14 +71,9 @@ const Header = () => {
           onClick={toggleDrawer()}>
           <MenuIcon />
         </IconButton>
-        <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
-          <Button
-            className={classes.navElement}
-            component={RouterLink}
-            to="/dashboard">
-            Digital Access Card
-          </Button>
-        </div>
+        <Typography className={classes.title} variant="h6" noWrap>
+          Digital Access Card
+        </Typography>
         <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
           <Button
             className={classes.navElement}
