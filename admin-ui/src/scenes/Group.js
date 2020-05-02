@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Tab, Tabs} from "@material-ui/core";
+import { Button, Tab, Tabs } from "@material-ui/core";
 import { Delete, AddBox } from "@material-ui/icons";
 
 import Paper from "@material-ui/core/Paper";
@@ -56,12 +56,12 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
     padding: theme.spacing(3)
-
   },
   tabPanel: {
     width: "100%",
     backgroundColor: theme.palette.background.paper,
-    display: "flex"
+    display: "flex",
+    borderRadius: 5
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`
