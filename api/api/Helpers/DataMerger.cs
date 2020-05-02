@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using api.Entities;
 using api.Models;
 using AutoMapper;
 using Microsoft.Graph;
@@ -25,8 +26,10 @@ namespace api.Helpers
                 from dbUserFromAzureAd in allUsersFromAzureAd
                 where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<UserDto>(userFromRepo)
-                select mapper.Map(dbUserFromAzureAd, dtoFromDb));
-
+                select mapper.Map(dbUserFromAzureAd, dtoFromDb))
+                .OrderByDescending(u=>u.Surname)
+                .ThenBy(u => u.GivenName)
+                .ThenBy(u => u.DisplayName);
             return mergedUsers;
         }
 
@@ -38,7 +41,10 @@ namespace api.Helpers
                 from dbUserFromAzureAd in usersFromAzureAd
                 where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<UserDto>(userFromRepo)
-                select mapper.Map(dbUserFromAzureAd, dtoFromDb));
+                select mapper.Map(dbUserFromAzureAd, dtoFromDb))
+                .OrderByDescending(u=>u.Surname)
+                .ThenBy(u => u.GivenName)
+                .ThenBy(u => u.DisplayName);
 
             return mergedUsers;
         }
@@ -51,19 +57,7 @@ namespace api.Helpers
 
             return mapper.Map(groupFromAzureAd, dtoGroupFromDb);
         }
-
-        public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo,
-            IEnumerable<Microsoft.Graph.User> allGroupsFromAzureAd, IMapper mapper)
-        {
-            var mergedGroups = (from groupFromRepo in groupsFromRepo
-                from dbGroupFromAzureAd in allGroupsFromAzureAd
-                where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
-                let dtoFromDb = mapper.Map<GroupDto>(groupFromRepo)
-                select mapper.Map(dbGroupFromAzureAd, dtoFromDb));
-
-            return mergedGroups;
-        }
-
+        
         public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo,
             IEnumerable<Microsoft.Graph.Group> allGroupsFromAzureAd, IMapper mapper)
         {
@@ -71,7 +65,8 @@ namespace api.Helpers
                 from dbGroupFromAzureAd in allGroupsFromAzureAd
                 where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<GroupDto>(groupFromRepo)
-                select mapper.Map(dbGroupFromAzureAd, dtoFromDb));
+                select mapper.Map(dbGroupFromAzureAd, dtoFromDb))
+                .OrderBy(g=> g.DisplayName);
 
             return mergedGroups;
         }
@@ -98,5 +93,42 @@ namespace api.Helpers
 
             return list2;
         }
+        
+        public static IEnumerable<AccessLogDto> MergeAccessLogData(IEnumerable<Access> accessLogsFromRepo,
+            Microsoft.Graph.IGraphServiceUsersCollectionPage allUsersFromAzureAd, 
+            IEnumerable<SmartLock> allSmartLocksFromRepo, IMapper mapper)
+        {
+            var logsFromRepo = accessLogsFromRepo.ToList();
+        
+            var mergedUserLogs = (from logFromRepo in logsFromRepo
+                    from dbUserFromAzureAd in allUsersFromAzureAd
+                    where logFromRepo.UserId == Guid.Parse(dbUserFromAzureAd.Id)
+                    let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
+                    select mapper.Map(dbUserFromAzureAd, dtoFromDb))
+                .OrderByDescending(al => al.Time).ToList();
+
+            var mergedSmartLockLogs = (from logFromRepo in logsFromRepo
+                from smartLockFromRepo in allSmartLocksFromRepo
+                where logFromRepo.SmartLockId == smartLockFromRepo.Id
+                let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
+                select mapper.Map(smartLockFromRepo, dtoFromDb)).ToList();
+            
+            
+            foreach (var ul in mergedUserLogs)
+            {
+                foreach (var sll in mergedSmartLockLogs)
+                {
+                    if (ul.SmartLockId == sll.SmartLockId)
+                    {
+                        ul.SmartLockTitle = sll.SmartLockTitle;
+                    }
+                }
+                        
+            }
+            
+            var x = mergedUserLogs;
+            return mergedUserLogs;
+        }
+
     }
 }

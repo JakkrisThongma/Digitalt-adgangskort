@@ -18,5 +18,11 @@ namespace api.Models
 		[MaxLength(100, ErrorMessage = "The manufacture Id can't include more than 100 characters.")]
 		public string ManufactureId { get; set; }
 		public Status Status { get; set; }
+		
+		public ICollection<UserCollectionDto> SmartLockUsers { get; set; }
+			= new List<UserCollectionDto>();
+		
+		public ICollection<GroupCollectionDto> SmartLockGroups { get; set; }
+			= new List<GroupCollectionDto>();
 	}
 }

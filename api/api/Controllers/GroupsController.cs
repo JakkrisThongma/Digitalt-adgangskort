@@ -49,8 +49,7 @@ namespace api.Controllers
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups(client);
+            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
 
             var mergedGroups = DataMerger.MergeGroupsWithAzureData(allGroupsFromRepo,
                 allGroupsFromAzureAd, _mapper);
@@ -67,10 +66,9 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GroupDto>> CreateGroup([FromBody] GroupCreationDto group)
         {
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
-                await _azureAdRepository.GetGroup(client, group.Id.ToString());
+                await _azureAdRepository.GetGroup(group.Id.ToString());
             }
             catch (ServiceException e)
             {
@@ -121,36 +119,14 @@ namespace api.Controllers
 
             var groupFromRepo = await _groupRepository.GetGroup(groupId);
 
-            var client = await MicrosoftGraphClient.GetGraphServiceClient();
-            var groupFromAzureAd = await _azureAdRepository.GetGroup(client, groupId.ToString());
+            var groupFromAzureAd = await _azureAdRepository.GetGroup(groupId.ToString());
 
             var mergedGroup = DataMerger.MergeGroupWithAzureData(groupFromRepo,
                 groupFromAzureAd, _mapper);
 
             return mergedGroup;
         }
-
         
-        // PUT: api/groups/5
-        [HttpPut("{groupId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateGroup(Guid groupId, GroupModificationDto group)
-        {
-            var groupExists = await _groupRepository.GroupExists(groupId);
-            if (!groupExists) return NotFound();
-
-            var groupEntity = _mapper.Map<Group>(group);
-            groupEntity.Id = groupId;
-            groupEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _groupRepository.UpdateGroup(groupEntity);
-            await _groupRepository.Save();
-
-            return NoContent();
-        }
-
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -161,12 +137,25 @@ namespace api.Controllers
         {
             var groupExists = await _groupRepository.GroupExists(groupId);
             if (!groupExists) return NotFound();
+            
 
-            var groupFromRepo = await _groupRepository.GetGroup(groupId);
+            var groupFromRepo = await _groupRepository.GetGroupWithSmartLocks(groupId);
             
             var groupToPatch = _mapper.Map<GroupModificationDto>(groupFromRepo);
             
+            
             patchDoc.ApplyTo(groupToPatch, ModelState);
+            
+            if (groupToPatch.SmartLockGroups.Count > 0)
+            {
+                foreach (var smartLockGroup in groupToPatch.SmartLockGroups)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockGroup.SmartLockId);
+                    if (!smartLockExist)
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockGroup.SmartLockId} doesn't exist");
+                }
+            }
 
             if (!TryValidateModel(groupToPatch))
             {

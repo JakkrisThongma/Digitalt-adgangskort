@@ -11,6 +11,7 @@ namespace api.MappingProfiles
             CreateMap<Entities.Group, Microsoft.Graph.Group>();
             CreateMap<Entities.Group, Models.GroupDto>();
             CreateMap<Entities.Group, Models.GroupModificationDto>();
+            CreateMap<Entities.SmartLockGroup, Models.SmartLockCollectionDto>();
             
             CreateMap<Microsoft.Graph.Group, Models.AzureAdGroupDto>();
             CreateMap<Microsoft.Graph.Group, Models.GroupDto>();
@@ -20,7 +21,7 @@ namespace api.MappingProfiles
             CreateMap<Models.GroupDto, Entities.Group>();
             CreateMap<Models.GroupCreationDto, Entities.Group>();
             CreateMap<Models.GroupModificationDto, Entities.Group>();
-            CreateMap<Models.SmartLockCollectionCreationDto, Entities.SmartLockGroup>();
+            CreateMap<Models.SmartLockCollectionDto, Entities.SmartLockGroup>();
 
 
         }

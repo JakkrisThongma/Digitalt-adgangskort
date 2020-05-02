@@ -9,5 +9,8 @@ namespace api.Models
 	public class GroupModificationDto
 	{
 		public Status Status { get; set; }
+		
+		public ICollection<SmartLockCollectionDto> SmartLockGroups { get; set; }
+			= new List<SmartLockCollectionDto>();
 	}
 }

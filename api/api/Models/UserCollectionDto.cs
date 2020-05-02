@@ -3,9 +3,9 @@ using api.ValidationAttributes;
 
 namespace api.Models
 {
-    public class GroupCollectionCreationDto
+    public class UserCollectionDto
     {
         [NonEmptyGuid]
-        public Guid GroupId { get; set; }
+        public Guid UserId { get; set; }
     }
 }
