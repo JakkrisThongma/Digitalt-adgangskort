@@ -18,7 +18,6 @@ namespace api.Entities
         public Guid Id { get; set; }
         [NonEmptyGuid]
         public Guid UserId { get; set; }
-        public Guid? GroupId { get; set; }
         [NonEmptyGuid]
         public Guid SmartLockId { get; set; }
         public bool IsValid { get; set; }

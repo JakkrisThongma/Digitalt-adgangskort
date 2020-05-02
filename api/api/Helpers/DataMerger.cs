@@ -95,9 +95,8 @@ namespace api.Helpers
         }
         
         public static IEnumerable<AccessLogDto> MergeAccessLogData(IEnumerable<Access> accessLogsFromRepo,
-            Microsoft.Graph.IGraphServiceUsersCollectionPage allUsersFromAzureAd,
-            IEnumerable<Microsoft.Graph.Group> allGroupsFromAzureAd,IEnumerable<SmartLock> allSmartLocksFromRepo,
-            IMapper mapper)
+            Microsoft.Graph.IGraphServiceUsersCollectionPage allUsersFromAzureAd, 
+            IEnumerable<SmartLock> allSmartLocksFromRepo, IMapper mapper)
         {
             var logsFromRepo = accessLogsFromRepo.ToList();
         
@@ -108,29 +107,12 @@ namespace api.Helpers
                     select mapper.Map(dbUserFromAzureAd, dtoFromDb))
                 .OrderByDescending(al => al.Time).ToList();
 
-            var mergedGroupLogs = (from logFromRepo in logsFromRepo
-                from dbGroupFromAzureAd in allGroupsFromAzureAd
-                where logFromRepo.GroupId == Guid.Parse(dbGroupFromAzureAd.Id)
-                let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
-                select mapper.Map(dbGroupFromAzureAd, dtoFromDb)).ToList();
-            
             var mergedSmartLockLogs = (from logFromRepo in logsFromRepo
                 from smartLockFromRepo in allSmartLocksFromRepo
                 where logFromRepo.SmartLockId == smartLockFromRepo.Id
                 let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
                 select mapper.Map(smartLockFromRepo, dtoFromDb)).ToList();
             
-           
-            foreach (var gl in mergedGroupLogs)
-            {
-                foreach (var ul in mergedUserLogs)
-                {
-                    if (ul.GroupId == gl.GroupId)
-                    {
-                        ul.GroupName = gl.GroupName;
-                    }
-                }
-            }
             
             foreach (var ul in mergedUserLogs)
             {
@@ -143,25 +125,7 @@ namespace api.Helpers
                 }
                         
             }
-                
             
-            
-            // select new AccessLogDto
-            // {
-            //     Id = logFromRepo.Id,
-            //     UserId = logFromRepo.UserId,
-            //     GroupId = logFromRepo.GroupId,
-            //     Time = logFromRepo.Time,
-            //     IsValid = logFromRepo.IsValid,
-            //     SmartLockId = logFromRepo.SmartLockId,
-            //     UserName = userLogDtoFromDb.UserName,
-            //     GroupName = groupLogDtoFromDb.GroupName
-            //
-            // }).OrderByDescending(al => al.Time).ToList();
-            //var x = mapper.Map(mergedGroupLogs, mergedUserLogs );
-            //var y = mapper.Map(mergedSmartLockLogs, mergedUserLogs);
-        
-            //var z = mapper.Map(mergedGroupLogs, mergedSmartLockLogs);
             var x = mergedUserLogs;
             return mergedUserLogs;
         }

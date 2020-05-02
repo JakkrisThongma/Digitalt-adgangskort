@@ -461,7 +461,7 @@ namespace api.Controllers
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
                         IsValid = false,
-                        Info = "Lock is in inactive state"
+                        Info = "Lock was in inactive state"
                     };
                     _accessLogRepository.AddAccess(inactiveLockAccessLog);
                     await _accessLogRepository.Save();
@@ -480,7 +480,7 @@ namespace api.Controllers
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
                         IsValid = false,
-                        Info = "User is in inactive state"
+                        Info = "User was in inactive state"
                     };
                     _accessLogRepository.AddAccess(inactiveUserAccessLog);
                     await _accessLogRepository.Save();
@@ -495,7 +495,7 @@ namespace api.Controllers
                     UserId = smartLockUser.UserId,
                     SmartLockId = smartLockUser.SmartLockId,
                     IsValid = true,
-                    Info = "Access is permitted for user"
+                    Info = "Access was permitted for user"
                 };
                 _accessLogRepository.AddAccess(validAccessLog);
                 await _accessLogRepository.Save();
@@ -524,7 +524,7 @@ namespace api.Controllers
                             UserId = smartLockUser.UserId,
                             SmartLockId = smartLockUser.SmartLockId,
                             IsValid = false,
-                            Info = "Lock is in inactive state"
+                            Info = "Lock was in inactive state"
                         };
                         _accessLogRepository.AddAccess(inactiveLockAccessLog);
                         await _accessLogRepository.Save();
@@ -543,9 +543,8 @@ namespace api.Controllers
                         {
                             UserId = smartLockUser.UserId,
                             SmartLockId = smartLockUser.SmartLockId,
-                            GroupId = group.Id,
                             IsValid = false,
-                            Info = "Group is in inactive state"
+                            Info = "User group was in inactive state"
                         };
                         _accessLogRepository.AddAccess(inactiveGroupAccessLog);
                         await _accessLogRepository.Save();
@@ -559,16 +558,14 @@ namespace api.Controllers
                     {
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
-                        GroupId = group.Id,
                         IsValid = true,
-                        Info = "Access is permitted for group member"
+                        Info = "Access is permitted for group user"
                     };
                     _accessLogRepository.AddAccess(validGroupAccessLog);
                     await _accessLogRepository.Save();
                     return Ok(new AccessDto
                     {
                         AccessAuthorized = true
-                        
                     });
                 }
             }
@@ -578,7 +575,7 @@ namespace api.Controllers
                 UserId = smartLockUser.UserId,
                 SmartLockId = smartLockUser.SmartLockId,
                 IsValid = false,
-                Info = "Access is not permitted for user"
+                Info = "Access was denied"
             };
             _accessLogRepository.AddAccess(notValidAccessLog);
             await _accessLogRepository.Save();

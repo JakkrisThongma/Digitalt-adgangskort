@@ -10,8 +10,7 @@ namespace api.Models
         public string SmartLockTitle { get; set; }
         public Guid UserId { get; set; }
         public string UserName { get; set; }
-        public Guid? GroupId { get; set; }
-        public string GroupName { get; set; }
+        public string Info { get; set; }
         public bool IsValid { get; set; }
         public DateTimeOffset Time { get; set; }
     }

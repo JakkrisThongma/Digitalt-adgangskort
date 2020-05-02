@@ -20,12 +20,7 @@ namespace api.MappingProfiles
                     dest => dest.UserName,
                     opt => opt.MapFrom(src => src.DisplayName)
                 );
-
-            CreateMap<Microsoft.Graph.Group, Models.AccessLogDto>()
-                .ForMember(
-                    dest => dest.GroupName,
-                    opt => opt.MapFrom(src => src.DisplayName)
-                );
+            
         }
     }
 }

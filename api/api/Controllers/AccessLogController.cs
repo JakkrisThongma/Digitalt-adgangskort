@@ -45,12 +45,10 @@ namespace api.Controllers
             
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
-            var allGroupsFromAzureAd = await _azureAdRepository.GetGroups();
-
             var allSmartLocks =await _smartLockRepository.GetSmartLocks();
             
             var mergedAccessLogs = DataMerger.MergeAccessLogData(allAccessLogsFromRepo,
-                allUsersFromAzureAd, allGroupsFromAzureAd, allSmartLocks, _mapper);
+                allUsersFromAzureAd, allSmartLocks, _mapper);
 
             return Ok(mergedAccessLogs);
         }
