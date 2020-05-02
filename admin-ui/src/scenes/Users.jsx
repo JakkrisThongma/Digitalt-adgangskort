@@ -3,7 +3,7 @@ import { AddBox, Edit, Delete } from "@material-ui/icons";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { userContext, smartLockContext, uiContext } from "@/store";
+import {userContext, smartLockContext, uiContext, azureAdContext} from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
 import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
 import {
@@ -26,6 +26,8 @@ import {
 } from "@/actions/userActions";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import {Button} from "@material-ui/core";
+import {getAzureAdUsers} from "@/actions/azureAdActions";
+import azureAdReducer from "@/reducers/azureAdReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,6 +70,7 @@ const Users = () => {
     error: userError
   } = userState;
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
@@ -75,6 +78,7 @@ const Users = () => {
 
   const handleAddUserClick = () => {
     uiDispatch(openAddDialog);
+    azureAdDispatch(getAzureAdUsers);
     smartLockDispatch(getSmartLocks);
   };
 

@@ -42,13 +42,13 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   status: "inactive",
-  group: {},
+  group: "",
   smartLocks: []
 };
 
 const validationSchema = object().shape({
   status: string(),
-  group: object()
+  group: string()
     .required("Group is required")
     .nullable(),
   smartLocks: array()
@@ -57,14 +57,10 @@ const validationSchema = object().shape({
 const AddGroupDialog = () => {
   const classes = useStyles();
   const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
-
   const { azureAdGroups, azureAdError } = azureAdState;
+
   const [groupState, groupDispatch] = useContext(groupContext);
   const { groupError, loading, addFailed, addSucceed } = groupState;
-
-  const [openGroup, setOpenGroup] = useState(false);
-  const [groupOptions, setGroupOptions] = useState([]);
-  const groupLoading = openGroup && groupOptions.length === 0;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
@@ -73,22 +69,6 @@ const AddGroupDialog = () => {
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;
 
-  useEffect(() => {
-    setGroupOptions(azureAdGroups);
-  }, [azureAdGroups]);
-
-  useEffect(() => {
-    if (!groupLoading) {
-      return undefined;
-    }
-    azureAdDispatch(getAzureAdGroups);
-  }, [groupLoading]);
-
-  useEffect(() => {
-    if (!openGroup) {
-      setGroupOptions([]);
-    }
-  }, [openGroup]);
 
   useDidMountEffect(() => {
     if (addFailed) {
@@ -145,25 +125,19 @@ const AddGroupDialog = () => {
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
+              validateOnBlur
               validateOnChange
               onSubmit={values => handleAddClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
+                    required
                     name="group"
                     component={Autocomplete}
-                    options={groupOptions}
+                    options={azureAdGroups}
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    open={openGroup}
-                    onOpen={() => {
-                      setOpenGroup(true);
-                    }}
-                    onClose={() => {
-                      setOpenGroup(false);
-                    }}
-                    loading={groupLoading}
                     size="small"
                     textFieldProps={{
                       label: "Azure AD group",

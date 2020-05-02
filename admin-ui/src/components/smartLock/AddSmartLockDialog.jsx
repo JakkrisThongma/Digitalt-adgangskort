@@ -49,10 +49,10 @@ const initialValues = {
 
 const validationSchema = object().shape({
   manufactureId: string()
-    .required("SmartLock is required")
+    .required("Manufacture ID is required")
     .nullable(),
   title: string()
-    .required("SmartLock is required")
+    .required("Title is required")
     .nullable(),
   description: string(),
   status: string(),

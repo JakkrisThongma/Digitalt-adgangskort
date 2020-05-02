@@ -134,6 +134,7 @@ const AddSmartLockUserDialog = () => {
               initialValues={initialValues}
               validationSchema={validationSchema}
               validateOnChange
+              validateOnBlur
               enableReinitialize
               onSubmit={values => handleAddClick(values)}>
               {formik => (

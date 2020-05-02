@@ -3,7 +3,12 @@ import { Link as RouterLink, Redirect } from "react-router-dom";
 import { AddBox, Edit, Delete } from "@material-ui/icons";
 import { Breadcrumbs, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { groupContext, smartLockContext, uiContext } from "@/store";
+import {
+  azureAdContext,
+  groupContext,
+  smartLockContext,
+  uiContext
+} from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
 import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
 import {
@@ -24,6 +29,7 @@ import {
   getGroupSmartLocks,
   setSelectedGroupId
 } from "@/actions/groupActions";
+import { getAzureAdGroups } from "@/actions/azureAdActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,14 +71,17 @@ const Groups = () => {
     selectedGroupId,
     error: groupError
   } = groupState;
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const [, smartLockDispatch] = useContext(smartLockContext);
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, azureAdDispatch] = useContext(azureAdContext);
+
+  const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleAddGroupClick = () => {
     uiDispatch(openAddDialog);
+    azureAdDispatch(getAzureAdGroups);
     smartLockDispatch(getSmartLocks);
   };
 

@@ -15,8 +15,6 @@ import { object, string, array } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
 
 import { useSnackbar } from "notistack";
-
-import { getAzureAdUsers } from "@/actions/azureAdActions";
 import { closeAddDialog } from "@/actions/uiActions";
 import { addUser } from "@/actions/userActions";
 
@@ -44,53 +42,34 @@ const useStyles = makeStyles(theme => ({
 
 const initialValues = {
   status: "inactive",
-  user: {},
+  user: "",
   smartLocks: []
 };
 
 const validationSchema = object().shape({
-  status: string(),
-  user: object()
+  user: string()
     .required("User is required")
     .nullable(),
+  status: string(),
   smartLocks: array()
 });
 
 const AddUserDialog = () => {
   const classes = useStyles();
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
 
+  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
   const { azureAdUsers, azureAdError } = azureAdState;
+
   const [userState, userDispatch] = useContext(userContext);
   const { userError, loading, addFailed, addSucceed } = userState;
 
-  const [openUser, setOpenUser] = useState(false);
-  const [userOptions, setUserOptions] = useState([]);
-  const userLoading = openUser && userOptions.length === 0;
-
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks, smartLockError } = smartLockState;
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;
-
-  useEffect(() => {
-    setUserOptions(azureAdUsers);
-  }, [azureAdUsers]);
-
-  useEffect(() => {
-    if (!userLoading) {
-      return undefined;
-    }
-    azureAdDispatch(getAzureAdUsers);
-  }, [userLoading]);
-
-  useEffect(() => {
-    if (!openUser) {
-      setUserOptions([]);
-    }
-  }, [openUser]);
 
   useDidMountEffect(() => {
     if (addFailed) {
@@ -149,24 +128,18 @@ const AddUserDialog = () => {
               initialValues={initialValues}
               validationSchema={validationSchema}
               validateOnChange
+              validateOnBlur
               onSubmit={values => handleAddClick(values)}>
               {formik => (
                 <Form noValidate autoComplete="off">
                   <Field
+                    required
                     name="user"
                     component={Autocomplete}
-                    options={userOptions}
+                    options={azureAdUsers}
                     getOptionLabel={option =>
                       option.displayName ? option.displayName : ""
                     }
-                    open={openUser}
-                    onOpen={() => {
-                      setOpenUser(true);
-                    }}
-                    onClose={() => {
-                      setOpenUser(false);
-                    }}
-                    loading={userLoading}
                     size="small"
                     textFieldProps={{
                       label: "Azure AD user",
