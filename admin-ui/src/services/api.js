@@ -40,6 +40,7 @@ export function updateUser(userId, data) {
     data
   });
 }
+
 export function deleteUser(userId) {
   return http({
     method: "DELETE",
@@ -94,6 +95,7 @@ export function updateGroup(groupId, data) {
     data
   });
 }
+
 export function deleteGroup(groupId) {
   return http({
     method: "DELETE",
@@ -148,6 +150,7 @@ export function updateSmartLock(smartLockId, data) {
     data
   });
 }
+
 export function deleteSmartLock(smartLockId) {
   return http({
     method: "DELETE",
@@ -228,6 +231,7 @@ export function getAzureAdUsers() {
     url: "azure-ad/users"
   }).then(res => Promise.resolve(res.data));
 }
+
 export function getAzureAdUser(userId) {
   return http({
     method: "GET",
@@ -274,7 +278,7 @@ export function getAzureAdGroupMembers(groupId) {
 export function getAccessLog() {
   return http({
     method: "GET",
-    url: "access-log"
+    url: "accesses"
   }).then(res => Promise.resolve(res.data));
 }
 
