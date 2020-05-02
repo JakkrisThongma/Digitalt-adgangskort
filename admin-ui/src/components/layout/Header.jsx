@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { Menu as MenuIcon } from "@material-ui/icons";
 import clsx from "clsx";
+import { Link as RouterLink } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 const useStyles = makeStyles(theme => ({
@@ -75,19 +76,31 @@ const Header = () => {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Digital adgangskort
+            Digital Access Card
           </Typography>
           <div className={clsx(classes.navContainer, classes.sectionDesktop)}>
-            <Button className={classes.navElement} href="/dashboard">
+            <Button
+              className={classes.navElement}
+              component={RouterLink}
+              to="/dashboard">
               Dashboard
             </Button>
-            <Button className={classes.navElement} href="/users">
+            <Button
+              className={classes.navElement}
+              component={RouterLink}
+              to="/users">
               Users
             </Button>
-            <Button className={classes.navElement} href="/groups">
+            <Button
+              className={classes.navElement}
+              component={RouterLink}
+              to="/groups">
               Groups
             </Button>
-            <Button className={classes.navElement} href="/smart-locks">
+            <Button
+              className={classes.navElement}
+              component={RouterLink}
+              to="/smart-locks">
               Smart locks
             </Button>
           </div>

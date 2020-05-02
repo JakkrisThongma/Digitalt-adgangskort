@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Grid,
   Typography,
@@ -7,208 +6,194 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
-  TextField,
   Button
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { PersonAdd as PersonAddIcon } from "@material-ui/icons";
-import useFormValidation from "validation/useFormValidation";
-import SmartLocksSelector from "./SmartLocksSelector";
-import AzureAdUserSelector from "./AzureAdUserSelector";
+import { PersonAdd as UserAddIcon } from "@material-ui/icons";
+import { Formik, Form, Field } from "formik";
+import { object, string, array } from "yup";
+import { Autocomplete, Select } from "material-ui-formik-components";
+
+import { useSnackbar } from "notistack";
+import { closeAddDialog } from "@/actions/uiActions";
+import { addUser } from "@/actions/userActions";
+
+import {
+  azureAdContext,
+  userContext,
+  smartLockContext,
+  statusOptions,
+  uiContext
+} from "@/store";
+import useDidMountEffect from "@/extensions/useDidMountEffect";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(8),
+  form: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    margin: "auto"
   },
-  form: {
-    width: "100%",
-    margin: theme.spacing(3, 0, 3)
-  },
-
   chip: {
     margin: theme.spacing(0.5)
   },
-  button: { marginBottom: theme.spacing(2), minWidth: 80 }
+  button: { marginBottom: theme.spacing(2), minWidth: 80 },
+  option: { backgroundColor: "black" }
 }));
 
-const INITIAL_STATE = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  mobile: "",
-  password: "",
-  confirmPassword: "",
+const initialValues = {
+  status: "inactive",
+  user: "",
   smartLocks: []
 };
 
-const AddUserDialog = props => {
+const validationSchema = object().shape({
+  user: string()
+    .required("User is required")
+    .nullable(),
+  status: string(),
+  smartLocks: array()
+});
+
+const AddUserDialog = () => {
   const classes = useStyles();
-  const { isAddUserOpened, onAddUserCancelClick } = props;
 
-  const {
-    handleOnBlur,
-    handleOnChange,
-    handleOnSubmit,
-    handleListOnChange,
-    values,
-    hasError,
-    errors
-  } = useFormValidation(INITIAL_STATE, login);
+  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
+  const { azureAdUsers, azureAdError } = azureAdState;
 
-  function login() {
-    console.log("No errors, submited!");
-    console.log(values.smartLocks);
-    console.log(values.email);
+  const [userState, userDispatch] = useContext(userContext);
+  const { userError, loading, addFailed, addSucceed } = userState;
 
-    onAddUserCancelClick();
-  }
-  const smartLocks = [
-    { key: 0, label: "Guest spaces" },
-    { key: 1, label: "Employee spaces" },
-    { key: 2, label: "Developer spaces" },
-    { key: 3, label: "Full access" }
-  ];
+  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
+  const { smartLocks, smartLockError } = smartLockState;
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const [uiState, uiDispatch] = useContext(uiContext);
+  const { addDialogOpen } = uiState;
+
+  useDidMountEffect(() => {
+    if (addFailed) {
+      enqueueSnackbar("Add user failed", {
+        variant: "error"
+      });
+    }
+  }, [addFailed]);
+
+  useDidMountEffect(() => {
+    if (addSucceed) {
+      enqueueSnackbar("User added successfully", {
+        variant: "success"
+      });
+    }
+  }, [addSucceed]);
+
+  const handleCancelClick = () => {
+    uiDispatch(closeAddDialog);
+  };
+
+  const handleAddClick = values => {
+    const payload = {
+      id: values.user.id,
+      status: values.status,
+      smartLockUsers: values.smartLocks.map(smartLock => ({
+        smartLockId: smartLock.id
+      }))
+    };
+    console.log(payload);
+    userDispatch(dispatch => addUser(dispatch, payload));
+    uiDispatch(closeAddDialog);
+  };
+
   return (
     <div>
-      <Dialog open={isAddUserOpened} aria-labelledby="form-dialog-title">
+      <Dialog
+        open={addDialogOpen}
+        onClose={handleCancelClick}
+        aria-labelledby="form-dialog-title"
+        maxWidth="sm"
+        fullWidth>
         <DialogTitle id="form-dialog-title">
           <Grid container spacing={2}>
             <Grid item>
-              <PersonAddIcon fontSize="large" />
+              <UserAddIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add New User</Typography>
+              <Typography variant="h6">Add Azure Ad User</Typography>
             </Grid>
           </Grid>
         </DialogTitle>
         <DialogContent>
           <div>
-            <form className={classes.form}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-              <AzureAdUserSelector />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.lastName && true}
-                    value={values.lastName}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.lastName}
-                    variant="outlined"
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              validateOnChange
+              validateOnBlur
+              onSubmit={values => handleAddClick(values)}>
+              {formik => (
+                <Form noValidate autoComplete="off">
+                  <Field
                     required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="lname"
+                    name="user"
+                    component={Autocomplete}
+                    options={azureAdUsers}
+                    getOptionLabel={option =>
+                      option.displayName ? option.displayName : ""
+                    }
+                    size="small"
+                    textFieldProps={{
+                      label: "Azure AD user",
+                      required: true,
+                      variant: "outlined"
+                    }}
+                    getOptionDisabled={option => option.addedToDb === true}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.email && true}
-                    value={values.email}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.email}
+                  <Field
+                    name="status"
+                    label="Status"
+                    component={Select}
+                    options={statusOptions}
+                    size="small"
                     variant="outlined"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    error={errors.mobile && true}
-                    value={values.mobile}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.mobile}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="mobile"
-                    label="Mobile"
-                    id="mobile"
-                    autoComplete="mobile"
+                  <Field
+                    name="smartLocks"
+                    getOptionLabel={option => option.title}
+                    options={smartLocks}
+                    component={Autocomplete}
+                    filterSelectedOptions
+                    multiple
+                    size="small"
+                    textFieldProps={{
+                      label: "Smart lock(s)",
+                      variant: "outlined"
+                    }}
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    error={errors.password && true}
-                    value={values.password}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.password}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    error={errors.confirmPassword && true}
-                    value={values.confirmPassword}
-                    onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    helperText={errors.confirmPassword}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="confirm password"
-                    type="password"
-                    id="confirmPassword"
-                    autoComplete="confirmPassword"
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <SmartLocksSelector
-                    handleListOnChange={handleListOnChange}
-                  />
-                </Grid>
-              </Grid>
-            </form>
+                  <DialogActions>
+                    <Button
+                      className={classes.button}
+                      variant="contained"
+                      onClick={handleCancelClick}
+                      color="primary">
+                      Cancel
+                    </Button>
+                    <Button
+                      className={classes.button}
+                      variant="contained"
+                      color="primary"
+                      disabled={!formik.dirty}
+                      type="submit">
+                      Add
+                    </Button>
+                  </DialogActions>
+                </Form>
+              )}
+            </Formik>
           </div>
         </DialogContent>
-        <DialogActions>
-          <Button
-            className={classes.button}
-            variant="contained"
-            onClick={onAddUserCancelClick}
-            color="primary">
-            Cancel
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            disabled={hasError}
-            onClick={handleOnSubmit}>
-            Add
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );
-};
-
-AddUserDialog.propTypes = {
-  onAddUserCancelClick: PropTypes.func.isRequired,
-  isAddUserOpened: PropTypes.bool.isRequired
 };
 
 export default AddUserDialog;

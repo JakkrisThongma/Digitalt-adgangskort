@@ -23,12 +23,20 @@ module.exports = {
     quotes: [2, "double", { avoidEscape: true }],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-filename-extension": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/forbid-prop-types": "off"
   },
   settings: {
     'import/resolver': {
       'webpack': { config: 'webpack/webpack.common.js'
-    }
+    },
+      "alias": {
+        map: [
+          [ "@", "./src" ]
+        ]
+      }
     }
   }
 };
