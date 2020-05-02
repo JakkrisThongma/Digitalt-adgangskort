@@ -5,9 +5,9 @@ using api.Entities;
 
 namespace api.Repositories
 {
-    public interface IAccessLogRepository
+    public interface IAccessRepository
     {
-        Task<IEnumerable<Access>> GetAccessLog();
+        Task<IEnumerable<Access>> GetAccesses();
         void AddAccess(Access access);
         Task<bool> Save();
     }

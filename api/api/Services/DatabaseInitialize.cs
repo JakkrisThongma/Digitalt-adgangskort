@@ -242,7 +242,7 @@ namespace api.Services
 
             };
             
-            context.AccessLog.AddRange(accessLog1, accessLog2);
+            context.Accesses.AddRange(accessLog1, accessLog2);
 
             context.SaveChanges();
         }

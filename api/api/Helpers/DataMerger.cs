@@ -94,41 +94,6 @@ namespace api.Helpers
             return list2;
         }
         
-        public static IEnumerable<AccessLogDto> MergeAccessLogData(IEnumerable<Access> accessLogsFromRepo,
-            Microsoft.Graph.IGraphServiceUsersCollectionPage allUsersFromAzureAd, 
-            IEnumerable<SmartLock> allSmartLocksFromRepo, IMapper mapper)
-        {
-            var logsFromRepo = accessLogsFromRepo.ToList();
-        
-            var mergedUserLogs = (from logFromRepo in logsFromRepo
-                    from dbUserFromAzureAd in allUsersFromAzureAd
-                    where logFromRepo.UserId == Guid.Parse(dbUserFromAzureAd.Id)
-                    let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
-                    select mapper.Map(dbUserFromAzureAd, dtoFromDb))
-                .OrderByDescending(al => al.Time).ToList();
-
-            var mergedSmartLockLogs = (from logFromRepo in logsFromRepo
-                from smartLockFromRepo in allSmartLocksFromRepo
-                where logFromRepo.SmartLockId == smartLockFromRepo.Id
-                let dtoFromDb = mapper.Map<AccessLogDto>(logFromRepo)
-                select mapper.Map(smartLockFromRepo, dtoFromDb)).ToList();
-            
-            
-            foreach (var ul in mergedUserLogs)
-            {
-                foreach (var sll in mergedSmartLockLogs)
-                {
-                    if (ul.SmartLockId == sll.SmartLockId)
-                    {
-                        ul.SmartLockTitle = sll.SmartLockTitle;
-                    }
-                }
-                        
-            }
-            
-            var x = mergedUserLogs;
-            return mergedUserLogs;
-        }
 
     }
 }

@@ -1,6 +1,6 @@
 namespace api.Models
 {
-    public class AccessDto
+    public class UserAccessDto
     {
         public bool AccessAuthorized { get; set; }
         
