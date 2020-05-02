@@ -17,7 +17,7 @@ namespace api.Entities
         
         public DbSet<SmartLockGroup> SmartLockGroups { get; set; }
         
-        public DbSet<Access> AccessLog { get; set; }
+        public DbSet<Access> Accesses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

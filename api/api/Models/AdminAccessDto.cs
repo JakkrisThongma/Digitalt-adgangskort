@@ -2,7 +2,7 @@ using System;
 
 namespace api.Models
 {
-    public class AccessLogDto
+    public class AdminAccessDto
     {
    
         public Guid Id { get; set; }

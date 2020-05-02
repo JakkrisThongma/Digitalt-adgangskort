@@ -5,7 +5,7 @@ using api.ValidationAttributes;
 
 namespace api.Entities
 {
-    [Table("AccessLog")]
+    [Table("Accesses")]
     public class Access
     {
         public Access()

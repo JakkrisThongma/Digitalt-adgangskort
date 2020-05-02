@@ -7,18 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
 {
-    public class AccessLogRepository : IAccessLogRepository
+    public class AccessRepository : IAccessRepository
     {
         private readonly ApiContext _context;
 
-        public AccessLogRepository(ApiContext context)
+        public AccessRepository(ApiContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Access>> GetAccessLog()
+        public async Task<IEnumerable<Access>> GetAccesses()
         {
-            return await _context.AccessLog.ToListAsync();
+            return await _context.Accesses.ToListAsync();
         }
 
         public void AddAccess(Access access)
@@ -30,7 +30,7 @@ namespace api.Repositories
             
             access.Id = Guid.NewGuid();
 
-            _context.AccessLog.Add(access);
+            _context.Accesses.Add(access);
         }
 
         

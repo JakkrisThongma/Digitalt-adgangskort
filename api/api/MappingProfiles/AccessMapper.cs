@@ -6,20 +6,21 @@ namespace api.MappingProfiles
     {
         public AccessMapper()
         {
-            CreateMap<Entities.Access, Models.AccessLogDto>();
-            CreateMap<Models.AccessLogDto, Models.AccessLogDto>();
+            CreateMap<Entities.Access, Models.AdminAccessDto>();
+            CreateMap<Models.AdminAccessDto, Models.AdminAccessDto>();
             
-            CreateMap<Entities.SmartLock, Models.AccessLogDto>()
+            CreateMap<Entities.SmartLock, Models.AdminAccessDto>()
                 .ForMember(
                     dest => dest.SmartLockTitle,
                     opt => opt.MapFrom(src => src.Title)
                 );
-            CreateMap<Models.AccessLogDto, Entities.Access>();
-            CreateMap<Microsoft.Graph.User, Models.AccessLogDto>()
+            CreateMap<Models.AdminAccessDto, Entities.Access>();
+            CreateMap<Microsoft.Graph.User, Models.AdminAccessDto>()
                 .ForMember(
                     dest => dest.UserName,
                     opt => opt.MapFrom(src => src.DisplayName)
-                );
+                )
+                .ForMember(x => x.Id, opt => opt.Ignore());
             
         }
     }
