@@ -117,6 +117,7 @@ namespace api
             services.AddScoped<ISmartLockRepository, SmartLockRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IAccessLogRepository, AccessLogRepository>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddDbContext<ApiContext>(opt =>
@@ -162,7 +163,6 @@ namespace api
                 c.DefaultModelExpandDepth(2);
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
                 c.EnableDeepLinking();
-                c.DisplayOperationId();
             });
             
             app.UseHttpsRedirection();

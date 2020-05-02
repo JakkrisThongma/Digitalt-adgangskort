@@ -27,12 +27,13 @@ namespace api.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IGroupRepository _groupRepository;
         private readonly IAzureAdRepository _azureAdRepository;
+        private readonly IAccessLogRepository _accessLogRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<SmartLocksController> _logger;
 
         public SmartLocksController(ISmartLockRepository smartLockRepository,
             IUserRepository userRepository, IGroupRepository groupRepository,
-            IAzureAdRepository azureAdRepository, IMapper mapper,
+            IAzureAdRepository azureAdRepository, IAccessLogRepository accessLogRepository, IMapper mapper,
             ILogger<SmartLocksController> logger)
         {
             _smartLockRepository = smartLockRepository ??
@@ -43,6 +44,8 @@ namespace api.Controllers
                                throw new ArgumentNullException(nameof(groupRepository));
             _azureAdRepository = azureAdRepository ??
                                  throw new ArgumentNullException(nameof(azureAdRepository));
+            _accessLogRepository = accessLogRepository ??
+                                   throw new ArgumentNullException(nameof(accessLogRepository));
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
             _logger = logger ??
@@ -421,10 +424,10 @@ namespace api.Controllers
         {
             var userExists = await _userRepository.UserExists(smartLockUser.UserId);
             if (!userExists) return NotFound();
-
+            
             var smartLockExists = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
             if (!smartLockExists) return NotFound();
-
+            
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
@@ -453,27 +456,53 @@ namespace api.Controllers
                 var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
                 if (smartLock.Status != Status.Active)
                 {
+                    var inactiveLockAccessLog = new Access
+                    {
+                        UserId = smartLockUser.UserId,
+                        SmartLockId = smartLockUser.SmartLockId,
+                        IsValid = false,
+                        Info = "Lock was in inactive state"
+                    };
+                    _accessLogRepository.AddAccess(inactiveLockAccessLog);
+                    await _accessLogRepository.Save();
                     return Ok(new AccessDto
                     {
-                        AccessAuthorized = false,
-                        Info = "The lock is in inactive state. Try again later"
+                        AccessAuthorized = false
+                        
                     });
                 }
                 var user = await _userRepository.GetUser(smartLockUser.UserId);
 
                 if (user.Status != Status.Active)
                 {
+                    var inactiveUserAccessLog = new Access
+                    {
+                        UserId = smartLockUser.UserId,
+                        SmartLockId = smartLockUser.SmartLockId,
+                        IsValid = false,
+                        Info = "User was in inactive state"
+                    };
+                    _accessLogRepository.AddAccess(inactiveUserAccessLog);
+                    await _accessLogRepository.Save();
                     return Ok(new AccessDto
                     {
-                        AccessAuthorized = false, 
-                        Info = "The user is in inactive state. Try again later"
+                        AccessAuthorized = false
+                        
                     });
                 }
+                var validAccessLog = new Access
+                {
+                    UserId = smartLockUser.UserId,
+                    SmartLockId = smartLockUser.SmartLockId,
+                    IsValid = true,
+                    Info = "Access was permitted for user"
+                };
+                _accessLogRepository.AddAccess(validAccessLog);
+                await _accessLogRepository.Save();
                 
                 return Ok(new AccessDto
                 {
-                    AccessAuthorized = true,
-                    Info = $"Access is permitted for user {user.Id}"
+                    AccessAuthorized = true
                 });
 
             }
@@ -490,35 +519,69 @@ namespace api.Controllers
                     var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
                     if (smartLock.Status != Status.Active)
                     {
+                        var inactiveLockAccessLog = new Access
+                        {
+                            UserId = smartLockUser.UserId,
+                            SmartLockId = smartLockUser.SmartLockId,
+                            IsValid = false,
+                            Info = "Lock was in inactive state"
+                        };
+                        _accessLogRepository.AddAccess(inactiveLockAccessLog);
+                        await _accessLogRepository.Save();
+                        
                         return Ok(new AccessDto
                         {
-                            AccessAuthorized = false,
-                            Info = "The lock is in inactive state. Try again later"
+                            AccessAuthorized = false
+                            
                         });
                     }
                     var group = await _groupRepository.GetGroup(Guid.Parse(groupId));
 
                     if (group.Status != Status.Active)
                     {
+                        var inactiveGroupAccessLog = new Access
+                        {
+                            UserId = smartLockUser.UserId,
+                            SmartLockId = smartLockUser.SmartLockId,
+                            IsValid = false,
+                            Info = "User group was in inactive state"
+                        };
+                        _accessLogRepository.AddAccess(inactiveGroupAccessLog);
+                        await _accessLogRepository.Save();
+                        
                         return Ok(new AccessDto
                         {
-                            AccessAuthorized = false, 
-                            Info = "The group is in inactive state. Try again later"
+                            AccessAuthorized = false
                         });
                     }
-                
+                    var validGroupAccessLog = new Access
+                    {
+                        UserId = smartLockUser.UserId,
+                        SmartLockId = smartLockUser.SmartLockId,
+                        IsValid = true,
+                        Info = "Access is permitted for group user"
+                    };
+                    _accessLogRepository.AddAccess(validGroupAccessLog);
+                    await _accessLogRepository.Save();
                     return Ok(new AccessDto
                     {
-                        AccessAuthorized = true,
-                        Info = $"Access is permitted for group {group.Id}"
+                        AccessAuthorized = true
                     });
                 }
             }
 
+            var notValidAccessLog = new Access
+            {
+                UserId = smartLockUser.UserId,
+                SmartLockId = smartLockUser.SmartLockId,
+                IsValid = false,
+                Info = "Access was denied"
+            };
+            _accessLogRepository.AddAccess(notValidAccessLog);
+            await _accessLogRepository.Save();
             return Ok(new AccessDto
             {
-                AccessAuthorized = false,
-                Info = "Access is not permitted"
+                AccessAuthorized = false
             });
         }
     }
