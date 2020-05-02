@@ -1,11 +1,16 @@
-import React, { useEffect, useContext, useState } from "react";
-import { AddBox, Edit, Delete } from "@material-ui/icons";
+import React, { useContext, useEffect, useState } from "react";
+import { AddBox, Delete, Edit } from "@material-ui/icons";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import {userContext, smartLockContext, uiContext, azureAdContext} from "@/store";
+import {
+  azureAdContext,
+  smartLockContext,
+  uiContext,
+  userContext
+} from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
-import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
+import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
 import {
   openAddDialog,
   openDeleteDialog,
@@ -15,9 +20,9 @@ import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { useSnackbar } from "notistack";
 import {
   AddUserDialog,
-  EditUserDialog,
-  DeleteUserDialog
-} from "@/components/usersList";
+  DeleteUserDialog,
+  EditUserDialog
+} from "@/components/users";
 import {
   getUser,
   getUsers,
@@ -25,9 +30,8 @@ import {
   setSelectedUserId
 } from "@/actions/userActions";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import {Button} from "@material-ui/core";
-import {getAzureAdUsers} from "@/actions/azureAdActions";
-import azureAdReducer from "@/reducers/azureAdReducer";
+import { Button } from "@material-ui/core";
+import { getAzureAdUsers } from "@/actions/azureAdActions";
 
 const useStyles = makeStyles(theme => ({
   root: {

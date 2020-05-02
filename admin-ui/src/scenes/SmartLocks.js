@@ -1,15 +1,15 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { AddBox, Edit, Delete } from "@material-ui/icons";
+import { AddBox, Delete, Edit } from "@material-ui/icons";
 import { Breadcrumbs, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  smartLockContext,
   groupContext,
+  smartLockContext,
   uiContext,
   userContext
 } from "@/store";
-import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
+import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
 import {
   openAddDialog,
   openDeleteDialog,
@@ -20,16 +20,16 @@ import { useSnackbar } from "notistack";
 
 import {
   getSmartLock,
-  getSmartLocks,
   getSmartLockGroups,
+  getSmartLocks,
   getSmartLockUsers,
-  setSelectedSmartLockId,
+  setSelectedSmartLockId
 } from "@/actions/smartLockActions";
 import { getGroups } from "@/actions/groupActions";
 import {
+  AddSmartLockDialog,
   DeleteSmartLockDialog,
-  EditSmartLockDialog,
-  AddSmartLockDialog
+  EditSmartLockDialog
 } from "@/components/smartLock";
 import { getUsers } from "@/actions/userActions";
 

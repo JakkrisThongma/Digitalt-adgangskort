@@ -1,30 +1,32 @@
 import React, { useContext, useEffect } from "react";
-import { makeStyles, fade } from "@material-ui/core/styles";
-import { Button, Tab, Tabs, Typography } from "@material-ui/core";
-import { Delete, AddBox } from "@material-ui/icons";
+import { fade, makeStyles } from "@material-ui/core/styles";
+import { Button, Tab, Tabs } from "@material-ui/core";
+import { AddBox, Delete } from "@material-ui/icons";
 
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
-  getUserSmartLocks,
   getUser,
   getUserGroups,
+  getUserSmartLocks,
   setSelectedUserId
 } from "@/actions/userActions";
 import {
   getSmartLocks,
   setSelectedSmartLockId
 } from "@/actions/smartLockActions";
-import { userContext, smartLockContext, uiContext } from "@/store";
-import ViewMaterialTable from "@/components/ViewMaterialTable";
-import TabPanel from "@/components/TabPanel";
+import { smartLockContext, uiContext, userContext } from "@/store";
+import ViewMaterialTable from "@/components/common/ViewMaterialTable";
+import TabPanel from "@/components/common/TabPanel";
 import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 
-import UserInfo from "@/components/usersList/UserInfo/UserInfo";
-import DeleteSmartLockDialog from "@/components/usersList/DeleteSmartLockDialog";
-import { AddUserSmartLockDialog } from "@/components/usersList";
+import {
+  AddUserSmartLockDialog,
+  UserInfo,
+  DeleteSmartLockDialog
+} from "@/components/users";
 
 const groupColumns = [
   { title: "User Id", field: "id", editable: "never", sorting: false },
@@ -140,6 +142,7 @@ const User = ({ match }) => {
       "aria-controls": `vertical-tabpanel-${index}`
     };
   }
+
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">

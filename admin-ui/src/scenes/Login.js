@@ -1,11 +1,10 @@
 import React from "react";
 import {
-  Paper,
   Avatar,
   Button,
-  TextField,
-  Typography,
-  Container
+  Container,
+  Paper,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LockOutlined } from "@material-ui/icons";
@@ -47,7 +46,6 @@ const Login = () => {
           className={classes.form}
           noValidate
           onSubmit={e => e.preventDefault()}>
-
           <Button
             type="submit"
             fullWidth

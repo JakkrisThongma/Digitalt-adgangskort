@@ -1,6 +1,6 @@
 import {
-  GET_ACCESS_LOG_PENDING,
   GET_ACCESS_LOG_FAILED,
+  GET_ACCESS_LOG_PENDING,
   GET_ACCESS_LOG_SUCCEEDED
 } from "@/actions/actionTypes";
 

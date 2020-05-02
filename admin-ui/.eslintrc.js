@@ -26,7 +26,8 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn",
     "react/jsx-filename-extension": "off",
     "react/jsx-props-no-spreading": "off",
-    "react/forbid-prop-types": "off"
+    "react/forbid-prop-types": "off",
+    "import/prefer-default-export": "off"
   },
   settings: {
     'import/resolver': {

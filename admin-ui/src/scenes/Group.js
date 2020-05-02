@@ -1,14 +1,14 @@
 import React, { useContext, useEffect } from "react";
-import { makeStyles, fade } from "@material-ui/core/styles";
+import { fade, makeStyles } from "@material-ui/core/styles";
 import { Button, Tab, Tabs } from "@material-ui/core";
-import { Delete, AddBox } from "@material-ui/icons";
+import { AddBox, Delete } from "@material-ui/icons";
 
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
-  getGroupSmartLocks,
   getGroup,
+  getGroupSmartLocks,
   getGroupUsers,
   setSelectedGroupId
 } from "@/actions/groupActions";
@@ -17,14 +17,16 @@ import {
   setSelectedSmartLockId
 } from "@/actions/smartLockActions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
-import ViewMaterialTable from "@/components/ViewMaterialTable";
-import TabPanel from "@/components/TabPanel";
+import ViewMaterialTable from "@/components/common/ViewMaterialTable";
+import TabPanel from "@/components/common/TabPanel";
 import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 
-import GroupInfo from "@/components/group/GroupInfo/GroupInfo";
-import DeleteSmartLockDialog from "@/components/group/DeleteSmartLockDialog";
-import { AddGroupSmartLockDialog } from "@/components/group";
+import {
+  AddGroupSmartLockDialog,
+  DeleteSmartLockDialog,
+  GroupInfo
+} from "@/components/group";
 
 const userColumns = [
   { title: "User Id", field: "id", editable: "never", sorting: false },
@@ -140,6 +142,7 @@ const Group = ({ match }) => {
       "aria-controls": `vertical-tabpanel-${index}`
     };
   }
+
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">

@@ -4,8 +4,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TotalCount } from "@/components/dashboard";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
-import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
-import { Refresh } from "@material-ui/icons";
+import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import {
+  Refresh as RefreshIcon,
+  Person as PersonIcon,
+  Group as GroupIcon,
+  Lock as LockIcon
+} from "@material-ui/icons";
 import { getSmartLocks } from "@/actions/smartLockActions";
 import getAccessLog from "@/actions/accessLogActions";
 import {
@@ -99,6 +104,7 @@ const Dashboard = () => {
     userDispatch(getUsers);
     groupDispatch(getGroups);
     smartLockDispatch(getSmartLocks);
+    console.log(typeof PersonIcon);
   }, []);
 
   useDidMountEffect(() => {
@@ -138,21 +144,21 @@ const Dashboard = () => {
           <TotalCount
             title="Total users"
             total={users.length}
-            iconTitle="People"
+            icon={PersonIcon}
           />
         </Grid>
         <Grid item md={4} xs={12}>
           <TotalCount
             title="Total groups"
             total={groups.length}
-            iconTitle="AccountTree"
+            icon={GroupIcon}
           />
         </Grid>
         <Grid item md={4} xs={12}>
           <TotalCount
             title="Total smart locks"
             total={smartLocks.length}
-            iconTitle="Lock"
+            icon={LockIcon}
           />
         </Grid>
         <Grid item xs={12}>
@@ -163,7 +169,7 @@ const Dashboard = () => {
             data={tableData}
             actions={[
               {
-                icon: () => <Refresh />,
+                icon: () => <RefreshIcon />,
                 tooltip: "Refresh",
                 onClick: event => handleRefreshClick(event),
                 isFreeAction: true

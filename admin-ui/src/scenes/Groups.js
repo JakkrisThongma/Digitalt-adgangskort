@@ -1,6 +1,6 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { AddBox, Edit, Delete } from "@material-ui/icons";
+import { AddBox, Delete, Edit } from "@material-ui/icons";
 import { Breadcrumbs, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -10,7 +10,7 @@ import {
   uiContext
 } from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
-import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
+import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
 import {
   openAddDialog,
   openDeleteDialog,
@@ -20,8 +20,8 @@ import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { useSnackbar } from "notistack";
 import {
   AddGroupDialog,
-  EditGroupDialog,
-  DeleteGroupDialog
+  DeleteGroupDialog,
+  EditGroupDialog
 } from "@/components/group";
 import {
   getGroup,
