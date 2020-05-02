@@ -8,10 +8,9 @@ using api.Repositories;
 using AutoMapper;
 using Status = api.Types.Status;
 
-
 namespace api.Services
 {
-    public class AccessesService : IAccessesService
+    public class AccessService : IAccesService
     {
         private readonly IAccessRepository _accessRepository;
         private readonly IUserRepository _userRepository;
@@ -20,7 +19,7 @@ namespace api.Services
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly IMapper _mapper;
 
-        public AccessesService(IAccessRepository accessRepository, IUserRepository userRepository,
+        public AccessService(IAccessRepository accessRepository, IUserRepository userRepository,
             IGroupRepository groupRepository, ISmartLockRepository smartLockRepository 
             ,IAzureAdRepository azureAdRepository, IMapper mapper)
         {
@@ -45,12 +44,6 @@ namespace api.Services
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
             var allSmartLocks =await _smartLockRepository.GetSmartLocks();
-            
-            // var mergedAccessLogs = DataMerger.MergeAccessLogData(allAccessLogsFromRepo,
-            //     allUsersFromAzureAd, allSmartLocks, _mapper);
-            //
-            // return mergedAccessLogs;
-            
             var logsFromRepo = allAccessLogsFromRepo.ToList();
         
             var mergedUserLogs = (from logFromRepo in logsFromRepo

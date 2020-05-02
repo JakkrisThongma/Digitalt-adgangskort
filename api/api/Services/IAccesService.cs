@@ -4,7 +4,7 @@ using api.Models;
 
 namespace api.Services
 {
-    public interface IAccessesService
+    public interface IAccesService
     {
         Task<UserAccessDto> GetUserAccessStatus(SmartLockUserAccessDto smartLockUser);
         Task<IEnumerable<AdminAccessDto>> GetAccesses();

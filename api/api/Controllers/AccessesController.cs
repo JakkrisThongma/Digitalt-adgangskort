@@ -18,18 +18,18 @@ namespace api.Controllers
     [ApiController]
     public class AccessesController : ControllerBase
     {
-        private readonly IAccessesService _accessesService;
+        private readonly IAccesService _accesService;
         private readonly IUserRepository _userRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly ISmartLockRepository _smartLockRepository;
         private readonly IMapper _mapper;
 
-        public AccessesController( IAccessesService accessesService, IUserRepository userRepository,
+        public AccessesController( IAccesService accesService, IUserRepository userRepository,
             ISmartLockRepository smartLockRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
         {
      
-            _accessesService = accessesService ??
-                               throw new ArgumentNullException(nameof(accessesService));
+            _accesService = accesService ??
+                               throw new ArgumentNullException(nameof(accesService));
             _userRepository = userRepository ??
                               throw new ArgumentNullException(nameof(userRepository));
             _smartLockRepository = smartLockRepository ??
@@ -46,7 +46,7 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<AdminAccessDto>>> GetAccesses()
         {
-            var mergedAccessLogs = await _accessesService.GetAccesses();
+            var mergedAccessLogs = await _accesService.GetAccesses();
             return Ok(mergedAccessLogs);
         }
         
@@ -84,7 +84,7 @@ namespace api.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            var userAccessStatus = await _accessesService.GetUserAccessStatus(smartLockUser);
+            var userAccessStatus = await _accesService.GetUserAccessStatus(smartLockUser);
             return Ok(userAccessStatus);
         }
     }
