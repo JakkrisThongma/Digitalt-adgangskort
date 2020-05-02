@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { TotalCount, LastActivity } from "@/components/dashboard";
+import { TotalCount } from "@/components/dashboard";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import EnhancedMaterialTable from "@/components/EnhancedMaterialTable";
 import { Refresh } from "@material-ui/icons";
-import Paper from "@material-ui/core/Paper";
 import { getSmartLocks } from "@/actions/smartLockActions";
 import getAccessLog from "@/actions/accessLogActions";
 import {
@@ -18,6 +17,7 @@ import {
 import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { getUsers } from "@/actions/userActions";
 import { getGroups } from "@/actions/groupActions";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -84,7 +84,7 @@ const Dashboard = () => {
   const classes = useStyles();
 
   const [accessLogState, accessLogDispatch] = useContext(accessLogContext);
-  const { accessLog, loading } = accessLogState;
+  const { accessLog, loading, error: accessLogError } = accessLogState;
   const [userState, userDispatch] = useContext(userContext);
   const { users } = userState;
   const [groupState, groupDispatch] = useContext(groupContext);
@@ -92,6 +92,7 @@ const Dashboard = () => {
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks } = smartLockState;
   const [tableData, setTableData] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     accessLogDispatch(getAccessLog);
@@ -108,10 +109,19 @@ const Dashboard = () => {
     setTableData(data);
   }, [accessLog]);
 
-  const handleRefreshClick = (event) => {
+  const handleRefreshClick = event => {
     event.stopPropagation();
     accessLogDispatch(getAccessLog);
   };
+
+  useDidMountEffect(() => {
+    if (accessLogError) {
+      enqueueSnackbar(accessLogError.message, {
+        variant: "error"
+      });
+    }
+  }, [accessLogError]);
+
   return (
     <div className={classes.root}>
       <div className={classes.paper}>
@@ -147,14 +157,15 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12}>
           <EnhancedMaterialTable
+            title="Access log"
             isLoading={loading}
             columns={accessLogColumns}
             data={tableData}
             actions={[
               {
-                icon: () => <Refresh fontSize="large" />,
+                icon: () => <Refresh />,
                 tooltip: "Refresh",
-                onClick: (event) => handleRefreshClick(event),
+                onClick: event => handleRefreshClick(event),
                 isFreeAction: true
               }
             ]}
