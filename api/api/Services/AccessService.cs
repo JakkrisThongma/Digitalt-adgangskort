@@ -39,30 +39,30 @@ namespace api.Services
         
         public async Task<IEnumerable<AdminAccessDto>> GetAccesses()
         {
-            var allAccessLogsFromRepo = await _accessRepository.GetAccesses();
+            var allAccessesFromRepo = await _accessRepository.GetAccesses();
             
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var allUsersFromAzureAd = await _azureAdRepository.GetUsers(client);
             var allSmartLocks =await _smartLockRepository.GetSmartLocks();
-            var logsFromRepo = allAccessLogsFromRepo.ToList();
+            var logsFromRepo = allAccessesFromRepo.ToList();
         
-            var mergedUserLogs = (from logFromRepo in logsFromRepo
+            var mergedUsers = (from logFromRepo in logsFromRepo
                     from dbUserFromAzureAd in allUsersFromAzureAd
                     where logFromRepo.UserId == Guid.Parse(dbUserFromAzureAd.Id)
                     let dtoFromDb = _mapper.Map<AdminAccessDto>(logFromRepo)
                     select _mapper.Map(dbUserFromAzureAd, dtoFromDb))
                 .OrderByDescending(al => al.Time).ToList();
 
-            var mergedSmartLockLogs = (from logFromRepo in logsFromRepo
+            var mergedSmartLocks = (from logFromRepo in logsFromRepo
                 from smartLockFromRepo in allSmartLocks
                 where logFromRepo.SmartLockId == smartLockFromRepo.Id
                 let dtoFromDb = _mapper.Map<AdminAccessDto>(logFromRepo)
                 select _mapper.Map(smartLockFromRepo, dtoFromDb)).ToList();
             
             
-            foreach (var ul in mergedUserLogs)
+            foreach (var ul in mergedUsers)
             {
-                foreach (var sll in mergedSmartLockLogs)
+                foreach (var sll in mergedSmartLocks)
                 {
                     if (ul.SmartLockId == sll.SmartLockId)
                     {
@@ -72,7 +72,7 @@ namespace api.Services
                         
             }
             
-            return mergedUserLogs;
+            return mergedUsers;
         }
         
          public async Task<UserAccessDto> GetUserAccessStatus(SmartLockUserAccessDto smartLockUser)
@@ -87,14 +87,14 @@ namespace api.Services
                 var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
                 if (smartLock.Status != Types.Status.Active)
                 {
-                    var inactiveLockAccessLog = new Access
+                    var inactiveLockAccess = new Access
                     {
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
                         IsValid = false,
                         Info = "Lock was in inactive state"
                     };
-                    _accessRepository.AddAccess(inactiveLockAccessLog);
+                    _accessRepository.AddAccess(inactiveLockAccess);
                     await _accessRepository.Save();
                     return new UserAccessDto
                     {
@@ -106,14 +106,14 @@ namespace api.Services
 
                 if (user.Status != Types.Status.Active)
                 {
-                    var inactiveUserAccessLog = new Access
+                    var inactiveUserAccess = new Access
                     {
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
                         IsValid = false,
                         Info = "User was in inactive state"
                     };
-                    _accessRepository.AddAccess(inactiveUserAccessLog);
+                    _accessRepository.AddAccess(inactiveUserAccess);
                     await _accessRepository.Save();
                     return new UserAccessDto
                     {
@@ -121,14 +121,14 @@ namespace api.Services
                         
                     };
                 }
-                var validAccessLog = new Access
+                var validAccess = new Access
                 {
                     UserId = smartLockUser.UserId,
                     SmartLockId = smartLockUser.SmartLockId,
                     IsValid = true,
                     Info = "Access was permitted for user"
                 };
-                _accessRepository.AddAccess(validAccessLog);
+                _accessRepository.AddAccess(validAccess);
                 await _accessRepository.Save();
                 
                 return new UserAccessDto
@@ -150,14 +150,14 @@ namespace api.Services
                     var smartLock = await _smartLockRepository.GetSmartLock(smartLockUser.SmartLockId);
                     if (smartLock.Status != Types.Status.Active)
                     {
-                        var inactiveLockAccessLog = new Access
+                        var inactiveLockAccess = new Access
                         {
                             UserId = smartLockUser.UserId,
                             SmartLockId = smartLockUser.SmartLockId,
                             IsValid = false,
                             Info = "Lock was in inactive state"
                         };
-                        _accessRepository.AddAccess(inactiveLockAccessLog);
+                        _accessRepository.AddAccess(inactiveLockAccess);
                         await _accessRepository.Save();
                         
                         return new UserAccessDto
@@ -170,14 +170,14 @@ namespace api.Services
 
                     if (group.Status != Status.Active)
                     {
-                        var inactiveGroupAccessLog = new Access
+                        var inactiveGroupAccess = new Access
                         {
                             UserId = smartLockUser.UserId,
                             SmartLockId = smartLockUser.SmartLockId,
                             IsValid = false,
                             Info = "User group was in inactive state"
                         };
-                        _accessRepository.AddAccess(inactiveGroupAccessLog);
+                        _accessRepository.AddAccess(inactiveGroupAccess);
                         await _accessRepository.Save();
                         
                         return new UserAccessDto
@@ -185,14 +185,14 @@ namespace api.Services
                             AccessAuthorized = false
                         };
                     }
-                    var validGroupAccessLog = new Access
+                    var validGroupAccess = new Access
                     {
                         UserId = smartLockUser.UserId,
                         SmartLockId = smartLockUser.SmartLockId,
                         IsValid = true,
                         Info = "Access is permitted for group user"
                     };
-                    _accessRepository.AddAccess(validGroupAccessLog);
+                    _accessRepository.AddAccess(validGroupAccess);
                     await _accessRepository.Save();
                     return new UserAccessDto
                     {
@@ -201,14 +201,14 @@ namespace api.Services
                 }
             }
 
-            var notValidAccessLog = new Access
+            var notValidAccess = new Access
             {
                 UserId = smartLockUser.UserId,
                 SmartLockId = smartLockUser.SmartLockId,
                 IsValid = false,
                 Info = "Access was denied"
             };
-            _accessRepository.AddAccess(notValidAccessLog);
+            _accessRepository.AddAccess(notValidAccess);
             await _accessRepository.Save();
             return new UserAccessDto
             {
