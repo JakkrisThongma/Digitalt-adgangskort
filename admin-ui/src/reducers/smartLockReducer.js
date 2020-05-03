@@ -36,7 +36,8 @@ import {
 } from "../actions/actionTypes";
 
 const smartLockReducer = (state, action) => {
-  console.log("Smart lock action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("Smart lock action dispatched: ", action.type);
 
   // Get smart locks
   if (action.type === GET_SMART_LOCKS_PENDING) {

@@ -10,7 +10,8 @@ import {
 } from "../actions/actionTypes";
 
 const uiReducer = (state, action) => {
-  console.log("UI action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("UI action dispatched: ", action.type);
 
   // Add dialog
   if (action.type === OPEN_ADD_DIALOG) {

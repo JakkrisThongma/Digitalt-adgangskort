@@ -5,7 +5,8 @@ import {
 } from "@/actions/actionTypes";
 
 const accessLogReducer = (state, action) => {
-  console.log("Access log Ad action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("Access log Ad action dispatched: ", action.type);
 
   // Get access log
   if (action.type === GET_ACCESS_LOG_PENDING) {
