@@ -27,7 +27,8 @@ import {
 } from "../actions/actionTypes";
 
 const userReducer = (state, action) => {
-  console.log("User action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("User action dispatched: ", action.type);
 
   // Get users
   if (action.type === GET_USERS_PENDING) {

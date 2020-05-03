@@ -23,7 +23,8 @@ import {
 } from "../actions/actionTypes";
 
 const azureAdReducer = (state, action) => {
-  console.log("Azure Ad action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("Azure Ad action dispatched: ", action.type);
 
   // Get Azure Ad users
   if (action.type === GET_AZURE_AD_USERS_PENDING) {

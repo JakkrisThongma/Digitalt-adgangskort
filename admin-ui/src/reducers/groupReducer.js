@@ -24,7 +24,8 @@ import {
 } from "../actions/actionTypes";
 
 const groupReducer = (state, action) => {
-  console.log("Group action: ", action.type);
+  if (process.env.NODE_ENV !== "development")
+    console.log("Group action dispatched: ", action.type);
   // Get groups
   if (action.type === GET_GROUPS_PENDING) {
     return {
