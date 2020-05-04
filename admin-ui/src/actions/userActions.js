@@ -42,7 +42,7 @@ const getUsers = dispatch => {
     .then(response =>
       dispatch({
         type: GET_USERS_SUCCEEDED,
-        payload: { users: response }
+        payload: { users: response.data }
       })
     )
     .catch(error =>
@@ -61,7 +61,7 @@ const addUser = (dispatch, data) => {
     .then(response =>
       dispatch({
         type: ADD_USER_SUCCEEDED,
-        payload: { newUser: response }
+        payload: { newUser: response.data }
       })
     )
     .catch(error =>
@@ -78,7 +78,7 @@ const getUser = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_USER_SUCCEEDED,
-        payload: { user: response }
+        payload: { user: response.data }
       })
     )
     .catch(error =>
@@ -133,7 +133,7 @@ const getUserGroups = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_USER_GROUPS_SUCCEEDED,
-        payload: { userGroups: response }
+        payload: { userGroups: response.data }
       })
     )
     .catch(error =>
@@ -152,7 +152,7 @@ const getUserSmartLocks = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_USER_SMART_LOCKS_SUCCEEDED,
-        payload: { userSmartLocks: response }
+        payload: { userSmartLocks: response.data }
       })
     )
     .catch(error =>
@@ -171,7 +171,7 @@ const getCurrentAuthenticatedUser = dispatch => {
     .then(response =>
       dispatch({
         type: GET_CURRENT_AUTHENTICATED_USER_SUCCEEDED,
-        payload: { currentAuthenticatedUser: response }
+        payload: { currentAuthenticatedUser: response.data }
       })
     )
     .catch(error =>

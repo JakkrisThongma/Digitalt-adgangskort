@@ -13,7 +13,7 @@ const getAccessLog = dispatch => {
     .then(response =>
       dispatch({
         type: GET_ACCESS_LOG_SUCCEEDED,
-        payload: { accessLog: response }
+        payload: { accessLog: response.data }
       })
     )
     .catch(error =>

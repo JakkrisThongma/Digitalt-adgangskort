@@ -56,7 +56,7 @@ const getSmartLocks = dispatch => {
     .then(response =>
       dispatch({
         type: GET_SMART_LOCKS_SUCCEEDED,
-        payload: { smartLocks: response }
+        payload: { smartLocks: response.data }
       })
     )
     .catch(error =>
@@ -75,7 +75,7 @@ const addSmartLock = (dispatch, data) => {
     .then(response =>
       dispatch({
         type: ADD_SMART_LOCK_SUCCEEDED,
-        payload: { newSmartLock: response }
+        payload: { newSmartLock: response.data }
       })
     )
     .catch(error =>
@@ -94,7 +94,7 @@ const getSmartLock = (dispatch, smartLockId) => {
     .then(response =>
       dispatch({
         type: GET_SMART_LOCK_SUCCEEDED,
-        payload: { smartLock: response }
+        payload: { smartLock: response.data }
       })
     )
     .catch(error =>
@@ -149,7 +149,7 @@ const getSmartLockUsers = (dispatch, smartLockId) => {
     .then(response =>
       dispatch({
         type: GET_SMART_LOCK_USERS_SUCCEEDED,
-        payload: { smartLockUsers: response }
+        payload: { smartLockUsers: response.data }
       })
     )
     .catch(error =>
@@ -168,7 +168,7 @@ const addSmartLockUser = (dispatch, smartLockId, data) => {
     .then(response =>
       dispatch({
         type: ADD_SMART_LOCK_USER_SUCCEEDED,
-        payload: { newSmartLockUser: response }
+        payload: { newSmartLockUser: response.data }
       })
     )
     .catch(error =>
@@ -205,7 +205,7 @@ const getSmartLockGroups = (dispatch, smartLockId) => {
     .then(response =>
       dispatch({
         type: GET_SMART_LOCK_GROUPS_SUCCEEDED,
-        payload: { smartLockGroups: response }
+        payload: { smartLockGroups: response.data }
       })
     )
     .catch(error =>
@@ -224,7 +224,7 @@ const addSmartLockGroup = (dispatch, smartLockId, data) => {
     .then(response =>
       dispatch({
         type: ADD_SMART_LOCK_GROUP_SUCCEEDED,
-        payload: { newSmartLockGroup: response }
+        payload: { newSmartLockGroup: response.data }
       })
     )
     .catch(error =>
