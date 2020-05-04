@@ -127,7 +127,7 @@ namespace api.Controllers
 
         // GET: api/smart-locks/5
         /// <summary>
-        /// Get a db smart lock by id
+        /// Get a smart lock from db by id
         /// </summary>
         /// <param name="smartLockId">The id of the smart lock you want to get</param>
         /// <returns>An ActionResult task of type SmartLockDto</returns>
