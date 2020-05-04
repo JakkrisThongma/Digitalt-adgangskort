@@ -17,9 +17,9 @@ let firstGroupFromAzureAd;
 let secondGroupFromAzureAd;
 let groupCount;
 let smartLocks;
+let updatedSmartLocks;
 let firstSmartLock;
 let secondSmartLock;
-let updatedSmartLocks;
 const smartLocksToAdd = [
   {
     title: "Smart lock 1",
@@ -30,7 +30,6 @@ const smartLocksToAdd = [
     status: "Inactive"
   }
 ];
-
 describe("Setup", function() {
   it("should set tests data", async function(done) {
     const azureAdGroups = await getAzureAdGroups();
@@ -38,6 +37,7 @@ describe("Setup", function() {
 
     const groups = await getGroups();
     groupCount = await groups.data.length;
+
     const addFirstSmartLock = await addSmartLock(smartLocksToAdd[0]);
     firstSmartLock = addFirstSmartLock.data;
     const addSecondSmartLock = await addSmartLock(smartLocksToAdd[1]);
@@ -50,46 +50,45 @@ describe("Setup", function() {
 
 // Create groups
 describe("Create groups", function() {
-  it("should create group with 'active' state", function(done) {
+  it("should create group with 'active' state", async function(done) {
     const groupPayload = {
       id: firstGroupFromAzureAd.id,
       status: "Active"
     };
-    addGroup(groupPayload).then(res => {
-      expect(res.status).toBe(201);
-      return done();
-    });
+    const response = await addGroup(groupPayload);
+    expect(response.status).toBe(201);
+    return done();
   });
 
-  it("should create group with list of smart locks", function(done) {
+  it("should create group with list of smart locks", async function(done) {
     const groupPayload = {
       id: secondGroupFromAzureAd.id,
       status: "Active",
       smartLockGroups: extractIdList(smartLocks, "smartLockId")
     };
-    addGroup(groupPayload).then(res => {
-      expect(res.status).toBe(201);
-      return done();
-    });
+    const response = await addGroup(groupPayload);
+    expect(response.status).toBe(201);
+    return done();
   });
 
-  it("should not create group if group exist", function(done) {
+  it("should not create group if group exist", async function(done) {
     const groupPayload = {
       id: firstGroupFromAzureAd.id,
       status: "Active"
     };
-    addGroup(groupPayload).catch(error => {
+    try {
+      await addGroup(groupPayload);
+    } catch (error) {
       expect(error.response.status).toBe(409);
-      return done();
-    });
+    }
+    return done();
   });
 
-  it("should confirm groups created successfully", function(done) {
-    getGroups().then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data.length).toBe(groupCount + 2);
-      return done();
-    });
+  it("should confirm groups created successfully", async function(done) {
+    const response = await getGroups();
+    expect(response.status).toBe(200);
+    expect(response.data.length).toBe(groupCount + 2);
+    return done();
   });
 });
 
@@ -104,23 +103,21 @@ describe("Update group", function() {
     }
   ];
 
-  it("should get group to update", function(done) {
-    getGroup(firstGroupFromAzureAd.id).then(res => {
-      groupToUpdate = res.data;
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstGroupFromAzureAd.id);
-      return done();
-    });
+  it("should get group to update", async function(done) {
+    const response = await getGroup(firstGroupFromAzureAd.id);
+    groupToUpdate = response.data;
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstGroupFromAzureAd.id);
+    return done();
   });
 
-  it("should update group", function(done) {
-    updateGroup(groupToUpdate.id, statusUpdatePayload).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+  it("should update group", async function(done) {
+    const response = await updateGroup(groupToUpdate.id, statusUpdatePayload);
+    expect(response.status).toBe(204);
+    return done();
   });
 
-  it("should update smart lock list for group", function(done) {
+  it("should update smart lock list for group", async function(done) {
     const smartLocksUpdatePayload = [
       {
         value: extractIdList(updatedSmartLocks, "smartLockId"),
@@ -128,56 +125,56 @@ describe("Update group", function() {
         op: "replace"
       }
     ];
-    updateGroup(groupToUpdate.id, smartLocksUpdatePayload).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+    const response = await updateGroup(
+      groupToUpdate.id,
+      smartLocksUpdatePayload
+    );
+    expect(response.status).toBe(204);
+    return done();
   });
-  it("should confirm group status updated successfully ", function(done) {
-    getGroup(firstGroupFromAzureAd.id).then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstGroupFromAzureAd.id);
-      expect(res.data.status).toBe(statusUpdatePayload[0].value);
-      return done();
-    });
+  it("should confirm group status updated successfully ", async function(done) {
+    const response = await getGroup(firstGroupFromAzureAd.id);
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstGroupFromAzureAd.id);
+    expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    return done();
   });
 
-  it("should confirm group smart locks updated successfully ", function(done) {
-    getGroupSmartLocks(firstGroupFromAzureAd.id).then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data).toHaveLength(updatedSmartLocks.length);
-      return done();
-    });
+  it("should confirm group smart locks updated successfully ", async function(done) {
+    const response = await getGroupSmartLocks(firstGroupFromAzureAd.id);
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveLength(updatedSmartLocks.length);
+    return done();
   });
 });
 
 // Delete group
 describe("Delete group", function() {
   let groupToDelete;
-  it("Get group to delete", function(done) {
-    getGroup(firstGroupFromAzureAd.id).then(res => {
-      groupToDelete = res.data;
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstGroupFromAzureAd.id);
-      return done();
-    });
+  it("Get group to delete", async function(done) {
+    const response = await getGroup(firstGroupFromAzureAd.id);
+    groupToDelete = response.data;
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstGroupFromAzureAd.id);
+    return done();
   });
 
-  it("should delete group", function(done) {
-    deleteGroup(groupToDelete.id).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+  it("should delete group", async function(done) {
+    const response = await deleteGroup(groupToDelete.id);
+    expect(response.status).toBe(204);
+    return done();
   });
-  it("should confirm group deleted successfully", function(done) {
-    getGroup(groupToDelete.id).catch(error => {
+  it("should confirm group deleted successfully", async function(done) {
+    try {
+      await getGroup(groupToDelete.id);
+    } catch (error) {
       expect(error.response.status).toBe(404);
-      return done();
-    });
+    }
+    return done();
   });
 });
 
-describe("Setup", function() {
+describe("Tear down", function() {
   it("should delete added data from database", async function(done) {
     try {
       await deleteSmartLock(smartLocks[0].id);
@@ -192,9 +189,9 @@ describe("Setup", function() {
     try {
       await deleteGroup(secondGroupFromAzureAd.id);
     } catch (e) {
-      console.log("group deleteGroup2", e);
+      console.log("deleteGroup2", e);
     }
-    await console.log("group smartLocks after ", smartLocks);
+    await console.log("groups smartLocks after", smartLocks);
 
     return done();
   });

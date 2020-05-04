@@ -50,46 +50,45 @@ describe("Setup", function() {
 
 // Create users
 describe("Create users", function() {
-  it("should create user with 'active' state", function(done) {
+  it("should create user with 'active' state", async function(done) {
     const userPayload = {
       id: firstUserFromAzureAd.id,
       status: "Active"
     };
-    addUser(userPayload).then(res => {
-      expect(res.status).toBe(201);
-      return done();
-    });
+    const response = await addUser(userPayload);
+    expect(response.status).toBe(201);
+    return done();
   });
 
-  it("should create user with list of smart locks", function(done) {
+  it("should create user with list of smart locks", async function(done) {
     const userPayload = {
       id: secondUserFromAzureAd.id,
       status: "Active",
       smartLockUsers: extractIdList(smartLocks, "smartLockId")
     };
-    addUser(userPayload).then(res => {
-      expect(res.status).toBe(201);
-      return done();
-    });
+    const response = await addUser(userPayload);
+    expect(response.status).toBe(201);
+    return done();
   });
 
-  it("should not create user if user exist", function(done) {
+  it("should not create user if user exist", async function(done) {
     const userPayload = {
       id: firstUserFromAzureAd.id,
       status: "Active"
     };
-    addUser(userPayload).catch(error => {
+    try {
+      await addUser(userPayload);
+    } catch (error) {
       expect(error.response.status).toBe(409);
-      return done();
-    });
+    }
+    return done();
   });
 
-  it("should confirm users created successfully", function(done) {
-    getUsers().then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data.length).toBe(userCount + 2);
-      return done();
-    });
+  it("should confirm users created successfully", async function(done) {
+    const response = await getUsers();
+    expect(response.status).toBe(200);
+    expect(response.data.length).toBe(userCount + 2);
+    return done();
   });
 });
 
@@ -104,23 +103,21 @@ describe("Update user", function() {
     }
   ];
 
-  it("should get user to update", function(done) {
-    getUser(firstUserFromAzureAd.id).then(res => {
-      userToUpdate = res.data;
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstUserFromAzureAd.id);
-      return done();
-    });
+  it("should get user to update", async function(done) {
+    const response = await getUser(firstUserFromAzureAd.id);
+    userToUpdate = response.data;
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    return done();
   });
 
-  it("should update user", function(done) {
-    updateUser(userToUpdate.id, statusUpdatePayload).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+  it("should update user", async function(done) {
+    const response = await updateUser(userToUpdate.id, statusUpdatePayload);
+    expect(response.status).toBe(204);
+    return done();
   });
 
-  it("should update smart lock list for user", function(done) {
+  it("should update smart lock list for user", async function(done) {
     const smartLocksUpdatePayload = [
       {
         value: extractIdList(updatedSmartLocks, "smartLockId"),
@@ -128,52 +125,49 @@ describe("Update user", function() {
         op: "replace"
       }
     ];
-    updateUser(userToUpdate.id, smartLocksUpdatePayload).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+    const response = await updateUser(userToUpdate.id, smartLocksUpdatePayload);
+    expect(response.status).toBe(204);
+    return done();
   });
-  it("should confirm user status updated successfully ", function(done) {
-    getUser(firstUserFromAzureAd.id).then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstUserFromAzureAd.id);
-      expect(res.data.status).toBe(statusUpdatePayload[0].value);
-      return done();
-    });
+  it("should confirm user status updated successfully ", async function(done) {
+    const response = await getUser(firstUserFromAzureAd.id);
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    return done();
   });
 
-  it("should confirm user smart locks updated successfully ", function(done) {
-    getUserSmartLocks(firstUserFromAzureAd.id).then(res => {
-      expect(res.status).toBe(200);
-      expect(res.data).toHaveLength(updatedSmartLocks.length);
-      return done();
-    });
+  it("should confirm user smart locks updated successfully ", async function(done) {
+    const response = await getUserSmartLocks(firstUserFromAzureAd.id);
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveLength(updatedSmartLocks.length);
+    return done();
   });
 });
 
 // Delete user
 describe("Delete user", function() {
   let userToDelete;
-  it("Get user to delete", function(done) {
-    getUser(firstUserFromAzureAd.id).then(res => {
-      userToDelete = res.data;
-      expect(res.status).toBe(200);
-      expect(res.data.id).toBe(firstUserFromAzureAd.id);
-      return done();
-    });
+  it("Get user to delete", async function(done) {
+    const response = await getUser(firstUserFromAzureAd.id);
+    userToDelete = response.data;
+    expect(response.status).toBe(200);
+    expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    return done();
   });
 
-  it("should delete user", function(done) {
-    deleteUser(userToDelete.id).then(res => {
-      expect(res.status).toBe(204);
-      return done();
-    });
+  it("should delete user", async function(done) {
+    const response = await deleteUser(userToDelete.id);
+    expect(response.status).toBe(204);
+    return done();
   });
-  it("should confirm user deleted successfully", function(done) {
-    getUser(userToDelete.id).catch(error => {
+  it("should confirm user deleted successfully", async function(done) {
+    try {
+      await getUser(userToDelete.id);
+    } catch (error) {
       expect(error.response.status).toBe(404);
-      return done();
-    });
+    }
+    return done();
   });
 });
 
