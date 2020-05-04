@@ -4,7 +4,7 @@ module.exports = {
   },
   parser: "babel-eslint",
   extends: ["airbnb", "prettier", "prettier/react"],
-  plugins: ["react", "jsx-a11y", "import", "prettier", "react-hooks"],
+  plugins: ["react", "jsx-a11y", "import", "prettier", "react-hooks", "jest"],
   rules: {
     "prettier/prettier": [
       "error",
@@ -28,6 +28,9 @@ module.exports = {
     "react/jsx-props-no-spreading": "off",
     "react/forbid-prop-types": "off",
     "import/prefer-default-export": "off"
+  },
+  env: {
+    "jest/globals": true
   },
   settings: {
     'import/resolver': {
