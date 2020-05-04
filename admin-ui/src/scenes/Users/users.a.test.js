@@ -175,21 +175,11 @@ describe("Tear down", function() {
   it("should delete added data from database", async function(done) {
     try {
       await deleteSmartLock(smartLocks[0].id);
+      await deleteSmartLock(smartLocks[1].id);
+      await deleteUser(secondUserFromAzureAd.id);
     } catch (e) {
       console.log("user deleteSmartLock1", e);
     }
-    try {
-      await deleteSmartLock(smartLocks[1].id);
-    } catch (e) {
-      console.log("user deleteSmartLock2", e);
-    }
-    try {
-      await deleteUser(secondUserFromAzureAd.id);
-    } catch (e) {
-      console.log("deleteUser2", e);
-    }
-    await console.log("users smartLocks after", smartLocks);
-
     return done();
   });
 });
