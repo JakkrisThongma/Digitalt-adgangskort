@@ -53,8 +53,16 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks
+        /// <summary>
+        /// Get a list of db smart-locks
+        /// </summary>
+        /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
+        /// <response code="200">Smart-locks retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">No smart-locks found</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLocks()
         {
@@ -65,10 +73,20 @@ namespace api.Controllers
         }
 
         // POST: api/smart-locks
+        /// <summary>
+        /// Add smart-locks to db
+        /// </summary>
+        /// <param name="smartLock">The user to add</param>
+        /// <returns>An ActionResult of type SmartLockDto</returns>
+        /// <response code="201">Smart-lock created successfully</response>
+        /// <response code="404">The user or group in the payload was not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> CreateSmartLock(SmartLockCreationDto smartLock)
         {
@@ -108,9 +126,19 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5
+        /// <summary>
+        /// Get a db smart lock by id
+        /// </summary>
+        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <returns>An ActionResult task of type SmartLockDto</returns>
+        /// <response code="200">Smart lock retrieved successfully</response>
+        /// <response code="404">Smart lock from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> GetSmartLock(Guid smartLockId)
         {
@@ -124,11 +152,31 @@ namespace api.Controllers
             return Ok(smartLock);
         }
 
-        
+        /// <summary>
+        ///  Update db smart lock partially
+        /// </summary>
+        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <param name="patchDoc">The set of operations to apply to the smart lock</param>
+        /// <returns>An ActionResult of type NoContent</returns>
+        /// <remarks>Sample request (this request updates the smart lock's **status**)  
+        /// 
+        /// [ 
+        ///     {
+        ///         "op": "replace", 
+        ///         "path": "/status", 
+        ///         "value": "new status" 
+        ///     } 
+        /// ] 
+        /// </remarks>
+        /// <response code="204">smart lock updated successfully</response>
+        /// <response code="404">smart lock not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPatch("{smartLockId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSmartLockPartially(Guid smartLockId,
             [FromBody] JsonPatchDocument<SmartLockModificationDto> patchDoc)
@@ -179,9 +227,19 @@ namespace api.Controllers
         }
 
         // DELETE: api/smart-locks/5
+        /// <summary>
+        /// Delete smart lock from db
+        /// </summary>
+        /// <param name="smartLockId">The id of smart lock to delete</param>
+        /// <returns>An ActionResult of type no content</returns>
+        /// <response code="204">Smart lock deleted successfully</response>
+        /// <response code="404">Smart lock not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLock(Guid smartLockId)
         {
@@ -197,9 +255,19 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5
+        /// <summary>
+        /// Get a list of users by smart lock id from Azure ad and db
+        /// </summary>
+        /// <param name="smartLockId">The id of smart lock to get the users</param>
+        /// <returns>An ActionResult task of type IEnumerable of UserDto</returns>
+        /// <response code="200">User retrieved successfully</response>
+        /// <response code="404">Smart lock id not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetSmartLockUsers(Guid smartLockId)
         {
@@ -218,6 +286,7 @@ namespace api.Controllers
         }
 
         // Post: api/smart-locks/5/users
+        // todo: xml description
         [HttpPost("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -260,9 +329,20 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5/users/1
+        /// <summary>
+        /// Get smart lock user by smartlock id and userid
+        /// </summary>
+        /// <param name="userId">The id of the user you want to get</param>
+        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <returns>An ActionResult task of type SmartLockUserDto</returns>
+        /// <response code="200">Smart lock user retrieved successfully</response>
+        /// <response code="404">Smart lock user from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/users/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockUserDto>> GetSmartLockUser(Guid smartLockId, Guid userId)
         {
@@ -283,9 +363,20 @@ namespace api.Controllers
         }
 
         // DELETE: api/smart-locks/5/users/1
+        /// <summary>
+        /// Delete smart lock user from db
+        /// </summary>
+        /// <param name="userId">The id of user to delete</param>
+        /// <param name="smartLockId">The id of smart lock to delete</param>
+        /// <returns>An ActionResult of type no content</returns>
+        /// <response code="204">Smart lock user deleted successfully</response>
+        /// <response code="404">Smart lock user not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}/users/{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
@@ -307,6 +398,15 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5/groups
+        /// <summary>
+        /// Get a db user by id
+        /// </summary>
+        /// <param name="smartLockId">Retrieve list of smart lock groups by smart lock id</param>
+        /// <returns>An ActionResult task of type GroupDto</returns>
+        /// <response code="200">Smart lock groups retrieved successfully</response>
+        /// <response code="404">Smart lock groups  from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/groups")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -327,6 +427,7 @@ namespace api.Controllers
         }
 
         // Post: api/smart-locks/5/groups
+        // todo: xml description
         [HttpPost("{smartLockId}/groups")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -368,9 +469,17 @@ namespace api.Controllers
         }
 
         // GET: api/smart-locks/5/groups/1
+        /// <summary>
+        /// Get a smart lock group by smart lock id and group id
+        /// </summary>
+        /// <returns>An ActionResult task of type SmartLockGroupDto</returns>
+        /// <response code="200">Smart lock group retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">Smart lock id or group id or smart lock group not found in db</response>
         [HttpGet("{smartLockId}/groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockGroupDto>> GetSmartLockGroup(Guid smartLockId, Guid groupId)
         {
@@ -391,9 +500,20 @@ namespace api.Controllers
         }
 
         // DELETE: api/smart-locks/5/groups/1
+        /// <summary>
+        /// Delete smart lock group from db
+        /// </summary>
+        /// <param name="smartLockId">The id of smart lock to delete</param>
+        /// <param name="groupId">The id of group to delete</param>
+        /// <returns>An ActionResult of type no content</returns>
+        /// <response code="204">Smart lock group deleted successfully</response>
+        /// <response code="404">Smart lock or group or smart lock group not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}/groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {
