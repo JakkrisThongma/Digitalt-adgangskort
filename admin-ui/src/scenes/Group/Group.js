@@ -186,7 +186,7 @@ const Group = ({ match }) => {
               data={groupUsers}
               actions={[
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip:
                     "Delete user from a group should be done from Azure AD",
                   disabled: true,
@@ -210,7 +210,7 @@ const Group = ({ match }) => {
               data={groupSmartLocks}
               actions={[
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
