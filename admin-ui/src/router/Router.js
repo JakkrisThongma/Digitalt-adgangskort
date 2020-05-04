@@ -7,7 +7,6 @@ import {
   Dashboard,
   Group,
   Groups,
-  Login,
   NotFound,
   SmartLock,
   SmartLocks,
@@ -19,12 +18,6 @@ const Router = () => {
   return (
     <Switch>
       <Redirect exact from="/" to="/dashboard" />
-      <RouteWithLayout
-        component={Login}
-        exact
-        layout={MainLayout}
-        path="/login"
-      />
       <RouteWithLayout
         component={Dashboard}
         exact
