@@ -18,7 +18,7 @@ let secondGroupFromAzureAd;
 let groupCount;
 let smartLocks;
 let firstSmartLock;
-let secondeSmartLock;
+let secondSmartLock;
 let updatedSmartLocks;
 const smartLocksToAdd = [
   {
@@ -41,8 +41,8 @@ describe("Setup", function() {
     const addFirstSmartLock = await addSmartLock(smartLocksToAdd[0]);
     firstSmartLock = addFirstSmartLock.data;
     const addSecondSmartLock = await addSmartLock(smartLocksToAdd[1]);
-    secondeSmartLock = addSecondSmartLock.data;
-    smartLocks = [firstSmartLock, secondeSmartLock];
+    secondSmartLock = addSecondSmartLock.data;
+    smartLocks = [firstSmartLock, secondSmartLock];
     updatedSmartLocks = [smartLocks[0]];
     return done();
   });

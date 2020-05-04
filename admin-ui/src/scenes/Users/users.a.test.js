@@ -19,7 +19,7 @@ let userCount;
 let smartLocks;
 let updatedSmartLocks;
 let firstSmartLock;
-let secondeSmartLock;
+let secondSmartLock;
 const smartLocksToAdd = [
   {
     title: "Smart lock 1",
@@ -41,8 +41,8 @@ describe("Setup", function() {
     const addFirstSmartLock = await addSmartLock(smartLocksToAdd[0]);
     firstSmartLock = addFirstSmartLock.data;
     const addSecondSmartLock = await addSmartLock(smartLocksToAdd[1]);
-    secondeSmartLock = addSecondSmartLock.data;
-    smartLocks = [firstSmartLock, secondeSmartLock];
+    secondSmartLock = addSecondSmartLock.data;
+    smartLocks = [firstSmartLock, secondSmartLock];
     updatedSmartLocks = [smartLocks[0]];
     return done();
   });
