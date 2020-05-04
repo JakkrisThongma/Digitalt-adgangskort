@@ -13,7 +13,7 @@ namespace api.Services
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            var user1 = new User
+            /*var user1 = new User
             {
                 Id = Guid.Parse("48984aba-64e1-4eef-b2bd-af2061cb2616"),
                 Status = Status.Active
@@ -244,7 +244,7 @@ namespace api.Services
             
             context.Accesses.AddRange(accessLog1, accessLog2);
 
-            context.SaveChanges();
+            context.SaveChanges();*/
         }
     }
 }
