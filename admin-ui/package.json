@@ -15,8 +15,9 @@
     "prod:serve": "NODE_ENV=production node src/server.js",
     "analyze": "yarn run clean && webpack -p --config webpack/webpack.analyze.js",
     "compress": "yarn run clean && webpack -p --config webpack/webpack.compress.js",
-    "test-acceptance": "jest --testMatch='**/?(*.a.)+(spec|test).[tj]s?(x)'",
+    "test-acceptance": "jest --testMatch='**/?(*.a.)+(spec|test).[tj]s?(x)' --runInBand",
     "ta": "yarn run test-acceptance ",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
   "dependencies": {
