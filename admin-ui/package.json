@@ -1,10 +1,10 @@
 {
-  "name": "digital-adgangskort-admin-ui",
+  "name": "digital-access-card",
   "version": "1.0.0",
-  "description": "Bacheloroppgaver-2020",
+  "description": "Bachelor project 2020",
   "main": "index.jsx",
-  "author": "Gruppe-4",
-  "license": "UNLICENSED",
+  "author": "Mohamad Kenas",
+  "license": "GPL",
   "private": true,
   "scripts": {
     "clean": "rimraf dist",
