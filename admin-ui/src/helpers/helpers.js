@@ -23,6 +23,9 @@ const helpers = {
         minute: "2-digit"
       });
     return "";
+  },
+  extractIdList: (list, fieldName) => {
+    return list.map(el => ({ [fieldName]: el.id }));
   }
 };
 
