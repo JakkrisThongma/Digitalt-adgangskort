@@ -8,7 +8,7 @@ name: $(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyy-MM-dd).$(Buil
 trigger:
   branches:
     include: 
-    - develop
+    #- develop
     - master
 
 variables: 

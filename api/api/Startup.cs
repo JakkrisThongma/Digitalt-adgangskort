@@ -1,4 +1,7 @@
-using api.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,87 +11,190 @@ using Microsoft.EntityFrameworkCore;
 using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication;
+using System.Runtime.InteropServices;
+using api.Configuration;
+using api.Entities;
+using api.Repositories;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace api
 {
-	public class Startup
-	{
-		private readonly IDatabaseInitialize _databaseInitialize;
-		public Startup(IConfiguration configuration, IDatabaseInitialize databaseInitialize)
-		{
-			Configuration = configuration;
-			_databaseInitialize = databaseInitialize;
-		}
+    public class Startup
+    {
+        private readonly IDatabaseInitialize _databaseInitialize;
 
-		public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration, IDatabaseInitialize databaseInitialize)
+        {
+            Configuration = configuration;
+            _databaseInitialize = databaseInitialize;
+        }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.Configure<CookiePolicyOptions>(options =>
-			{
-				// This lambda determines whether user consent for non-essential cookies is needed for a given request.
-				options.CheckConsentNeeded = context => true;
-				options.MinimumSameSitePolicy = SameSiteMode.None;
-			});
+        public IConfiguration Configuration { get; }
 
-			services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-					.AddAzureAD(options => Configuration.Bind("AzureAd", options));
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            
+            services
+                .AddAuthentication(sharedOptions =>
+                {
+                    sharedOptions.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    var authSettings = Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 
-			services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
-			{
-				options.Authority = options.Authority + "/v2.0/";         // Microsoft identity platform
+                    options.Audience = authSettings.ClientId;
+                    options.Authority = authSettings.Authority;
+                });
 
-				options.TokenValidationParameters.ValidateIssuer = false; // accept several tenants (here simplified)
-			});
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("admin",
+                    policy => policy.RequireClaim("groups", "8b4b5344-9050-4fd0-858b-5b93125341c9"));
+            });
 
-			services.AddMvc(options =>
-			{
-				var policy = new AuthorizationPolicyBuilder()
-								.RequireAuthenticatedUser()
-								.Build();
-				options.Filters.Add(new AuthorizeFilter(policy));
-			})
-			.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers()
+                .AddNewtonsoftJson(
+                options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    
+                    options.SerializerSettings.ContractResolver =
+                        new CamelCasePropertyNamesContractResolver();
 
-			services.AddDbContext<ApiContext>(opt =>
-				opt.UseSqlServer(Configuration.GetConnectionString("LockAccessDB")));
-			services.AddControllers();
-		}
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-			}
+                });
 
-			app.UseHttpsRedirection();
+            services.AddHealthChecks();
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Digital Access Card ", Version = "v1"});
 
-			app.UseRouting();
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description =
+                        "JWT Authorization header with the Bearer scheme. \r\n\r\n " +
+                        "Enter 'Bearer' [space] and then your token in the text input as: \"Bearer 123123abcabc...\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
-			app.UseAuthentication();
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+                //Locate the XML file being generated by ASP.NET...
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-			app.UseAuthorization();
+                //... and tell Swagger to use those XML comments.
+                c.IncludeXmlComments(xmlPath);
+            });
+            services.AddSwaggerGenNewtonsoftSupport();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints
-				.MapDefaultControllerRoute()
-				.RequireAuthorization();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IIdentityService, AzureAdIdentityService>();
+            services.AddScoped<IAccessService, AccessService>();
+            
+            services.AddScoped<IAzureAdRepository, AzureAdRepository>();
+            services.AddScoped<ISmartLockRepository, SmartLockRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IAccessRepository, AccessRepository>();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                services.AddDbContext<ApiContext>(opt =>
+                    opt.UseSqlServer(Configuration.GetConnectionString("LockAccessDB")));
+            }
+            else
+            {
+                services.AddDbContext<ApiContext>(opt =>
+                    opt.UseSqlServer(Configuration.GetConnectionString("MacLocalDB")));
+            }
+        }
 
-			});
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            
+            app.UseCors(builder =>
+            {
+                builder
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
 
-			using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-			{
-				_databaseInitialize.Initialize(serviceScope.ServiceProvider.GetRequiredService<ApiContext>());
-			}
-		}
-	}
+            app.UseAuthentication();
+            
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Digital Access Card API V1");
+                c.RoutePrefix = string.Empty;
+
+                c.DefaultModelExpandDepth(2);
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                c.EnableDeepLinking();
+
+            });
+            
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints
+                    .MapDefaultControllerRoute()
+                    .RequireAuthorization();
+                endpoints.MapHealthChecks("/api/health");
+            });
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                _databaseInitialize.Initialize(serviceScope.ServiceProvider.GetRequiredService<ApiContext>());
+            }
+        }
+    }
 }
