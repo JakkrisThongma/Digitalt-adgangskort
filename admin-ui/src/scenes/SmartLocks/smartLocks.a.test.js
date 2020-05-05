@@ -36,52 +36,24 @@ let groups;
 let updatedGroups;
 let firstGroup;
 let secondGroup;
-const context = {
-  azureAd: {
-    groups: {
-      all: [],
-      first: null,
-      second: null
-    },
-    users: {
-      all: [],
-      first: null,
-      second: null
-    }
-  },
-  groups: {
-    all: [],
-    updated: [],
-    first: null,
-    second: null
-  },
-  users: {
-    all: [],
-    updated: [],
-    first: null,
-    second: null
-  },
-  smartLocks: {
-    count: 0,
-    first: null,
-    second: null
-  }
-};
 
 describe("Setup", function() {
   it("should set tests data", async function(done) {
-    const azureAdUsers = await getAzureAdUsers();
-    [firstUserFromAzureAd, secondUserFromAzureAd] = await azureAdUsers.data;
-
-    const azureAdGroups = await getAzureAdGroups();
-    [firstGroupFromAzureAd, secondGroupFromAzureAd] = await azureAdGroups.data;
-
-    const smartLocks = await getSmartLocks();
-    smartLockCount = await smartLocks.data.length;
-
-    const addFirstUser = await addUser({ id: firstUserFromAzureAd.id });
-    firstUser = await addFirstUser.data;
     try {
+      const azureAdUsers = await getAzureAdUsers();
+      [firstUserFromAzureAd, secondUserFromAzureAd] = await azureAdUsers.data;
+
+      const azureAdGroups = await getAzureAdGroups();
+      [
+        firstGroupFromAzureAd,
+        secondGroupFromAzureAd
+      ] = await azureAdGroups.data;
+
+      const smartLocks = await getSmartLocks();
+      smartLockCount = await smartLocks.data.length;
+
+      const addFirstUser = await addUser({ id: firstUserFromAzureAd.id });
+      firstUser = await addFirstUser.data;
       const addSecondUser = await addUser({ id: secondUserFromAzureAd.id });
       secondUser = await addSecondUser.data;
       users = await extractIdList([firstUser, secondUser], "userId");
@@ -93,11 +65,10 @@ describe("Setup", function() {
       secondGroup = await addSecondGroup.data;
       groups = await extractIdList([firstGroup, secondGroup], "groupId");
       updatedGroups = await [groups[0]];
-      return done();
     } catch (e) {
       console.log(e);
-      return done();
     }
+    return done();
   });
 });
 
@@ -111,15 +82,21 @@ describe("Create smart locks", function() {
   };
 
   it("should create smart lock", async done => {
-    const response = await addSmartLock(firstSmartLockPayload);
-    firstSmartLock = response.data;
-    expect(response.status).toBe(201);
-    expect(firstSmartLock.title).toBe(firstSmartLockPayload.title);
-    expect(firstSmartLock.description).toBe(firstSmartLockPayload.description);
-    expect(firstSmartLock.manufactureId).toBe(
-      firstSmartLockPayload.manufactureId
-    );
-    expect(firstSmartLock.status).toBe(firstSmartLockPayload.status);
+    try {
+      const response = await addSmartLock(firstSmartLockPayload);
+      firstSmartLock = response.data;
+      expect(response.status).toBe(201);
+      expect(firstSmartLock.title).toBe(firstSmartLockPayload.title);
+      expect(firstSmartLock.description).toBe(
+        firstSmartLockPayload.description
+      );
+      expect(firstSmartLock.manufactureId).toBe(
+        firstSmartLockPayload.manufactureId
+      );
+      expect(firstSmartLock.status).toBe(firstSmartLockPayload.status);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -132,36 +109,47 @@ describe("Create smart locks", function() {
       smartLockUsers: users,
       smartLockGroups: groups
     };
-    const response = await addSmartLock(secondSmartLockPayload);
-    secondSmartLock = response.data;
-    expect(response.status).toBe(201);
-    expect(secondSmartLock.title).toBe(secondSmartLockPayload.title);
-    expect(secondSmartLock.description).toBe(
-      secondSmartLockPayload.description
-    );
-    expect(secondSmartLock.manufactureId).toBe(
-      secondSmartLockPayload.manufactureId
-    );
-    expect(secondSmartLock.status).toBe(secondSmartLockPayload.status);
+    try {
+      const response = await addSmartLock(secondSmartLockPayload);
+      secondSmartLock = response.data;
+      expect(response.status).toBe(201);
+      expect(secondSmartLock.title).toBe(secondSmartLockPayload.title);
+      expect(secondSmartLock.description).toBe(
+        secondSmartLockPayload.description
+      );
+      expect(secondSmartLock.manufactureId).toBe(
+        secondSmartLockPayload.manufactureId
+      );
+      expect(secondSmartLock.status).toBe(secondSmartLockPayload.status);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should confirm smart lock groups and users created successfully", async function(done) {
-    const groupsResponse = await getSmartLockGroups(secondSmartLock.id);
-    expect(groupsResponse.status).toBe(200);
-    expect(groupsResponse.data).toHaveLength(groups.length);
+    try {
+      const groupsResponse = await getSmartLockGroups(secondSmartLock.id);
+      expect(groupsResponse.status).toBe(200);
+      expect(groupsResponse.data).toHaveLength(groups.length);
 
-    const usersResponse = await getSmartLockUsers(secondSmartLock.id);
-    expect(usersResponse.status).toBe(200);
-    expect(groupsResponse.data).toHaveLength(users.length);
-
+      const usersResponse = await getSmartLockUsers(secondSmartLock.id);
+      expect(usersResponse.status).toBe(200);
+      expect(groupsResponse.data).toHaveLength(users.length);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should get list of smart locks to confirm the created smart locks persisted in the list", async function(done) {
-    const response = await getSmartLocks();
-    expect(response.status).toBe(200);
-    expect(response.data.length).toBe(smartLockCount + 2);
+    try {
+      const response = await getSmartLocks();
+      expect(response.status).toBe(200);
+      expect(response.data.length).toBe(smartLockCount + 2);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -178,19 +166,27 @@ describe("Update smartLock", function() {
   ];
 
   it("should get smartLock to update", async function(done) {
-    const response = await getSmartLock(secondSmartLock.id);
-    smartLockToUpdate = response.data;
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(secondSmartLock.id);
+    try {
+      const response = await getSmartLock(secondSmartLock.id);
+      smartLockToUpdate = response.data;
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(secondSmartLock.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should update smartLock", async function(done) {
-    const response = await updateSmartLock(
-      smartLockToUpdate.id,
-      statusUpdatePayload
-    );
-    expect(response.status).toBe(204);
+    try {
+      const response = await updateSmartLock(
+        smartLockToUpdate.id,
+        statusUpdatePayload
+      );
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -207,29 +203,41 @@ describe("Update smartLock", function() {
         op: "replace"
       }
     ];
-    const response = await updateSmartLock(
-      smartLockToUpdate.id,
-      smartLocksUpdatePayload
-    );
-    expect(response.status).toBe(204);
+    try {
+      const response = await updateSmartLock(
+        smartLockToUpdate.id,
+        smartLocksUpdatePayload
+      );
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
   it("should confirm smartLock status updated successfully ", async function(done) {
-    const response = await getSmartLock(secondSmartLock.id);
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(secondSmartLock.id);
-    expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    try {
+      const response = await getSmartLock(secondSmartLock.id);
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(secondSmartLock.id);
+      expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should confirm smartLock smart locks updated successfully ", async function(done) {
-    const usersResponse = await getSmartLockUsers(secondSmartLock.id);
-    expect(usersResponse.status).toBe(200);
-    expect(usersResponse.data).toHaveLength(updatedUsers.length);
+    try {
+      const usersResponse = await getSmartLockUsers(secondSmartLock.id);
+      expect(usersResponse.status).toBe(200);
+      expect(usersResponse.data).toHaveLength(updatedUsers.length);
 
-    const groupsResponse = await getSmartLockGroups(secondSmartLock.id);
-    expect(groupsResponse.status).toBe(200);
-    expect(groupsResponse.data).toHaveLength(updatedGroups.length);
+      const groupsResponse = await getSmartLockGroups(secondSmartLock.id);
+      expect(groupsResponse.status).toBe(200);
+      expect(groupsResponse.data).toHaveLength(updatedGroups.length);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -239,26 +247,38 @@ describe("Add smartLock user", function() {
   let smartLockUsers = [];
 
   it("should get  smart lock users", async function(done) {
-    const usersResponse = await getSmartLockUsers(firstSmartLock.id);
-    smartLockUsers = usersResponse.data;
+    try {
+      const usersResponse = await getSmartLockUsers(firstSmartLock.id);
+      smartLockUsers = usersResponse.data;
 
-    expect(usersResponse.status).toBe(200);
+      expect(usersResponse.status).toBe(200);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should add smart lock user", async function(done) {
-    const response = await addSmartLockUser(firstSmartLock.id, {
-      userId: firstUser.id
-    });
-    expect(response.status).toBe(201);
-    expect(response.data.userId).toBe(firstUser.id);
+    try {
+      const response = await addSmartLockUser(firstSmartLock.id, {
+        userId: firstUser.id
+      });
+      expect(response.status).toBe(201);
+      expect(response.data.userId).toBe(firstUser.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should get smart lock users to confirm user added successfully", async function(done) {
-    const usersResponse = await getSmartLockUsers(firstSmartLock.id);
-    expect(usersResponse.status).toBe(200);
-    expect(usersResponse.data).toHaveLength(smartLockUsers.length + 1);
+    try {
+      const usersResponse = await getSmartLockUsers(firstSmartLock.id);
+      expect(usersResponse.status).toBe(200);
+      expect(usersResponse.data).toHaveLength(smartLockUsers.length + 1);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -266,8 +286,15 @@ describe("Add smartLock user", function() {
 // Remove smartLock user
 describe("Add smartLock user", function() {
   it("should remove smartLock user", async function(done) {
-    const response = await deleteSmartLockUser(firstSmartLock.id, firstUser.id);
-    expect(response.status).toBe(204);
+    try {
+      const response = await deleteSmartLockUser(
+        firstSmartLock.id,
+        firstUser.id
+      );
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -286,26 +313,38 @@ describe("Add smartLock group", function() {
   let smartLockGroups = [];
 
   it("should get  smart lock groups", async function(done) {
-    const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
-    smartLockGroups = groupsResponse.data;
+    try {
+      const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
+      smartLockGroups = groupsResponse.data;
 
-    expect(groupsResponse.status).toBe(200);
+      expect(groupsResponse.status).toBe(200);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should add smart lock group", async function(done) {
-    const response = await addSmartLockGroup(firstSmartLock.id, {
-      groupId: firstGroup.id
-    });
-    expect(response.status).toBe(201);
-    expect(response.data.groupId).toBe(firstGroup.id);
+    try {
+      const response = await addSmartLockGroup(firstSmartLock.id, {
+        groupId: firstGroup.id
+      });
+      expect(response.status).toBe(201);
+      expect(response.data.groupId).toBe(firstGroup.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should get smart lock groups to confirm group added successfully", async function(done) {
-    const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
-    expect(groupsResponse.status).toBe(200);
-    expect(groupsResponse.data).toHaveLength(smartLockGroups.length + 1);
+    try {
+      const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
+      expect(groupsResponse.status).toBe(200);
+      expect(groupsResponse.data).toHaveLength(smartLockGroups.length + 1);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -313,8 +352,15 @@ describe("Add smartLock group", function() {
 // Remove smartLock group
 describe("Add smartLock group", function() {
   it("should remove smartLock group", async function(done) {
-    const response = await deleteSmartLockGroup(firstSmartLock.id, firstGroup.id);
-    expect(response.status).toBe(204);
+    try {
+      const response = await deleteSmartLockGroup(
+        firstSmartLock.id,
+        firstGroup.id
+      );
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -332,16 +378,24 @@ describe("Add smartLock group", function() {
 describe("Delete smartLock", function() {
   let smartLockToDelete;
   it("should get smartLock to delete", async function(done) {
-    const response = await getSmartLock(firstSmartLock.id);
-    smartLockToDelete = response.data;
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstSmartLock.id);
+    try {
+      const response = await getSmartLock(firstSmartLock.id);
+      smartLockToDelete = response.data;
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(firstSmartLock.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should delete smartLock", async function(done) {
-    const response = await deleteSmartLock(smartLockToDelete.id);
-    expect(response.status).toBe(204);
+    try {
+      const response = await deleteSmartLock(smartLockToDelete.id);
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
   it("should confirm smartLock deleted successfully", async function(done) {

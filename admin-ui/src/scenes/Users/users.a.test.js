@@ -7,7 +7,10 @@ import {
   updateUser,
   addSmartLock,
   deleteSmartLock,
-  getUserSmartLocks
+  getUserSmartLocks,
+  getUserGroups,
+  addGroup,
+  deleteGroup
 } from "../../services/api";
 import helpers from "../../helpers";
 
@@ -32,18 +35,22 @@ const smartLocksToAdd = [
 ];
 describe("Setup", function() {
   it("should set tests data", async function(done) {
-    const azureAdUsers = await getAzureAdUsers();
-    [firstUserFromAzureAd, secondUserFromAzureAd] = await azureAdUsers.data;
+    try {
+      const azureAdUsers = await getAzureAdUsers();
+      [firstUserFromAzureAd, secondUserFromAzureAd] = await azureAdUsers.data;
 
-    const users = await getUsers();
-    userCount = await users.data.length;
+      const users = await getUsers();
+      userCount = await users.data.length;
 
-    const addFirstSmartLock = await addSmartLock(smartLocksToAdd[0]);
-    firstSmartLock = addFirstSmartLock.data;
-    const addSecondSmartLock = await addSmartLock(smartLocksToAdd[1]);
-    secondSmartLock = addSecondSmartLock.data;
-    smartLocks = [firstSmartLock, secondSmartLock];
-    updatedSmartLocks = [smartLocks[0]];
+      const addFirstSmartLock = await addSmartLock(smartLocksToAdd[0]);
+      firstSmartLock = addFirstSmartLock.data;
+      const addSecondSmartLock = await addSmartLock(smartLocksToAdd[1]);
+      secondSmartLock = addSecondSmartLock.data;
+      smartLocks = [firstSmartLock, secondSmartLock];
+      updatedSmartLocks = [smartLocks[0]];
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -55,8 +62,12 @@ describe("Create users", function() {
       id: firstUserFromAzureAd.id,
       status: "Active"
     };
-    const response = await addUser(userPayload);
-    expect(response.status).toBe(201);
+    try {
+      const response = await addUser(userPayload);
+      expect(response.status).toBe(201);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -66,8 +77,12 @@ describe("Create users", function() {
       status: "Active",
       smartLockUsers: extractIdList(smartLocks, "smartLockId")
     };
-    const response = await addUser(userPayload);
-    expect(response.status).toBe(201);
+    try {
+      const response = await addUser(userPayload);
+      expect(response.status).toBe(201);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -85,9 +100,13 @@ describe("Create users", function() {
   });
 
   it("should confirm users created successfully", async function(done) {
-    const response = await getUsers();
-    expect(response.status).toBe(200);
-    expect(response.data.length).toBe(userCount + 2);
+    try {
+      const response = await getUsers();
+      expect(response.status).toBe(200);
+      expect(response.data.length).toBe(userCount + 2);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -104,16 +123,24 @@ describe("Update user", function() {
   ];
 
   it("should get user to update", async function(done) {
-    const response = await getUser(firstUserFromAzureAd.id);
-    userToUpdate = response.data;
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    try {
+      const response = await getUser(firstUserFromAzureAd.id);
+      userToUpdate = response.data;
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should update user", async function(done) {
-    const response = await updateUser(userToUpdate.id, statusUpdatePayload);
-    expect(response.status).toBe(204);
+    try {
+      const response = await updateUser(userToUpdate.id, statusUpdatePayload);
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
@@ -125,22 +152,75 @@ describe("Update user", function() {
         op: "replace"
       }
     ];
-    const response = await updateUser(userToUpdate.id, smartLocksUpdatePayload);
-    expect(response.status).toBe(204);
+    try {
+      const response = await updateUser(
+        userToUpdate.id,
+        smartLocksUpdatePayload
+      );
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
   it("should confirm user status updated successfully ", async function(done) {
-    const response = await getUser(firstUserFromAzureAd.id);
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstUserFromAzureAd.id);
-    expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    try {
+      const response = await getUser(firstUserFromAzureAd.id);
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(firstUserFromAzureAd.id);
+      expect(response.data.status).toBe(statusUpdatePayload[0].value);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should confirm user smart locks updated successfully ", async function(done) {
-    const response = await getUserSmartLocks(firstUserFromAzureAd.id);
-    expect(response.status).toBe(200);
-    expect(response.data).toHaveLength(updatedSmartLocks.length);
+    try {
+      const response = await getUserSmartLocks(firstUserFromAzureAd.id);
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveLength(updatedSmartLocks.length);
+    } catch (e) {
+      console.log(e);
+    }
+    return done();
+  });
+});
+
+// User groups
+describe("User groups", function() {
+  let userGroups;
+  it("should get user groups", async function(done) {
+    try {
+      const response = await getUserGroups(firstUserFromAzureAd.id);
+      userGroups = response.data;
+      expect(response.status).toBe(200);
+    } catch (e) {
+      console.log(e);
+    }
+    return done();
+  });
+
+  it("should add user group to db", async function(done) {
+    try {
+      const response = await addGroup({
+        id: "e1f2df93-23b6-45ec-9e2f-a845fcd25cff"
+      });
+      expect(response.status).toBe(201);
+    } catch (e) {
+      console.log(e);
+    }
+    return done();
+  });
+
+  it("should confirm user group add successfully", async function(done) {
+    try {
+      const response = await getUserGroups(firstUserFromAzureAd.id);
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveLength(userGroups.length + 1);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 });
@@ -149,16 +229,24 @@ describe("Update user", function() {
 describe("Delete user", function() {
   let userToDelete;
   it("should get user to delete", async function(done) {
-    const response = await getUser(firstUserFromAzureAd.id);
-    userToDelete = response.data;
-    expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    try {
+      const response = await getUser(firstUserFromAzureAd.id);
+      userToDelete = response.data;
+      expect(response.status).toBe(200);
+      expect(response.data.id).toBe(firstUserFromAzureAd.id);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
 
   it("should delete user", async function(done) {
-    const response = await deleteUser(userToDelete.id);
-    expect(response.status).toBe(204);
+    try {
+      const response = await deleteUser(userToDelete.id);
+      expect(response.status).toBe(204);
+    } catch (e) {
+      console.log(e);
+    }
     return done();
   });
   it("should confirm user deleted successfully", async function(done) {
@@ -177,8 +265,9 @@ describe("Tear down", function() {
       await deleteSmartLock(smartLocks[0].id);
       await deleteSmartLock(smartLocks[1].id);
       await deleteUser(secondUserFromAzureAd.id);
+      await deleteGroup("e1f2df93-23b6-45ec-9e2f-a845fcd25cff");
     } catch (e) {
-      console.log("user deleteSmartLock1", e);
+      console.log(e);
     }
     return done();
   });
