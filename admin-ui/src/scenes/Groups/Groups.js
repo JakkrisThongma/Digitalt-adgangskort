@@ -146,7 +146,7 @@ const Groups = () => {
                   isFreeAction: true
                 },
                 {
-                  icon: Edit,
+                  icon: () => <Edit color="primary" />,
                   tooltip: "Edit",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
@@ -154,7 +154,7 @@ const Groups = () => {
                   }
                 },
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();

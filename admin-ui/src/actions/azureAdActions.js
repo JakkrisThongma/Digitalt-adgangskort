@@ -40,7 +40,7 @@ const getAzureAdUsers = dispatch => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_USERS_SUCCEEDED,
-        payload: { azureAdUsers: response }
+        payload: { azureAdUsers: response.data }
       })
     )
     .catch(error =>
@@ -59,7 +59,7 @@ const getAzureAdUser = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_USER_SUCCEEDED,
-        payload: { azureAdUser: response }
+        payload: { azureAdUser: response.data }
       })
     )
     .catch(error =>
@@ -78,7 +78,7 @@ const getAzureAdUserPhoto = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_USER_PHOTO_SUCCEEDED,
-        payload: { azureAdUserPhoto: response }
+        payload: { azureAdUserPhoto: response.data }
       })
     )
     .catch(error =>
@@ -97,7 +97,7 @@ const getAzureAdUserGroup = (dispatch, userId) => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_USER_GROUPS_SUCCEEDED,
-        payload: { azureAdUserGroups: response }
+        payload: { azureAdUserGroups: response.data }
       })
     )
     .catch(error =>
@@ -116,7 +116,7 @@ const getAzureAdGroups = dispatch => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_GROUPS_SUCCEEDED,
-        payload: { azureAdGroups: response }
+        payload: { azureAdGroups: response.data }
       })
     )
     .catch(error =>
@@ -135,7 +135,7 @@ const getAzureAdGroup = (dispatch, groupId) => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_GROUP_SUCCEEDED,
-        payload: { azureAdGroup: response }
+        payload: { azureAdGroup: response.data }
       })
     )
     .catch(error =>
@@ -154,7 +154,7 @@ const getAzureAdGroupMembers = (dispatch, groupId) => {
     .then(response =>
       dispatch({
         type: GET_AZURE_AD_GROUP_MEMBERS_SUCCEEDED,
-        payload: { azureAdGroupMembers: response }
+        payload: { azureAdGroupMembers: response.data }
       })
     )
     .catch(error =>

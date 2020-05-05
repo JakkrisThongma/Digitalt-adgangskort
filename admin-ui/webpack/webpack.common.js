@@ -23,41 +23,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
-        options: {
-          presets: [
-            ["@babel/preset-env", { modules: false }],
-            "@babel/preset-react"
-          ],
-          plugins: [
-            [
-              "babel-plugin-import",
-              {
-                libraryName: "@material-ui/core",
-                // Use "'libraryDirectory': ''," if your bundler does not support ES modules
-                libraryDirectory: "",
-                camel2DashComponentName: false
-              },
-              "core"
-            ],
-            [
-              "babel-plugin-import",
-              {
-                libraryName: "@material-ui/icons",
-                // Use "'libraryDirectory': ''," if your bundler does not support ES modules
-                libraryDirectory: "",
-                camel2DashComponentName: false
-              },
-              "icons"
-            ],
-            [
-              "@babel/transform-runtime",
-              {
-                regenerator: true
-              }
-            ]
-          ]
-        }
+        loader: "babel-loader"
       },
       {
         test: /\.css$/,

@@ -204,7 +204,7 @@ const SmartLock = ({ match }) => {
               data={smartLockUsers}
               actions={[
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
@@ -230,7 +230,7 @@ const SmartLock = ({ match }) => {
               data={smartLockGroups}
               actions={[
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();

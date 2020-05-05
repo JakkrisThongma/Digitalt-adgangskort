@@ -40,7 +40,7 @@ const getGroups = dispatch => {
     .then(response =>
       dispatch({
         type: GET_GROUPS_SUCCEEDED,
-        payload: { groups: response }
+        payload: { groups: response.data }
       })
     )
     .catch(error =>
@@ -59,7 +59,7 @@ const addGroup = (dispatch, data) => {
     .then(response =>
       dispatch({
         type: ADD_GROUP_SUCCEEDED,
-        payload: { newGroup: response }
+        payload: { newGroup: response.data }
       })
     )
     .catch(error =>
@@ -76,7 +76,7 @@ const getGroup = (dispatch, groupId) => {
     .then(response =>
       dispatch({
         type: GET_GROUP_SUCCEEDED,
-        payload: { group: response }
+        payload: { group: response.data }
       })
     )
     .catch(error =>
@@ -130,7 +130,7 @@ const getGroupUsers = (dispatch, groupId) => {
     .then(response =>
       dispatch({
         type: GET_GROUP_USERS_SUCCEEDED,
-        payload: { groupUsers: response }
+        payload: { groupUsers: response.data }
       })
     )
     .catch(error =>
@@ -149,7 +149,7 @@ const getGroupSmartLocks = (dispatch, groupId) => {
     .then(response =>
       dispatch({
         type: GET_GROUP_SMART_LOCKS_SUCCEEDED,
-        payload: { groupSmartLocks: response }
+        payload: { groupSmartLocks: response.data }
       })
     )
     .catch(error =>

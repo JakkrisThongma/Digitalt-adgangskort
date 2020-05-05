@@ -3,6 +3,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
+import { SnackbarProvider } from "notistack";
 import { theme } from "./styles";
 import Routes from "./router";
 import "@/styles/App.css";
@@ -15,11 +16,18 @@ function App() {
     <>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Store>
-          <Router history={browserHistory}>
-            <Routes />
-          </Router>
-        </Store>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right"
+          }}>
+          <Store>
+            <Router history={browserHistory}>
+              <Routes />
+            </Router>
+          </Store>
+        </SnackbarProvider>
       </ThemeProvider>
     </>
   );

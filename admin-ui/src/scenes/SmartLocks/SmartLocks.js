@@ -154,7 +154,7 @@ const SmartLocks = () => {
                   isFreeAction: true
                 },
                 {
-                  icon: Edit,
+                  icon: () => <Edit color="primary" />,
                   tooltip: "Edit",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
@@ -162,7 +162,7 @@ const SmartLocks = () => {
                   }
                 },
                 {
-                  icon: Delete,
+                  icon: () => <Delete color="primary" />,
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
