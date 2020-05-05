@@ -286,7 +286,17 @@ namespace api.Controllers
         }
 
         // Post: api/smart-locks/5/users
-        // todo: xml description
+        /// <summary>
+        /// Add user to smart lock or add smart lock to user
+        /// </summary>
+        /// <param name="smartLockId">The smart lock to add</param>
+        /// <param name="smartLockUser">The user to add</param>
+        /// <returns>An ActionResult of type UserDto</returns>
+        /// <response code="201">Smart lock user created successfully</response>
+        /// <response code="404">Azure Ad user not found</response>
+        /// <response code="409">User already exist for this smart lock</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPost("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -317,8 +327,8 @@ namespace api.Controllers
             var userExists = await _smartLockRepository.SmartLockUserExists(smartLockId, smartLockUser.UserId);
             if (userExists)
             {
-                _logger.LogWarning("User already exists");
-                return Conflict("User already exists");
+                _logger.LogWarning("User already exists for this smart lock");
+                return Conflict("User already exists for this smart lock");
             }
 
             _smartLockRepository.AddSmartLockUser(smartLockId, smartLockUser.UserId);
@@ -427,7 +437,17 @@ namespace api.Controllers
         }
 
         // Post: api/smart-locks/5/groups
-        // todo: xml description
+        /// <summary>
+        /// Add group to smart lock or add smart lock to group
+        /// </summary>
+        /// <param name="smartLockId">The smart lock to add</param>
+        /// <param name="smartLockGroup">The group to add</param>
+        /// <returns>An ActionResult of type SmartLockGroupDto</returns>
+        /// <response code="201">Smart lock group created successfully</response>
+        /// <response code="404">Azure Ad group not found</response>
+        /// <response code="409">Group already exist for this smart lock</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPost("{smartLockId}/groups")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -457,8 +477,8 @@ namespace api.Controllers
 
             if (await _smartLockRepository.SmartLockGroupExists(smartLockId, smartLockGroup.GroupId))
             {
-                _logger.LogWarning("Group already exists");
-                return Conflict("Group already exists");
+                _logger.LogWarning("Group already exists for this smart lock");
+                return Conflict("Group already exists for this smart lock");
             }
 
             _smartLockRepository.AddSmartLockGroup(smartLockId, smartLockGroup.GroupId);
