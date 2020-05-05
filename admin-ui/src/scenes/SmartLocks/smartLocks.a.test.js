@@ -69,7 +69,7 @@ describe("Setup", function() {
       console.log(e);
     }
     return done();
-  });
+  }, 10000);
 });
 
 // Create smartLocks
@@ -226,7 +226,7 @@ describe("Update smartLock", function() {
     return done();
   });
 
-  it("should confirm smartLock smart locks updated successfully ", async function(done) {
+  it("should confirm smart locks users and groups updated successfully ", async function(done) {
     try {
       const usersResponse = await getSmartLockUsers(secondSmartLock.id);
       expect(usersResponse.status).toBe(200);
