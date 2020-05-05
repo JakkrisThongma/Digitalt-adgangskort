@@ -10,7 +10,7 @@ using Status = api.Types.Status;
 
 namespace api.Services
 {
-    public class AccessService : IAccesService
+    public class AccessService : IAccessService
     {
         private readonly IAccessRepository _accessRepository;
         private readonly IUserRepository _userRepository;

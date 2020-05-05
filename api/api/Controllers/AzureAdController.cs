@@ -41,11 +41,18 @@ namespace api.Controllers
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
-
-
+        // GET /api/azure-ad/users
+        /// <summary>
+        /// Get a list of Azure Ad users
+        /// </summary>
+        /// <returns>An ActionResult task of type IEnumerable of AzureAdUserDto</returns>
+        /// <response code="200">Users retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">No users found</response>
         [HttpGet("users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetUsers()
         {
@@ -83,11 +90,19 @@ namespace api.Controllers
                 }
             }
         }
-
-
+        // GET /api/azure-ad/users/userId
+        /// <summary>
+        /// Get Azure Ad user by id
+        /// </summary>
+        /// <param name="userId">The id of the user to get</param>
+        /// <returns>An ActionResult task of type AzureAdUserDto</returns>
+        /// <response code="200">User retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">No users found</response>
         [HttpGet("users/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AzureAdUserDto>> GetUser(string userId)
         {
@@ -127,10 +142,21 @@ namespace api.Controllers
                 }
             }
         }
-
+        
+        // GET /api/azure-ad/users/userId/photo
+        /// <summary>
+        /// Get photo for Azure Ad user by user id
+        /// </summary>
+        /// <param name="userId">The id of the user to get a user's photo</param>
+        /// <returns>An ActionResult task of type string</returns>
+        /// <response code="200">User's photo retrieved successfully</response>
+        /// <response code="404">User not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("users/{userId}/photo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<string>> GetUserPhoto(string userId)
         {
@@ -157,9 +183,20 @@ namespace api.Controllers
             }
         }
 
+        // GET: /api/azure-ad/users/userId/groups
+        /// <summary>
+        /// Get list of Azure Ad groups by user id
+        /// </summary>
+        /// <param name="userId">The id of the user to get a list of the user's groups</param>
+        /// <returns>An ActionResult task of type List of string</returns>
+        /// <response code="200">Groups retrieved successfully</response>
+        /// <response code="404">User id from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("users/{userId}/groups")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<String>>> GetUserGroups(string userId)
         {
@@ -190,10 +227,18 @@ namespace api.Controllers
                 }
             }
         }
-
+        // GET: /api/azure-ad/groups
+        /// <summary>
+        /// Get a list of Azure ad groups
+        /// </summary>
+        /// <returns>An ActionResult task of type IEnumerable of AzureAdGroupDto</returns>
+        /// <response code="200">Groups retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">No groups found</response>
         [HttpGet("groups/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdGroupDto>>> GetGroups()
         {
@@ -227,8 +272,17 @@ namespace api.Controllers
                 }
             }
         }
-
-
+        
+        // GET: /api/azure-ad/groups/groupId
+        /// <summary>
+        /// Get a Azure Ad group by id
+        /// </summary>
+        /// <param name="groupId">The id of the group to get</param>
+        /// <returns>An ActionResult task of type AzureAdGroupDto</returns>
+        /// <response code="200">Group retrieved successfully</response>
+        /// <response code="404">Group not not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -262,10 +316,21 @@ namespace api.Controllers
                 }
             }
         }
-
+        
+        // GET: /api/azure-ad/groups/groupId/members
+        /// <summary>
+        /// Get list of members of Azure Ad group
+        /// </summary>
+        /// <param name="groupId">The id of the group to get a list of the group's members</param>
+        /// <returns>An ActionResult task of type AzureAdUserDto</returns>
+        /// <response code="200">Users retrieved successfully</response>
+        /// <response code="404">Group members not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("groups/{groupId}/members")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetGroupMembers(string groupId)
         {

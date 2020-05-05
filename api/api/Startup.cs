@@ -120,7 +120,7 @@ namespace api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityService, AzureAdIdentityService>();
-            services.AddScoped<IAccesService, AccessService>();
+            services.AddScoped<IAccessService, AccessService>();
             
             services.AddScoped<IAzureAdRepository, AzureAdRepository>();
             services.AddScoped<ISmartLockRepository, SmartLockRepository>();
