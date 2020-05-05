@@ -42,9 +42,18 @@ namespace api.Controllers
         }
 
         // GET: api/groups
+        /// <summary>
+        /// Get a list of groups
+        /// </summary>
+        /// <returns>An ActionResult task of type IEnumerable of GroupDto</returns>
+        /// <response code="200">Users retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">No users found</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
         {
             var allGroupsFromRepo = await _groupRepository.GetGroups();
@@ -58,6 +67,16 @@ namespace api.Controllers
         }
         
         // POST: api/groups
+        /// <summary>
+        /// Add Azure Ad group to db
+        /// </summary>
+        /// <param name="group">The group to add</param>
+        /// <returns>An ActionResult of type GroupDto</returns>
+        /// <response code="201">Group created successfully</response>
+        /// <response code="404">Azure Ad group not found</response>
+        /// <response code="409">Group already exist in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -108,9 +127,19 @@ namespace api.Controllers
         }
 
         // GET: api/groups/5
+        /// <summary>
+        /// Get a db group by group id
+        /// </summary>
+        /// <param name="groupId">The id of the group you want to get</param>
+        /// <returns>An ActionResult task of type GroupDto</returns>
+        /// <response code="200">Group retrieved successfully</response>
+        /// <response code="404">Group from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
         {
@@ -127,10 +156,31 @@ namespace api.Controllers
             return mergedGroup;
         }
         
+        /// <summary>
+        ///  Update db group partially
+        /// </summary>
+        /// <param name="groupId">The id of the group you want to get</param>
+        /// <param name="patchDoc">The set of operations to apply to the group</param>
+        /// <returns>An ActionResult of type NoContent</returns>
+        /// <remarks>Sample request (this request updates the users's **status**)  
+        /// 
+        /// [ 
+        ///     {
+        ///         "op": "replace", 
+        ///         "path": "/status", 
+        ///         "value": "new status" 
+        ///     } 
+        /// ] 
+        /// </remarks>
+        /// <response code="204">Group updated successfully</response>
+        /// <response code="404">Group not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpPatch("{groupId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateGroupPartially(Guid groupId,
             [FromBody] JsonPatchDocument<GroupModificationDto> patchDoc)
@@ -172,9 +222,20 @@ namespace api.Controllers
         }
 
         // DELETE: api/groups/5
+        /// <summary>
+        /// Delete group from db
+        /// </summary>
+        /// <param name="groupId">The id of group to delete</param>
+        /// <returns>An ActionResult of type no content</returns>
+        /// <response code="204">Group deleted successfully</response>
+        /// <response code="404">Group not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpDelete("{groupId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteGroup(Guid groupId)
         {
@@ -190,9 +251,19 @@ namespace api.Controllers
         }
         
         // GET: api/groups/5/users
+        /// <summary>
+        /// Get a list of Azure Ad users by group id
+        /// </summary>
+        /// <param name="groupId">The id of group to get the users</param>
+        /// <returns>An ActionResult task of type IEnumerable of UserDto</returns>
+        /// <response code="200">Users has been retrieved successfully</response>
+        /// <response code="404">Group id was not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{groupId}/users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetGroupUsers(Guid groupId)
         {
@@ -212,6 +283,15 @@ namespace api.Controllers
         }
 
         // GET: api/groups/5/smart-locks
+        /// <summary>
+        /// Get a list of smart locks by group id
+        /// </summary>
+        /// <param name="groupId">The id of group to get the smart locks</param>
+        /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
+        /// <response code="200">Smart locks retrieved successfully</response>
+        /// <response code="404">Group id was not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="400">Validation error</response>
         [HttpGet("{groupId}/smart-locks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
