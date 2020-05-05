@@ -151,7 +151,7 @@ describe("Update group", function() {
 // Delete group
 describe("Delete group", function() {
   let groupToDelete;
-  it("Get group to delete", async function(done) {
+  it("should get group to delete", async function(done) {
     const response = await getGroup(firstGroupFromAzureAd.id);
     groupToDelete = response.data;
     expect(response.status).toBe(200);

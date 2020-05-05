@@ -148,7 +148,7 @@ describe("Update user", function() {
 // Delete user
 describe("Delete user", function() {
   let userToDelete;
-  it("Get user to delete", async function(done) {
+  it("should get user to delete", async function(done) {
     const response = await getUser(firstUserFromAzureAd.id);
     userToDelete = response.data;
     expect(response.status).toBe(200);

@@ -15,7 +15,8 @@ import {
   getSmartLockUsers,
   getSmartLockGroups,
   getAzureAdUsers,
-  getAzureAdGroups
+  getAzureAdGroups,
+  getSmartLockUser
 } from "../../services/api";
 import helpers from "../../helpers";
 
@@ -177,10 +178,10 @@ describe("Update smartLock", function() {
   ];
 
   it("should get smartLock to update", async function(done) {
-    const response = await getSmartLock(firstSmartLock.id);
+    const response = await getSmartLock(secondSmartLock.id);
     smartLockToUpdate = response.data;
     expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstSmartLock.id);
+    expect(response.data.id).toBe(secondSmartLock.id);
     return done();
   });
 
@@ -214,21 +215,115 @@ describe("Update smartLock", function() {
     return done();
   });
   it("should confirm smartLock status updated successfully ", async function(done) {
-    const response = await getSmartLock(firstSmartLock.id);
+    const response = await getSmartLock(secondSmartLock.id);
     expect(response.status).toBe(200);
-    expect(response.data.id).toBe(firstSmartLock.id);
+    expect(response.data.id).toBe(secondSmartLock.id);
     expect(response.data.status).toBe(statusUpdatePayload[0].value);
     return done();
   });
 
   it("should confirm smartLock smart locks updated successfully ", async function(done) {
-    const usersResponse = await getSmartLockUsers(firstSmartLock.id);
+    const usersResponse = await getSmartLockUsers(secondSmartLock.id);
     expect(usersResponse.status).toBe(200);
     expect(usersResponse.data).toHaveLength(updatedUsers.length);
 
-    const groupsResponse = await getSmartLockUsers(firstSmartLock.id);
+    const groupsResponse = await getSmartLockGroups(secondSmartLock.id);
     expect(groupsResponse.status).toBe(200);
     expect(groupsResponse.data).toHaveLength(updatedGroups.length);
+    return done();
+  });
+});
+
+// Add smartLock user
+describe("Add smartLock user", function() {
+  let smartLockUsers = [];
+
+  it("should get  smart lock users", async function(done) {
+    const usersResponse = await getSmartLockUsers(firstSmartLock.id);
+    smartLockUsers = usersResponse.data;
+
+    expect(usersResponse.status).toBe(200);
+    return done();
+  });
+
+  it("should add smart lock user", async function(done) {
+    const response = await addSmartLockUser(firstSmartLock.id, {
+      userId: firstUser.id
+    });
+    expect(response.status).toBe(201);
+    expect(response.data.userId).toBe(firstUser.id);
+    return done();
+  });
+
+  it("should get smart lock users to confirm user added successfully", async function(done) {
+    const usersResponse = await getSmartLockUsers(firstSmartLock.id);
+    expect(usersResponse.status).toBe(200);
+    expect(usersResponse.data).toHaveLength(smartLockUsers.length + 1);
+    return done();
+  });
+});
+
+// Remove smartLock user
+describe("Add smartLock user", function() {
+  it("should remove smartLock user", async function(done) {
+    const response = await deleteSmartLockUser(firstSmartLock.id, firstUser.id);
+    expect(response.status).toBe(204);
+    return done();
+  });
+
+  it("should confirm smart lock user deleted successfully", async function(done) {
+    try {
+      await getSmartLockUser(firstSmartLock.id, firstUser.id);
+    } catch (error) {
+      expect(error.response.status).toBe(404);
+    }
+    return done();
+  });
+});
+
+// Add smartLock user
+describe("Add smartLock group", function() {
+  let smartLockGroups = [];
+
+  it("should get  smart lock groups", async function(done) {
+    const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
+    smartLockGroups = groupsResponse.data;
+
+    expect(groupsResponse.status).toBe(200);
+    return done();
+  });
+
+  it("should add smart lock group", async function(done) {
+    const response = await addSmartLockGroup(firstSmartLock.id, {
+      groupId: firstGroup.id
+    });
+    expect(response.status).toBe(201);
+    expect(response.data.groupId).toBe(firstGroup.id);
+    return done();
+  });
+
+  it("should get smart lock groups to confirm group added successfully", async function(done) {
+    const groupsResponse = await getSmartLockGroups(firstSmartLock.id);
+    expect(groupsResponse.status).toBe(200);
+    expect(groupsResponse.data).toHaveLength(smartLockGroups.length + 1);
+    return done();
+  });
+});
+
+// Remove smartLock group
+describe("Add smartLock group", function() {
+  it("should remove smartLock group", async function(done) {
+    const response = await deleteSmartLockGroup(firstSmartLock.id, firstGroup.id);
+    expect(response.status).toBe(204);
+    return done();
+  });
+
+  it("should confirm smart lock user deleted successfully", async function(done) {
+    try {
+      await getSmartLockUser(firstSmartLock.id, firstUser.id);
+    } catch (error) {
+      expect(error.response.status).toBe(404);
+    }
     return done();
   });
 });
@@ -236,7 +331,7 @@ describe("Update smartLock", function() {
 // Delete smartLock
 describe("Delete smartLock", function() {
   let smartLockToDelete;
-  it("Get smartLock to delete", async function(done) {
+  it("should get smartLock to delete", async function(done) {
     const response = await getSmartLock(firstSmartLock.id);
     smartLockToDelete = response.data;
     expect(response.status).toBe(200);
@@ -245,7 +340,7 @@ describe("Delete smartLock", function() {
   });
 
   it("should delete smartLock", async function(done) {
-    const response = await deleteSmartLock(firstSmartLock.id);
+    const response = await deleteSmartLock(smartLockToDelete.id);
     expect(response.status).toBe(204);
     return done();
   });
