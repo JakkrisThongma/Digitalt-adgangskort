@@ -41,9 +41,9 @@ namespace api.Controllers
                       throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/groups
+        // GET: /api/groups
         /// <summary>
-        /// Get a list of groups
+        /// Get a list of Azure Ad groups which added to db
         /// </summary>
         /// <returns>An ActionResult task of type IEnumerable of GroupDto</returns>
         /// <response code="200">Users retrieved successfully</response>
@@ -66,7 +66,7 @@ namespace api.Controllers
             return Ok(mergedGroups);
         }
         
-        // POST: api/groups
+        // POST: /api/groups
         /// <summary>
         /// Add Azure Ad group to db
         /// </summary>
@@ -126,11 +126,11 @@ namespace api.Controllers
             return CreatedAtAction("GetGroup", new {groupId = groupDto.Id}, groupDto);
         }
 
-        // GET: api/groups/5
+        // GET: /api/groups/groupId
         /// <summary>
-        /// Get a db group by group id
+        /// Get a db group by id
         /// </summary>
-        /// <param name="groupId">The id of the group you want to get</param>
+        /// <param name="groupId">The id of the group to get</param>
         /// <returns>An ActionResult task of type GroupDto</returns>
         /// <response code="200">Group retrieved successfully</response>
         /// <response code="404">Group from db not found</response>
@@ -156,13 +156,14 @@ namespace api.Controllers
             return mergedGroup;
         }
         
+        // PATCH: /api/groups/groupId
         /// <summary>
         ///  Update db group partially
         /// </summary>
-        /// <param name="groupId">The id of the group you want to get</param>
+        /// <param name="groupId">The id of the group to get</param>
         /// <param name="patchDoc">The set of operations to apply to the group</param>
         /// <returns>An ActionResult of type NoContent</returns>
-        /// <remarks>Sample request (this request updates the users's **status**)  
+        /// <remarks>Sample request (this request updates the group's **status**)  
         /// 
         /// [ 
         ///     {
@@ -221,9 +222,9 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/groups/5
+        // DELETE: /api/groups/5
         /// <summary>
-        /// Delete group from db
+        /// Delete Azure Ad group from db
         /// </summary>
         /// <param name="groupId">The id of group to delete</param>
         /// <returns>An ActionResult of type no content</returns>
@@ -252,9 +253,9 @@ namespace api.Controllers
         
         // GET: api/groups/5/users
         /// <summary>
-        /// Get a list of Azure Ad users by group id
+        /// Get a list of Azure Ad group users by group id
         /// </summary>
-        /// <param name="groupId">The id of group to get the users</param>
+        /// <param name="groupId">The id of group to get a list of the group's users</param>
         /// <returns>An ActionResult task of type IEnumerable of UserDto</returns>
         /// <response code="200">Users has been retrieved successfully</response>
         /// <response code="404">Group id was not found in db</response>
@@ -286,7 +287,7 @@ namespace api.Controllers
         /// <summary>
         /// Get a list of smart locks by group id
         /// </summary>
-        /// <param name="groupId">The id of group to get the smart locks</param>
+        /// <param name="groupId">The id of group to get a list of the group's smart locks</param>
         /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
         /// <response code="200">Smart locks retrieved successfully</response>
         /// <response code="404">Group id was not found in db</response>

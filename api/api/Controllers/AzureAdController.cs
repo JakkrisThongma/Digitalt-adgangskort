@@ -41,7 +41,7 @@ namespace api.Controllers
             _mapper = mapper ??
                       throw new ArgumentNullException(nameof(mapper));
         }
-        
+        // GET /api/azure-ad/users
         /// <summary>
         /// Get a list of Azure Ad users
         /// </summary>
@@ -90,11 +90,11 @@ namespace api.Controllers
                 }
             }
         }
-
+        // GET /api/azure-ad/users/userId
         /// <summary>
-        /// Get user by id
+        /// Get Azure Ad user by id
         /// </summary>
-        /// <param name="userId">The id of the user you want to get</param>
+        /// <param name="userId">The id of the user to get</param>
         /// <returns>An ActionResult task of type AzureAdUserDto</returns>
         /// <response code="200">User retrieved successfully</response>
         /// <response code="401">Not authorized</response>
@@ -142,11 +142,12 @@ namespace api.Controllers
                 }
             }
         }
-
+        
+        // GET /api/azure-ad/users/userId/photo
         /// <summary>
-        /// Get users photo by id
+        /// Get photo for Azure Ad user by user id
         /// </summary>
-        /// <param name="userId">The id of the user you want to get</param>
+        /// <param name="userId">The id of the user to get a user's photo</param>
         /// <returns>An ActionResult task of type string</returns>
         /// <response code="200">User's photo retrieved successfully</response>
         /// <response code="404">User not found</response>
@@ -182,11 +183,11 @@ namespace api.Controllers
             }
         }
 
-        // GET: /users/userId
+        // GET: /api/azure-ad/users/userId/groups
         /// <summary>
-        /// Get list of groups by user id
+        /// Get list of Azure Ad groups by user id
         /// </summary>
-        /// <param name="userId">The id of the user you want get</param>
+        /// <param name="userId">The id of the user to get a list of the user's groups</param>
         /// <returns>An ActionResult task of type List of string</returns>
         /// <response code="200">Groups retrieved successfully</response>
         /// <response code="404">User id from db not found</response>
@@ -226,7 +227,7 @@ namespace api.Controllers
                 }
             }
         }
-
+        // GET: /api/azure-ad/groups
         /// <summary>
         /// Get a list of Azure ad groups
         /// </summary>
@@ -271,11 +272,12 @@ namespace api.Controllers
                 }
             }
         }
-
+        
+        // GET: /api/azure-ad/groups/groupId
         /// <summary>
-        /// Get a group from Azure Ad by group id
+        /// Get a Azure Ad group by id
         /// </summary>
-        /// <param name="groupId">The id of the group you want to get</param>
+        /// <param name="groupId">The id of the group to get</param>
         /// <returns>An ActionResult task of type AzureAdGroupDto</returns>
         /// <response code="200">Group retrieved successfully</response>
         /// <response code="404">Group not not found</response>
@@ -315,10 +317,11 @@ namespace api.Controllers
             }
         }
         
+        // GET: /api/azure-ad/groups/groupId/members
         /// <summary>
-        /// Get list of members by in a group
+        /// Get list of members of Azure Ad group
         /// </summary>
-        /// <param name="groupId">The id of the group you want to list the members</param>
+        /// <param name="groupId">The id of the group to get a list of the group's members</param>
         /// <returns>An ActionResult task of type AzureAdUserDto</returns>
         /// <response code="200">Users retrieved successfully</response>
         /// <response code="404">Group members not found</response>

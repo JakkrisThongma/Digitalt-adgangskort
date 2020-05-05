@@ -52,9 +52,9 @@ namespace api.Controllers
                       throw new ArgumentNullException(nameof(logger));
         }
 
-        // GET: api/smart-locks
+        // GET: /api/smart-locks
         /// <summary>
-        /// Get a list of db smart-locks
+        /// Get a list of smart locks
         /// </summary>
         /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
         /// <response code="200">Smart-locks retrieved successfully</response>
@@ -72,11 +72,11 @@ namespace api.Controllers
             return Ok(smartLocksDto);
         }
 
-        // POST: api/smart-locks
+        // POST: /api/smart-locks
         /// <summary>
-        /// Add smart-locks to db
+        /// Add smart lock to db
         /// </summary>
-        /// <param name="smartLock">The user to add</param>
+        /// <param name="smartLock">The smart lock to add</param>
         /// <returns>An ActionResult of type SmartLockDto</returns>
         /// <response code="201">Smart-lock created successfully</response>
         /// <response code="404">The user or group in the payload was not found</response>
@@ -125,11 +125,11 @@ namespace api.Controllers
             return CreatedAtAction("GetSmartLock", new {smartLockId = smartLockDto.Id}, smartLockDto);
         }
 
-        // GET: api/smart-locks/5
+        // GET: /api/smart-locks/5
         /// <summary>
         /// Get a smart lock from db by id
         /// </summary>
-        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <param name="smartLockId">The id of the smart lock to get</param>
         /// <returns>An ActionResult task of type SmartLockDto</returns>
         /// <response code="200">Smart lock retrieved successfully</response>
         /// <response code="404">Smart lock from db not found</response>
@@ -152,10 +152,11 @@ namespace api.Controllers
             return Ok(smartLock);
         }
 
+        // PATCH: /api/smart-locks/5
         /// <summary>
-        ///  Update db smart lock partially
+        ///  Update smart lock partially
         /// </summary>
-        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <param name="smartLockId">The id of the smart lock to get</param>
         /// <param name="patchDoc">The set of operations to apply to the smart lock</param>
         /// <returns>An ActionResult of type NoContent</returns>
         /// <remarks>Sample request (this request updates the smart lock's **status**)  
@@ -226,7 +227,7 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/smart-locks/5
+        // DELETE: /api/smart-locks/5
         /// <summary>
         /// Delete smart lock from db
         /// </summary>
@@ -254,11 +255,11 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // GET: api/smart-locks/5
+        // GET: /api/smart-locks/5/users
         /// <summary>
-        /// Get a list of users by smart lock id from Azure ad and db
+        /// Get a list of smart lock's users by smart lock id
         /// </summary>
-        /// <param name="smartLockId">The id of smart lock to get the users</param>
+        /// <param name="smartLockId">The id of smart lock to get the smart lock's users</param>
         /// <returns>An ActionResult task of type IEnumerable of UserDto</returns>
         /// <response code="200">User retrieved successfully</response>
         /// <response code="404">Smart lock id not found in db</response>
@@ -285,11 +286,11 @@ namespace api.Controllers
             return Ok(mergedSmartLockUsers);
         }
 
-        // Post: api/smart-locks/5/users
+        // Post: /api/smart-locks/5/users
         /// <summary>
         /// Add user to smart lock or add smart lock to user
         /// </summary>
-        /// <param name="smartLockId">The smart lock to add</param>
+        /// <param name="smartLockId">The smart lock to add smart lock's user</param>
         /// <param name="smartLockUser">The user to add</param>
         /// <returns>An ActionResult of type UserDto</returns>
         /// <response code="201">Smart lock user created successfully</response>
@@ -338,12 +339,12 @@ namespace api.Controllers
                 smartLockUser);
         }
 
-        // GET: api/smart-locks/5/users/1
+        // GET: /api/smart-locks/5/users/1
         /// <summary>
-        /// Get smart lock user by smartlock id and userid
+        /// Get smart lock user by smartLockId id and userid
         /// </summary>
-        /// <param name="userId">The id of the user you want to get</param>
-        /// <param name="smartLockId">The id of the smart lock you want to get</param>
+        /// <param name="userId">The id of the user to get smart lock's user</param>
+        /// <param name="smartLockId">The id of the smart lock to get smart lock's user</param>
         /// <returns>An ActionResult task of type SmartLockUserDto</returns>
         /// <response code="200">Smart lock user retrieved successfully</response>
         /// <response code="404">Smart lock user from db not found</response>
@@ -372,12 +373,12 @@ namespace api.Controllers
             return Ok(smartLockUserFromRepoDto);
         }
 
-        // DELETE: api/smart-locks/5/users/1
+        // DELETE: /api/smart-locks/5/users/1
         /// <summary>
-        /// Delete smart lock user from db
+        /// Delete smart lock's user or user's smart lock from db
         /// </summary>
-        /// <param name="userId">The id of user to delete</param>
-        /// <param name="smartLockId">The id of smart lock to delete</param>
+        /// <param name="userId">The id of user to delete a smart lock's user</param>
+        /// <param name="smartLockId">The id of smart lock to delete smart lock's user</param>
         /// <returns>An ActionResult of type no content</returns>
         /// <response code="204">Smart lock user deleted successfully</response>
         /// <response code="404">Smart lock user not found in db</response>
@@ -407,14 +408,14 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // GET: api/smart-locks/5/groups
+        // GET: /api/smart-locks/5/groups
         /// <summary>
-        /// Get a db user by id
+        /// Retrieve list of smart lock groups by smart lock i
         /// </summary>
-        /// <param name="smartLockId">Retrieve list of smart lock groups by smart lock id</param>
+        /// <param name="smartLockId">The id of smart lock to get a list of smart lock's group</param>
         /// <returns>An ActionResult task of type GroupDto</returns>
         /// <response code="200">Smart lock groups retrieved successfully</response>
-        /// <response code="404">Smart lock groups  from db not found</response>
+        /// <response code="404">Smart lock groups from db not found</response>
         /// <response code="401">Not authorized</response>
         /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/groups")]
@@ -436,11 +437,11 @@ namespace api.Controllers
             return Ok(mergedSmartLockUsers);
         }
 
-        // Post: api/smart-locks/5/groups
+        // Post: /api/smart-locks/5/groups
         /// <summary>
         /// Add group to smart lock or add smart lock to group
         /// </summary>
-        /// <param name="smartLockId">The smart lock to add</param>
+        /// <param name="smartLockId">The id of smart lock to add smart lock's group</param>
         /// <param name="smartLockGroup">The group to add</param>
         /// <returns>An ActionResult of type SmartLockGroupDto</returns>
         /// <response code="201">Smart lock group created successfully</response>
@@ -488,14 +489,14 @@ namespace api.Controllers
                 smartLockGroup);
         }
 
-        // GET: api/smart-locks/5/groups/1
+        // GET: /api/smart-locks/5/groups/1
         /// <summary>
         /// Get a smart lock group by smart lock id and group id
         /// </summary>
         /// <returns>An ActionResult task of type SmartLockGroupDto</returns>
         /// <response code="200">Smart lock group retrieved successfully</response>
         /// <response code="401">Not authorized</response>
-        /// <response code="404">Smart lock id or group id or smart lock group not found in db</response>
+        /// <response code="404">Smart lock group not found in db</response>
         [HttpGet("{smartLockId}/groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -519,12 +520,12 @@ namespace api.Controllers
             return Ok(smartLockGroupFromRepoDto);
         }
 
-        // DELETE: api/smart-locks/5/groups/1
+        // DELETE: /api/smart-locks/5/groups/1
         /// <summary>
-        /// Delete smart lock group from db
+        /// Delete smart lock's group or group's smart lock from db
         /// </summary>
-        /// <param name="smartLockId">The id of smart lock to delete</param>
-        /// <param name="groupId">The id of group to delete</param>
+        /// <param name="smartLockId">The id of smart lock to delete a smart lock's group</param>
+        /// <param name="groupId">The id of group to delete a smart lock's group</param>
         /// <returns>An ActionResult of type no content</returns>
         /// <response code="204">Smart lock group deleted successfully</response>
         /// <response code="404">Smart lock or group or smart lock group not found in db</response>

@@ -52,7 +52,7 @@ namespace api.Controllers
                       throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: /users
+        // GET: /api/users
         /// <summary>
         /// Get a list of db users
         /// </summary>
@@ -77,7 +77,7 @@ namespace api.Controllers
             return Ok(mergedUsers);
         }
 
-        // POST: api/users
+        // POST: /api/users
         /// <summary>
         /// Add Azure Ad user to db
         /// </summary>
@@ -139,11 +139,11 @@ namespace api.Controllers
             return CreatedAtAction("GetUser", new {userId = userDto.Id}, userDto);
         }
         
-        // GET: /users/userId
+        // GET: /api/users/userId
         /// <summary>
         /// Get a db user by id
         /// </summary>
-        /// <param name="userId">The id of the user you want to get</param>
+        /// <param name="userId">The id of the user to get</param>
         /// <returns>An ActionResult task of type UserDto</returns>
         /// <response code="200">User retrieved successfully</response>
         /// <response code="404">user from db not found</response>
@@ -169,10 +169,11 @@ namespace api.Controllers
             return Ok(mergedUser);
         }
         
+        // PATCH: /api/users/userId
         /// <summary>
         ///  Update db user partially
         /// </summary>
-        /// <param name="userId">The id of the user you want to get</param>
+        /// <param name="userId">The id of the user to get</param>
         /// <param name="patchDocument">The set of operations to apply to the user</param>
         /// <returns>An ActionResult of type NoContent</returns>
         /// <remarks>Sample request (this request updates the users's **status**)  
@@ -266,7 +267,7 @@ namespace api.Controllers
         /// <summary>
         /// Get a list of Azure Ad groups which are added to db for a db user
         /// </summary>
-        /// <param name="userId">The id of user to get the groups for</param>
+        /// <param name="userId">The id of user to get a list of the user's groups</param>
         /// <returns>An ActionResult task of type IEnumerable of GroupDto</returns>
         /// <response code="200">User Azure Ad groups retrieved successfully</response>
         /// <response code="404">User have no groups in Azure Ad</response>
@@ -307,7 +308,7 @@ namespace api.Controllers
         /// <summary>
         /// Get a list of smart locks for a db user
         /// </summary>
-        /// <param name="userId">The id of user to get the smart locks for</param>
+        /// <param name="userId">The id of user to get a list of the user's smart locks</param>
         /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
         /// <response code="200">User smart locks retrieved successfully</response>
         /// <response code="404">User have no smart locks</response>
@@ -329,7 +330,7 @@ namespace api.Controllers
 
             return Ok(userSmartLocksDto);
         }
-        // Get: /current
+        // Get: /api/users/current
         /// <summary>
         /// Get user by token
         /// </summary>

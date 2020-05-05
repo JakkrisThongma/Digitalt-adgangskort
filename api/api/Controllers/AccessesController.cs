@@ -18,18 +18,18 @@ namespace api.Controllers
     [ApiController]
     public class AccessesController : ControllerBase
     {
-        private readonly IAccesService _accesService;
+        private readonly IAccessService _accessService;
         private readonly IUserRepository _userRepository;
         private readonly IAzureAdRepository _azureAdRepository;
         private readonly ISmartLockRepository _smartLockRepository;
         private readonly IMapper _mapper;
 
-        public AccessesController( IAccesService accesService, IUserRepository userRepository,
+        public AccessesController( IAccessService accessService, IUserRepository userRepository,
             ISmartLockRepository smartLockRepository, IAzureAdRepository azureAdRepository, IMapper mapper)
         {
      
-            _accesService = accesService ??
-                               throw new ArgumentNullException(nameof(accesService));
+            _accessService = accessService ??
+                               throw new ArgumentNullException(nameof(accessService));
             _userRepository = userRepository ??
                               throw new ArgumentNullException(nameof(userRepository));
             _smartLockRepository = smartLockRepository ??
@@ -54,7 +54,7 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<AdminAccessDto>>> GetAccesses()
         {
-            var mergedAccessLogs = await _accesService.GetAccesses();
+            var mergedAccessLogs = await _accessService.GetAccesses();
             return Ok(mergedAccessLogs);
         }
         
@@ -102,7 +102,7 @@ namespace api.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            var userAccessStatus = await _accesService.GetUserAccessStatus(smartLockUser);
+            var userAccessStatus = await _accessService.GetUserAccessStatus(smartLockUser);
             return Ok(userAccessStatus);
         }
     }
