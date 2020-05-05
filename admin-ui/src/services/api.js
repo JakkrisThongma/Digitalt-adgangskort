@@ -216,14 +216,6 @@ export function deleteSmartLockGroup(smartLockId, groupId) {
   });
 }
 
-export function accessRequest(data) {
-  return http({
-    method: "POST",
-    url: "smart-locks/get-access",
-    data
-  }).then(res => Promise.resolve(res));
-}
-
 // Azure AD endpoints
 export function getAzureAdUsers() {
   return http({
@@ -274,7 +266,15 @@ export function getAzureAdGroupMembers(groupId) {
   }).then(res => Promise.resolve(res));
 }
 
-// Access Log
+// Access
+export function accessRequest(data) {
+  return http({
+    method: "POST",
+    url: "accesses",
+    data
+  }).then(res => Promise.resolve(res));
+}
+
 export function getAccessLog() {
   return http({
     method: "GET",
