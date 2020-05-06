@@ -42,10 +42,10 @@ module "api_web_app" {
 resource "azurerm_sql_server" "sql_server" {
   name                         = "${var.server_name}-${var.environment}-sql"
   resource_group_name          = "${var.resource_group_name}"
-  location                     = "${var.location}"
+  location                     = "East US"
   version                      = "12.0"
   administrator_login          = "${var.admin_login_name}"
-  administrator_login_password = "${random_string.password.result}"
+  administrator_login_password = "r7pCF6Z8UmHdY59q"
 }
 
 resource "azurerm_sql_firewall_rule" "sql_firewall" {
@@ -58,18 +58,26 @@ resource "azurerm_sql_firewall_rule" "sql_firewall" {
   end_ip_address      = "0.0.0.0"
 }
 
+resource "azurerm_sql_firewall_rule" "sql_firewall_client" {
+  name                = "AllowClientIP"
+  resource_group_name = "${var.resource_group_name}"
+  server_name         = "${azurerm_sql_server.sql_server.name}"
+  start_ip_address    = "80.213.106.196"
+  end_ip_address      = "80.213.106.196"
+}
+
 resource "azurerm_sql_active_directory_administrator" "sql_admin" {
   server_name         = "${azurerm_sql_server.sql_server.name}"
   resource_group_name = "${var.resource_group_name}"
   login               = "${var.ad_admin_login_name}"
-  tenant_id           = "${module.api_web_app.identity_tenant_id}"
-  object_id           = "${module.api_web_app.identity_principal_id}"
+  tenant_id           = "${var.ad_admin_tenant_id}"
+  object_id           = "${var.ad_admin_object_id}"
 }
 
 resource "azurerm_sql_database" "sql_database" {
   name                = "${var.database_name}"
   resource_group_name = "${var.resource_group_name}"
-  location            = "${var.location}"
+  location            = "East US"
   server_name         = "${azurerm_sql_server.sql_server.name}"
 
   collation                        = "${var.database_collation}"
@@ -95,4 +103,3 @@ resource "random_string" "password" {
   special          = true
   override_special = "/@\" "
 }
-

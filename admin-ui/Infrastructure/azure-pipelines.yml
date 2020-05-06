@@ -30,52 +30,160 @@ phases:
     queue:
       name: 'Private VS2019'
     steps:
-    - task: CopyFiles@2
-      displayName: Copy artifacts
-      inputs:
-        SourceFolder: admin-ui/Infrastructure
-        contents: |
-          **
-          !.vsts-ci.yml
-          !**/.git/**
-          !**/.terraform/**
-        targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure    
-    
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-      displayName: 'Install Terraform version: 0.12.12'
-      inputs:
-        terraformVersion: '$(Terraform.Version)'
-        
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
-      displayName: 'Terraform : azurerm init'
-      inputs:
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
-        commandOptions: '-no-color'
-        backendServiceArm: '$(Terraform.backendServiceArm)'
-        backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
-        backendAzureRmStorageAccountName: '$(Terraform.backendAzureRmStorageAccountName)'
-        backendAzureRmContainerName: '$(Terraform.backendAzureRmContainerName)'
-        backendAzureRmKey: '$(Terraform.backendAzureRmKey)'
+      - task: CopyFiles@2
+        displayName: Copy artifacts
+        inputs:
+          SourceFolder: admin-ui/Infrastructure
+          contents: |
+            **
+            !.vsts-ci.yml
+            !**/.git/**
+            !**/.terraform/**
+          targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
 
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
-      displayName: Validate Terraform configuration
-      inputs:
-        command: validate
-        variables: |
-          environment=dev
-          release=release
-        workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
-      
-    - task: DeleteFiles@1
-      inputs:
-        sourceFolder: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
-        Contents: '.terraform'
+      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+        displayName: 'Install Terraform version: 0.12.12'
+        inputs:
+          terraformVersion: '$(Terraform.Version)'
 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts
-      inputs:
-        pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
-        artifactName: Infrastructure
-        artifactType: Container
+      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+        displayName: 'Terraform : azurerm init'
+        inputs:
+          workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+          commandOptions: '-no-color'
+          backendServiceArm: '$(Terraform.backendServiceArm)'
+          backendAzureRmResourceGroupName: '$(Terraform.backendAzureRmResourceGroupName)'
+          backendAzureRmStorageAccountName: '$(Terraform.backendAzureRmStorageAccountName)'
+          backendAzureRmContainerName: '$(Terraform.backendAzureRmContainerName)'
+          backendAzureRmKey: '$(Terraform.backendAzureRmKey)'
 
-  
+      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+        displayName: Validate Terraform configuration
+        inputs:
+          command: validate
+          variables: |
+            environment=dev
+            release=release
+          workingDirectory: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+
+      - task: DeleteFiles@1
+        inputs:
+          sourceFolder: '$(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure'
+          Contents: '.terraform'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish artifacts
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/admin-ui/Infrastructure
+          artifactName: Infrastructure
+          artifactType: Container
+
+
+  - phase: Build_react_app
+    displayName: React Project Build And Publish
+    queue:
+      name: 'Private VS2019'
+      workspace:
+        clean: outputs
+    variables:
+      BuildPlatform: 'any cpu'
+      BuildConfiguration: '$(ConfigBuild)'
+      IsPrerelease: True
+    steps:
+
+      - task: Npm@1
+        displayName: Install Node modules
+        inputs:
+          command: 'install'
+          workingDir: 'admin-ui'
+
+      - task: Npm@1
+        displayName: Build the project
+        inputs:
+          command: 'custom'
+          workingDir: 'admin-ui'
+          customCommand: 'run prod'
+
+      - task: CopyFiles@2
+        displayName: Copy artifacts
+        inputs:
+          SourceFolder: admin-ui/dist
+          contents: |
+            **
+            !.vsts-ci.yml
+            !**/.git/**
+            !**/.terraform/**
+          targetFolder: $(Build.ArtifactStagingDirectory)/admin-ui
+
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/admin-ui'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact/admin-ui.zip'
+          replaceExistingArchive: true
+
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/admin-ui/artifact'
+          publishLocation: 'Container'
+
+
+  - phase: Build_dotnet_app
+    displayName: Dotnet Project Build And Publish
+    queue:
+      name: 'Private VS2019'
+      workspace:
+        clean: outputs
+    variables:
+      BuildPlatform: 'any cpu'
+      BuildConfiguration: '$(ConfigBuild)'
+      IsPrerelease: True
+    steps:
+      - task: DotNetCoreInstaller@0
+        displayName: 'Install .NET Core sdk 3.0.100'
+        inputs:
+          version: 3.0.100
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 3.x'
+        inputs:
+          version: 3.x
+
+      - task: DotNetCoreCLI@2
+        displayName: restore
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          nugetConfigPath: '$(Build.SourcesDirectory)/api/api/nuget.config'
+          arguments: '-r win-x64'
+
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: '**/*.csproj'
+          arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        inputs:
+          command: test
+          projects: '**/*[Tt]est/*.csproj'
+          arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish
+        inputs:
+          command: publish
+          publishWebProjects: false
+          arguments: '-r win-x64 --self-contained --configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)/project" -f netcoreapp3.1'
+          zipAfterPublish: True
+          projects: '$(Build.SourcesDirectory)/api/api/api.csproj'
+          workingDirectory: '$(Build.SourcesDirectory)'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Project Artifact'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)/project'

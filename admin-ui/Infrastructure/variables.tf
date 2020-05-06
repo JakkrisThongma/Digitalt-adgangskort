@@ -121,3 +121,18 @@ variable "lock_database_resource" {
   default     = "false"
   description = "Param defining whether to set CanNotDelete lock on the database resource upon DB creation. Possible input values is 'true' and 'false'."
 }
+
+variable "ad_admin_login_name" {
+  default     = "s320045@oslomet.no"
+  description = "Name of the login for sql admin loging in from Azure AD. "
+}
+
+variable "ad_admin_tenant_id" {
+  default = "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
+  description = "Id to the Azure AD tenant used for SSO. "
+}
+
+variable "ad_admin_object_id" {
+  default = "93da8e09-83e1-482b-845b-e8747ac44830"
+  description = "Id to the user whom should be admin."
+}
