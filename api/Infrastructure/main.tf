@@ -26,7 +26,7 @@ resource "azurerm_sql_server" "sql_server" {
   resource_group_name          = "${var.resource_group_name}"
   location                     = "East US"
   version                      = "12.0"
-  administrator_login          = "${var.admin_login_name}"
+  administrator_login          = "digital-access-card-admin"
   administrator_login_password = "ipLGZ4ZtoMpt"
 }
 
