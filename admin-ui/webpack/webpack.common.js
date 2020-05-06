@@ -51,7 +51,7 @@ module.exports = {
       title: "Digital Access Card",
       template: "public/index.html",
       inject: true,
-      favicon: "./public/IN-logo.svg"
+      favicon: path.resolve(__dirname, "../public/IN-logo.svg")
     }),
     gitRevisionPlugin,
     new DefinePlugin({
@@ -66,7 +66,7 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      "@": path.resolve("src"),
+      "@": path.resolve(__dirname, "../src"),
       "@material-ui/core": "@material-ui/core/es"
     }
   }
