@@ -91,18 +91,18 @@ phases:
       IsPrerelease: True
     steps:
 
-      - task: Npm@1
+
+      - task: Yarn@3
         displayName: Install Node modules
         inputs:
-          command: 'install'
-          workingDir: 'admin-ui'
+          arguments: 'install'
+          projectDirectory: 'admin-ui'
 
-      - task: Npm@1
+      - task: Yarn@3
         displayName: Build the project
         inputs:
-          command: 'custom'
-          workingDir: 'admin-ui'
-          customCommand: 'run prod'
+          arguments: 'run prod'
+          projectDirectory: 'admin-ui'
 
       - task: CopyFiles@2
         displayName: Copy artifacts
