@@ -51,7 +51,7 @@ resource "azurerm_sql_firewall_rule" "sql_firewall_client" {
 resource "azurerm_sql_active_directory_administrator" "sql_admin" {
   server_name         = "${azurerm_sql_server.sql_server.name}"
   resource_group_name = "${var.resource_group_name}"
-  login               = "${var.ad_admin_login_name}"
+  login               = "s320045@oslomet.no"
   tenant_id           = "${var.ad_admin_tenant_id}"
   object_id           = "${var.ad_admin_object_id}"
 }
