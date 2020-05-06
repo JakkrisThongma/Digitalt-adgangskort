@@ -1,3 +1,8 @@
 web_app_name = "digitalAdgangskortWebAPI"
 resource_group_name = "stud-gruppe5-oppgave5-dwe-rg"
 environment = "dev"
+admin_login_name = "digital-access-card-admin"
+ad_admin_login_name = "s320045@oslomet.no"
+ad_admin_tenant_id = "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
+ad_admin_object_id = "93da8e09-83e1-482b-845b-e8747ac44830"
+lock_database_resource = "false"
