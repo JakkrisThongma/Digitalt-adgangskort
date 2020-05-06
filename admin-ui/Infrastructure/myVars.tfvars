@@ -5,5 +5,6 @@ admin_login_name="digital-adgangs-kort-api-admin"
 database_name="digital-adgangs-kort-db"
 server_name="digital-adgangs-kort-sql-server"
 environment = "dev"
-
-
+ad_admin_object_id = "93da8e09-83e1-482b-845b-e8747ac44830"
+ad_admin_login_name= "s320045@oslomet.no"
+ad_admin_tenant_id = "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
