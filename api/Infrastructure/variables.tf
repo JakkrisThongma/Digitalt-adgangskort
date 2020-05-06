@@ -70,3 +70,54 @@ variable "allow_azure_ip_access" {
   default     = "true"
   description = "If azure ip ranges should be allowed through the sql server firewall."
 }
+
+
+variable "server_name" {
+  default = "digital-access-card-server"
+  description = "Name of the server. "
+}
+
+variable "database_name" {
+  default = "digital-access-card-database"
+  description = "Name on the initial database on the server. "
+}
+
+variable "database_collation" {
+  default = "SQL_LATIN1_GENERAL_CP1_CI_AS"
+  description = "Which collation the initial database should have."
+}
+
+variable "database_edition" {
+  default = "Standard"
+  description = "Which database scaling edition the database should have."
+}
+
+variable "database_requested_service_objective_name" {
+  default = "S1"
+  description = "Which service scaling objective the database should have."
+}
+
+variable "admin_login_name" {
+  default     = "digital-access-card-admin"
+  description = "Login name for the sql server administrator."
+}
+
+variable "ad_admin_login_name" {
+  default     = "s320045@oslomet.no"
+  description = "Name of the login for sql admin loging in from Azure AD. "
+}
+
+variable "ad_admin_tenant_id" {
+  default = "c39d49f7-9eed-4307-b032-bb28f3cf9d79"
+  description = "Id to the Azure AD tenant used for SSO. "
+}
+
+variable "ad_admin_object_id" {
+  default = "93da8e09-83e1-482b-845b-e8747ac44830"
+  description = "Id to the user whom should be admin."
+}
+
+variable "lock_database_resource" {
+  default     = "false"
+  description = "Param defining whether to set CanNotDelete lock on the database resource upon DB creation. Possible input values is 'true' and 'false'."
+}
