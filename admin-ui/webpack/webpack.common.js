@@ -66,8 +66,11 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      "@": path.resolve(__dirname, "../src"),
-      "@material-ui/core": "@material-ui/core/es"
+      "@": path.resolve(__dirname, "../src")
+      // enable next feature will minimize bundle size further, but it meant for advanced use cases,
+      // and might not work if agent lacks some experiential features from ECMAScript
+      // https://material-ui.com/guides/minimizing-bundle-size/#ecmascript
+      // "@material-ui/core": "@material-ui/core/es"
     }
   }
 };
