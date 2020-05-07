@@ -1,0 +1,17 @@
+import palette from "@/styles/palette";
+
+export default {
+  MuiTableRow: {
+    root: {
+      "&$selected": {
+        backgroundColor: palette.quillGray
+      },
+      "&$hover": {
+        "&:hover": {
+          backgroundColor: palette.quillGray,
+          cursor: "pointer"
+        }
+      }
+    }
+  }
+};
