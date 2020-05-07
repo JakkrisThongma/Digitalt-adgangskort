@@ -4,7 +4,7 @@ import {
   themeWithFontScaleLevel1,
   themeWithFontScaleLevel2,
   themeWithFontScaleLevel3
-} from "@/styles";
+} from "../styles";
 
 const helpers = {
   isArrayEqual: (x, y) => isEmpty(xorWith(x, y, isEqual)),
