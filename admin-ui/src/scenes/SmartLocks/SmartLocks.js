@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const smartLockColumns = [
-  { title: "SmartLock Id", field: "id", sorting: false },
+  { title: "Smart lock Id", field: "id", sorting: false },
   {
     title: "Title",
     field: "title",
