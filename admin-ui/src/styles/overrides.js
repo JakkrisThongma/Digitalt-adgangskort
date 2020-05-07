@@ -1,4 +1,4 @@
-import palette from "@/styles/palette";
+import palette from "./palette";
 
 export default {
   MuiTableRow: {
