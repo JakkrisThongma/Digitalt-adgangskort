@@ -29,7 +29,7 @@ import {
 } from "@/components/group";
 
 const userColumns = [
-  { title: "User Id", field: "id", editable: "never", sorting: false },
+  { title: "User ID", field: "id", editable: "never", sorting: false },
   {
     title: "Name",
     field: "displayName",
@@ -42,7 +42,7 @@ const userColumns = [
   }
 ];
 const smartLocksColumns = [
-  { title: "Smart Lock Id", field: "id", editable: "never", sorting: false },
+  { title: "Smart Lock ID", field: "id", editable: "never", sorting: false },
   {
     title: "Title",
     field: "title",
@@ -186,7 +186,7 @@ const Group = ({ match }) => {
               data={groupUsers}
               actions={[
                 {
-                  icon: () => <Delete color="primary" />,
+                  icon: () => <Delete />,
                   tooltip:
                     "Delete user from a group should be done from Azure AD",
                   disabled: true,

@@ -34,7 +34,7 @@ import {
 } from "@/components/smartLock";
 
 const userColumns = [
-  { title: "User Id", field: "id", editable: "never", sorting: false },
+  { title: "User ID", field: "id", editable: "never", sorting: false },
   {
     title: "Name",
     field: "displayName",
@@ -47,7 +47,7 @@ const userColumns = [
   }
 ];
 const groupsColumns = [
-  { title: "Group Id", field: "id", editable: "never", sorting: false },
+  { title: "Group ID", field: "id", editable: "never", sorting: false },
   {
     title: "Display Name",
     field: "displayName",
