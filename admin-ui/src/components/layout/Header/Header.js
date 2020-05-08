@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
 
 const Header = () => {
   const classes = useStyles();
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
 
   const [open, setOpen] = useState(false);
   const toggleDrawer = () => event => {
@@ -123,18 +123,21 @@ const Header = () => {
               Smart locks
             </Button>
           </div>
-          <Button className={classes.fontButton} onClick={handleScaleFontDown}>
-            A
-          </Button>
-          <Button className={classes.fontButton} onClick={handleScaleFontUp}>
-            A+
-          </Button>
-          <Button
-            className={classes.navElement}
-            onClick={() => authContext.logOut()}>
-            Log out
-          </Button>
-          ´{" "}
+          <div className={classes.sectionDesktop}>
+            <Button
+              className={classes.fontButton}
+              onClick={handleScaleFontDown}>
+              A
+            </Button>
+            <Button className={classes.fontButton} onClick={handleScaleFontUp}>
+              A+
+            </Button>
+            <Button
+              className={classes.navElement}
+              onClick={() => authContext.logOut()}>
+              Log out
+            </Button>
+          </div>
         </Toolbar>
       </AppBar>
     </div>

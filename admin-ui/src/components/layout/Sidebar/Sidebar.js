@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -9,8 +9,12 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
-import { Group, Dashboard, Lock, Person } from "@material-ui/icons";
+import { Group, Dashboard, Lock, Person, ExitToApp } from "@material-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
+import { authContext } from "@/services/auth";
+import { uiContext } from "@/store";
+import { scaleFontDown, scaleFontUp } from "@/actions/uiActions";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles({
   list: {
@@ -26,6 +30,7 @@ const useStyles = makeStyles({
 
 const Sidebar = props => {
   const classes = useStyles();
+  const [, uiDispatch] = useContext(uiContext);
   const { open, toggleDrawer } = props;
   const listItems = [
     { text: "Dashboard", link: "/dashboard", icon: Dashboard },
@@ -33,6 +38,14 @@ const Sidebar = props => {
     { text: "Groups", link: "/groups", icon: Group },
     { text: "Smart locks", link: "/smart-locks", icon: Lock }
   ];
+
+  const handleScaleFontUp = () => {
+    uiDispatch(scaleFontUp);
+  };
+
+  const handleScaleFontDown = () => {
+    uiDispatch(scaleFontDown);
+  };
   const sideList = () => (
     <div
       className={classes.list}
@@ -55,6 +68,38 @@ const Sidebar = props => {
             </ListItem>
           );
         })}
+
+        <ListItem button onClick={handleScaleFontDown}>
+          <ListItemIcon>
+            <Typography
+              variant="h5"
+              className={classes.icon}
+              style={{ marginLeft: 5 }}>
+              A
+            </Typography>
+          </ListItemIcon>
+          <ListItemText>Decrease font size</ListItemText>
+        </ListItem>
+        <ListItem button onClick={handleScaleFontUp}>
+          <ListItemIcon>
+            <Typography
+              variant="h5"
+              className={classes.icon}
+              style={{ marginLeft: 5 }}>
+              A+
+            </Typography>
+          </ListItemIcon>
+          <ListItemText>Increase font size</ListItemText>
+        </ListItem>
+        <ListItem
+          button
+          className={classes.navElement}
+          onClick={() => authContext.logOut()}>
+          <ListItemIcon>
+            <ExitToApp className={classes.icon} />
+          </ListItemIcon>
+          <ListItemText>Log out</ListItemText>
+        </ListItem>
       </List>
       <Divider />
     </div>
