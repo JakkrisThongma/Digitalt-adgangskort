@@ -12,6 +12,7 @@ const EnhancedMaterialTable = ({ title, ...rest }) => {
         actionsColumnIndex: -1,
         draggable: false
       }}
+      localization={{ body: { emptyDataSourceMessage: "No data to display" } }}
     />
   );
 };
