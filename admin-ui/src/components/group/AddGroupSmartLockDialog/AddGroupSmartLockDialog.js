@@ -123,7 +123,7 @@ const AddGroupSmartLockDialog = () => {
               <LockIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add smart Lock</Typography>
+              <Typography variant="h6">Add smart lock to a group</Typography>
             </Grid>
           </Grid>
         </DialogTitle>

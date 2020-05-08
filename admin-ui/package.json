@@ -11,12 +11,12 @@
     "webpack": "webpack",
     "webpack-dev-server": "webpack-dev-server",
     "dev": "webpack-dev-server --config webpack/webpack.dev.js",
-    "prod": "yarn run clean && webpack -p --config webpack/webpack.prod.js",
+    "prod": "npm run clean && webpack -p --config webpack/webpack.prod.js",
     "prod:serve": "NODE_ENV=production node src/server.js",
-    "analyze": "yarn run clean && webpack -p --config webpack/webpack.analyze.js",
-    "compress": "yarn run clean && webpack -p --config webpack/webpack.compress.js",
+    "analyze": "npm run clean && webpack -p --config webpack/webpack.analyze.js",
+    "compress": "npm run clean && webpack -p --config webpack/webpack.compress.js",
     "test-acceptance": "jest --testMatch='**/?(*.a.)+(spec|test).[tj]s?(x)' --runInBand",
-    "ta": "yarn run test-acceptance ",
+    "ta": "npm run test-acceptance ",
     "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
@@ -75,13 +75,13 @@
     "eslint-plugin-react": "^7.18.3",
     "eslint-plugin-react-hooks": "^3.0.0",
     "file-loader": "^5.0.2",
-    "fsevents": "^2.1.2",
     "git-revision-webpack-plugin": "^3.0.4",
     "html-webpack-plugin": "^3.2.0",
     "image-webpack-loader": "^6.0.0",
     "jest": "^25.5.4",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",
+    "rimraf": "^3.0.2",
     "style-loader": "^0.23.0",
     "url-loader": "^3.0.0",
     "uuid": "^8.0.0",
@@ -91,5 +91,8 @@
     "webpack-dev-middleware": "^3.7.2",
     "webpack-dev-server": "^3.10.1",
     "webpack-merge": "^4.2.2"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.1.2"
   }
 }

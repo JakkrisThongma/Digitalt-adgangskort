@@ -32,7 +32,6 @@ import {
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Button } from "@material-ui/core";
 import { getAzureAdUsers } from "@/actions/azureAdActions";
-
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
@@ -45,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const userColumns = [
-  { title: "User Id", field: "id", sorting: false },
+  { title: "User ID", field: "id", sorting: false },
   {
     title: "Display Name",
     field: "displayName",

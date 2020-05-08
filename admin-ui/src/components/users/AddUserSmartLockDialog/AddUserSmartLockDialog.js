@@ -123,7 +123,7 @@ const AddUserSmartLockDialog = () => {
               <LockIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h6">Add Azure Ad User</Typography>
+              <Typography variant="h6">Add smart lock to a User</Typography>
             </Grid>
           </Grid>
         </DialogTitle>

@@ -1,4 +1,6 @@
 import {
+  SCALE_FONT_DOWN,
+  SCALE_FONT_UP,
   CLOSE_ADD_DIALOG,
   CLOSE_DELETE_DIALOG,
   CLOSE_EDIT_DIALOG,
@@ -7,7 +9,7 @@ import {
   OPEN_DELETE_DIALOG,
   OPEN_EDIT_DIALOG,
   OPEN_VIEW_DIALOG
-} from "../actions/actionTypes";
+} from "@/actions/actionTypes";
 
 const uiReducer = (state, action) => {
   if (process.env.NODE_ENV !== "development")
@@ -69,6 +71,25 @@ const uiReducer = (state, action) => {
       viewDialogOpen: false
     };
   }
+
+  if (action.type === SCALE_FONT_UP) {
+    if (state.fontScaleLevel < 3)
+      return {
+        ...state,
+        fontScaleLevel: state.fontScaleLevel + 1
+      };
+    return state;
+  }
+
+  if (action.type === SCALE_FONT_DOWN) {
+    if (state.fontScaleLevel > 0)
+      return {
+        ...state,
+        fontScaleLevel: state.fontScaleLevel - 1
+      };
+    return state;
+  }
+
   return state;
 };
 

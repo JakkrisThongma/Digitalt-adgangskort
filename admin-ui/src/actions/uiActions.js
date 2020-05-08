@@ -8,6 +8,7 @@ import {
   OPEN_EDIT_DIALOG,
   OPEN_VIEW_DIALOG
 } from "./actionTypes";
+import {SCALE_FONT_DOWN, SCALE_FONT_UP} from "@/actions/actionTypes";
 
 const openAddDialog = dispatch => {
   dispatch({
@@ -42,14 +43,14 @@ const closeDeleteDialog = dispatch => {
   });
 };
 
-const openViewDialog = dispatch => {
+const scaleFontUp = dispatch => {
   dispatch({
-    type: OPEN_VIEW_DIALOG
+    type: SCALE_FONT_UP
   });
 };
-const closeViewDialog = dispatch => {
+const scaleFontDown = dispatch => {
   dispatch({
-    type: CLOSE_VIEW_DIALOG
+    type: SCALE_FONT_DOWN
   });
 };
 
@@ -60,6 +61,6 @@ export {
   closeEditDialog,
   openDeleteDialog,
   closeDeleteDialog,
-  openViewDialog,
-  closeViewDialog
+  scaleFontUp,
+  scaleFontDown
 };

@@ -102,7 +102,6 @@ const Dashboard = () => {
     userDispatch(getUsers);
     groupDispatch(getGroups);
     smartLockDispatch(getSmartLocks);
-    console.log(typeof PersonIcon);
   }, []);
 
   useDidMountEffect(() => {

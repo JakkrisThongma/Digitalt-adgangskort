@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const groupColumns = [
-  { title: "Group Id", field: "id", sorting: false },
+  { title: "Group ID", field: "id", sorting: false },
   {
     title: "Display Name",
     field: "displayName",

@@ -29,7 +29,7 @@ import {
 } from "@/components/users";
 
 const groupColumns = [
-  { title: "User Id", field: "id", editable: "never", sorting: false },
+  { title: "User ID", field: "id", editable: "never", sorting: false },
   {
     title: "Name",
     field: "displayName",
@@ -42,7 +42,7 @@ const groupColumns = [
   }
 ];
 const smartLocksColumns = [
-  { title: "Smart Lock Id", field: "id", editable: "never", sorting: false },
+  { title: "Smart Lock ID", field: "id", editable: "never", sorting: false },
   {
     title: "Title",
     field: "title",
@@ -184,14 +184,15 @@ const User = ({ match }) => {
               data={userGroups}
               actions={[
                 {
-                  icon: () => <Delete color="primary" />,
-                  tooltip: "Delete group should be done from Azure AD",
+                  icon: () => <Delete />,
+                  tooltip:
+                    "Delete group membership should be done from Azure AD",
                   disabled: true,
                   onClick: () => null
                 },
                 {
                   icon: () => <AddBox fontSize="large" />,
-                  tooltip: "Add group should be done from Azure AD",
+                  tooltip: "Add group membership should be done from Azure AD",
                   isFreeAction: true,
                   disabled: true,
                   onClick: () => null
