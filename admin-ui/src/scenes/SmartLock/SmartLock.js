@@ -32,6 +32,8 @@ import {
   DeleteSmartLockUserDialog,
   SmartLockInfo
 } from "@/components/smartLock";
+import { useSnackbar } from "notistack";
+import { authContext } from "@/services/auth";
 
 const userColumns = [
   { title: "User ID", field: "id", editable: "never", sorting: false },
@@ -106,9 +108,12 @@ const SmartLock = ({ match }) => {
   } = smartLockState;
 
   const [groupState, groupDispatch] = useContext(groupContext);
+  const { error: groupError } = groupState;
   const [userState, userDispatch] = useContext(userContext);
+  const { error: userError } = userState;
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -160,6 +165,34 @@ const SmartLock = ({ match }) => {
     }
   }, [didInvalidate]);
 
+  useDidMountEffect(() => {
+    if (groupError) {
+      if (
+        groupError.response.status === 401 ||
+        groupError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(groupError.message, {
+          variant: "error"
+        });
+    }
+  }, [groupError]);
+
+  useDidMountEffect(() => {
+    if (userError) {
+      if (
+        userError.response.status === 401 ||
+        userError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(userError.message, {
+          variant: "error"
+        });
+    }
+  }, [userError]);
+
   function a11yProps(index) {
     return {
       id: `vertical-tab-${index}`,
@@ -171,9 +204,6 @@ const SmartLock = ({ match }) => {
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
         <Breadcrumbs aria-label="breadcrumb">
-          <Button component={RouterLink} to="/dashboard">
-            Dashboard
-          </Button>
           <Button component={RouterLink} to="/smart-locks">
             Smart Locks
           </Button>
@@ -212,7 +242,7 @@ const SmartLock = ({ match }) => {
                   }
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   isFreeAction: true,
                   onClick: event => handleAddUserClick(event)
@@ -238,7 +268,7 @@ const SmartLock = ({ match }) => {
                   }
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   isFreeAction: true,
                   onClick: event => handleAddGroupClick(event)

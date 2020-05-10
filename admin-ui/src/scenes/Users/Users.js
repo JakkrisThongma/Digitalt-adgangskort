@@ -32,6 +32,8 @@ import {
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Button } from "@material-ui/core";
 import { getAzureAdUsers } from "@/actions/azureAdActions";
+import { authContext } from "@/services/auth";
+
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
@@ -71,10 +73,10 @@ const Users = () => {
     selectedUserId,
     error: userError
   } = userState;
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
+  const [, smartLockDispatch] = useContext(smartLockContext);
+  const [, azureAdDispatch] = useContext(azureAdContext);
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -115,9 +117,15 @@ const Users = () => {
 
   useDidMountEffect(() => {
     if (userError) {
-      enqueueSnackbar(userError.message, {
-        variant: "error"
-      });
+      if (
+        userError.response.status === 401 ||
+        userError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(userError.message, {
+          variant: "error"
+        });
     }
   }, [userError]);
 
@@ -126,9 +134,6 @@ const Users = () => {
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/users">
               Users
             </Button>
@@ -140,7 +145,7 @@ const Users = () => {
               data={users}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddUserClick(),
                   isFreeAction: true

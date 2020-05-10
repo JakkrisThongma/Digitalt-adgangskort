@@ -30,6 +30,7 @@ import {
   setSelectedGroupId
 } from "@/actions/groupActions";
 import { getAzureAdGroups } from "@/actions/azureAdActions";
+import { authContext } from "@/services/auth";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -115,9 +116,15 @@ const Groups = () => {
 
   useDidMountEffect(() => {
     if (groupError) {
-      enqueueSnackbar(groupError.message, {
-        variant: "error"
-      });
+      if (
+        groupError.response.status === 401 ||
+        groupError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(groupError.message, {
+          variant: "error"
+        });
     }
   }, [groupError]);
 
@@ -126,9 +133,6 @@ const Groups = () => {
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/groups">
               Groups
             </Button>
@@ -140,7 +144,7 @@ const Groups = () => {
               data={groups}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddGroupClick(),
                   isFreeAction: true

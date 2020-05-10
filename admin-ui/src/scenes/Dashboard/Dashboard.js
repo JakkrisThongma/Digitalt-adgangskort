@@ -23,6 +23,7 @@ import useDidMountEffect from "@/extensions/useDidMountEffect";
 import { getUsers } from "@/actions/userActions";
 import { getGroups } from "@/actions/groupActions";
 import { useSnackbar } from "notistack";
+import { authContext } from "@/services/auth";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -119,9 +120,15 @@ const Dashboard = () => {
 
   useDidMountEffect(() => {
     if (accessLogError) {
-      enqueueSnackbar(accessLogError.message, {
-        variant: "error"
-      });
+      if (
+        accessLogError.response.status === 401 ||
+        accessLogError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(accessLogError.message, {
+          variant: "error"
+        });
     }
   }, [accessLogError]);
 

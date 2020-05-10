@@ -73,7 +73,6 @@ const EditUserDialog = () => {
   const [userState, userDispatch] = useContext(userContext);
   const {
     user,
-    userError,
     userSmartLocks,
     loading: userLoading,
     updateFailed,
@@ -195,7 +194,7 @@ const EditUserDialog = () => {
               enableReinitialize
               validateOnChange
               onSubmit={values => handleEditClick(values)}>
-              {formik => (
+              {() => (
                 <Form noValidate autoComplete="off">
                   <Field
                     name="user"

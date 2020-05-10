@@ -54,15 +54,15 @@ const validationSchema = object().shape({
 
 const AddGroupDialog = () => {
   const classes = useStyles();
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
-  const { azureAdGroups, azureAdError } = azureAdState;
+  const [azureAdState] = useContext(azureAdContext);
+  const { azureAdGroups } = azureAdState;
 
   const [groupState, groupDispatch] = useContext(groupContext);
-  const { groupError, loading, addFailed, addSucceed } = groupState;
+  const { addFailed, addSucceed } = groupState;
 
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError } = smartLockState;
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [smartLockState] = useContext(smartLockContext);
+  const { smartLocks } = smartLockState;
+  const { enqueueSnackbar } = useSnackbar();
 
   const [uiState, uiDispatch] = useContext(uiContext);
   const { addDialogOpen } = uiState;

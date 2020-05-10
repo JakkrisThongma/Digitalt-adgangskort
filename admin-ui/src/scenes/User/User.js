@@ -27,6 +27,8 @@ import {
   UserInfo,
   DeleteSmartLockDialog
 } from "@/components/users";
+import { authContext } from "@/services/auth";
+import {useSnackbar} from "notistack";
 
 const groupColumns = [
   { title: "User ID", field: "id", editable: "never", sorting: false },
@@ -93,7 +95,7 @@ const User = ({ match }) => {
   const [userState, userDispatch] = useContext(userContext);
   const {
     user,
-    userError,
+    error: userError,
     selectedUserId,
     userSmartLocks,
     userGroups,
@@ -101,9 +103,10 @@ const User = ({ match }) => {
   } = userState;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError, didInvalidate } = smartLockState;
+  const { error: smartLockError, didInvalidate } = smartLockState;
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -138,6 +141,34 @@ const User = ({ match }) => {
     }
   }, [didInvalidate]);
 
+  useDidMountEffect(() => {
+    if (userError) {
+      if (
+        userError.response.status === 401 ||
+        userError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(userError.message, {
+          variant: "error"
+        });
+    }
+  }, [userError]);
+
+  useDidMountEffect(() => {
+    if (smartLockError) {
+      if (
+        smartLockError.response.status === 401 ||
+        smartLockError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(smartLockError.message, {
+          variant: "error"
+        });
+    }
+  }, [smartLockError]);
+
   function a11yProps(index) {
     return {
       id: `vertical-tab-${index}`,
@@ -148,9 +179,6 @@ const User = ({ match }) => {
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
-        <Button component={RouterLink} to="/dashboard">
-          Dashboard
-        </Button>
         <Button component={RouterLink} to="/users">
           Users
         </Button>
@@ -191,7 +219,7 @@ const User = ({ match }) => {
                   onClick: () => null
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add group membership should be done from Azure AD",
                   isFreeAction: true,
                   disabled: true,
@@ -216,7 +244,7 @@ const User = ({ match }) => {
                   }
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   isFreeAction: true,
                   onClick: event => handleAddSmartLockClick(event)

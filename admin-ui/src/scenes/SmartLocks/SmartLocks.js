@@ -32,6 +32,7 @@ import {
   EditSmartLockDialog
 } from "@/components/smartLock";
 import { getUsers } from "@/actions/userActions";
+import { authContext } from "@/services/auth";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -123,9 +124,15 @@ const SmartLocks = () => {
 
   useDidMountEffect(() => {
     if (smartLockError) {
-      enqueueSnackbar(smartLockError.message, {
-        variant: "error"
-      });
+      if (
+        smartLockError.response.status === 401 ||
+        smartLockError.response.status === 403
+      )
+        authContext.login();
+      else
+        enqueueSnackbar(smartLockError.message, {
+          variant: "error"
+        });
     }
   }, [smartLockError]);
 
@@ -134,9 +141,6 @@ const SmartLocks = () => {
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/smart-locks">
               Smart Locks
             </Button>
@@ -148,7 +152,7 @@ const SmartLocks = () => {
               data={smartLocks}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddSmartLockClick(),
                   isFreeAction: true

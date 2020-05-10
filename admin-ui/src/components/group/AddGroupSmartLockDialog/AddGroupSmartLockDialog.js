@@ -49,8 +49,8 @@ const validationSchema = object().shape({
 const AddGroupSmartLockDialog = () => {
   const classes = useStyles();
 
-  const [groupState, groupDispatch] = useContext(groupContext);
-  const { group, groupError, groupSmartLocks } = groupState;
+  const [groupState] = useContext(groupContext);
+  const { group, groupSmartLocks } = groupState;
 
   const [groupOptions, setGroupOptions] = useState([]);
   const [smartLockOptions, setSmartLockOptions] = useState([]);
