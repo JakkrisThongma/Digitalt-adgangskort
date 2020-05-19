@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Main = props => {
+const MainLayout = props => {
   const { children } = props;
 
   const classes = useStyles();
@@ -31,11 +31,11 @@ const Main = props => {
   );
 };
 
-Main.propTypes = {
+MainLayout.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
   ]).isRequired
 };
 
-export default Main;
+export default MainLayout;
