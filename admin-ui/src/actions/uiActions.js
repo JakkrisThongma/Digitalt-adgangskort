@@ -2,13 +2,12 @@ import {
   CLOSE_ADD_DIALOG,
   CLOSE_DELETE_DIALOG,
   CLOSE_EDIT_DIALOG,
-  CLOSE_VIEW_DIALOG,
   OPEN_ADD_DIALOG,
   OPEN_DELETE_DIALOG,
   OPEN_EDIT_DIALOG,
-  OPEN_VIEW_DIALOG
+  SCALE_FONT_DOWN,
+  SCALE_FONT_UP
 } from "./actionTypes";
-import {SCALE_FONT_DOWN, SCALE_FONT_UP} from "@/actions/actionTypes";
 
 const openAddDialog = dispatch => {
   dispatch({
