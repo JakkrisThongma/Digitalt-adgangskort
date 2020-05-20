@@ -1,5 +1,5 @@
 import { adalFetch, AuthenticationContext, withAdalLogin } from "react-adal";
-
+// Azure Ad client app configurations
 export const auth = {
   tenant: "3602e498-fd34-4a1e-a61b-b4639ceeaffd",
   clientId: "93a5c726-983f-4e8c-a330-f1b34e3d6752",
