@@ -27,7 +27,9 @@ module.exports = {
     "react/jsx-filename-extension": "off",
     "react/jsx-props-no-spreading": "off",
     "react/forbid-prop-types": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "react/prop-types": "off",
+    "no-shadow": "off",
   },
   env: {
     "jest/globals": true
