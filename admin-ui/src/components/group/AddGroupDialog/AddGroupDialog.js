@@ -23,8 +23,7 @@ import {
   statusOptions,
   uiContext
 } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-
+import { useDidMountEffect } from "@/extensions";
 const useStyles = makeStyles(theme => ({
   form: {
     display: "flex",

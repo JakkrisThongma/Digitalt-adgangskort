@@ -3,11 +3,10 @@
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
 import { deleteGroup } from "@/actions/groupActions";
-import { groupContext, uiContext } from "@/store/Store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { groupContext, uiContext } from "@/store";
+import { useDidMountEffect } from "@/extensions";
 import { closeDeleteDialog } from "@/actions/uiActions";
-import DeleteDialog from "@/components/common/DeleteDialog";
-import SlideTransition from "@/components/common/SlideTransition";
+import { DeleteDialog, SlideTransition } from "@/components/common";
 
 const DeleteGroupDialog = () => {
   const { enqueueSnackbar } = useSnackbar();

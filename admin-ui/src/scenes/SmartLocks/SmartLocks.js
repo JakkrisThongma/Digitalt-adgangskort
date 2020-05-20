@@ -15,7 +15,7 @@ import {
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { useSnackbar } from "notistack";
 
 import {

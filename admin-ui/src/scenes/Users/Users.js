@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AddBox, Delete, Edit } from "@material-ui/icons";
-import Paper from "@material-ui/core/Paper";
+import { Paper, Button, Breadcrumbs } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import {
@@ -16,7 +16,7 @@ import {
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { useSnackbar } from "notistack";
 import {
   AddUserDialog,
@@ -29,8 +29,6 @@ import {
   getUserSmartLocks,
   setSelectedUserId
 } from "@/actions/userActions";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import { Button } from "@material-ui/core";
 import { getAzureAdUsers } from "@/actions/azureAdActions";
 import { authContext } from "@/services/auth";
 
@@ -163,13 +161,11 @@ const Users = () => {
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
-                    console.log(rowData.id);
                     handleDeleteUserClick(rowData.id);
                   }
                 }
               ]}
               onRowClick={(event, rowData) => {
-                console.log(rowData.id);
                 handleViewUserClick(rowData.id);
               }}
             />

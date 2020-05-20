@@ -7,14 +7,14 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Typography
 } from "@material-ui/core";
 import { Group, Dashboard, Lock, Person, ExitToApp } from "@material-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import { authContext } from "@/services/auth";
 import { uiContext } from "@/store";
 import { scaleFontDown, scaleFontUp } from "@/actions/uiActions";
-import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles({
   list: {

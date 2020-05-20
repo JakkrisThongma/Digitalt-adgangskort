@@ -2,12 +2,11 @@
 
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import SlideTransition from "@/components/common/SlideTransition";
+import { useDidMountEffect } from "@/extensions";
 import { smartLockContext, uiContext, userContext } from "@/store";
 import { deleteSmartLockUser } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
-import DeleteDialog from "@/components/common/DeleteDialog";
+import { DeleteDialog, SlideTransition } from "@/components/common";
 
 const DeleteSmartLockUserDialog = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -17,7 +16,7 @@ const DeleteSmartLockUserDialog = () => {
   const [uiState, uiDispatch] = useContext(uiContext);
   const { deleteDialogOpen } = uiState;
 
-  const [userState, userDispatch] = useContext(userContext);
+  const [userState] = useContext(userContext);
   const { selectedUserId } = userState;
 
   useDidMountEffect(() => {

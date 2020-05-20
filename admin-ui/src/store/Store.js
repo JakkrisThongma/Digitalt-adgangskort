@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import useThunkReducer from "@/extensions/useThunkReducer";
+import { useThunkReducer } from "@/extensions";
 import {
   accessLogReducer,
   userReducer,

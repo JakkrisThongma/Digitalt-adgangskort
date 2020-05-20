@@ -6,7 +6,9 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Typography
+  Typography,
+  CircularProgress,
+  Backdrop
 } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Edit as EditIcon } from "@material-ui/icons";
@@ -23,9 +25,7 @@ import {
   uiContext,
   userContext
 } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { useDidMountEffect } from "@/extensions";
 import { isEqual } from "lodash";
 import helpers from "@/helpers";
 

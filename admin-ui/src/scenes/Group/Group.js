@@ -1,10 +1,7 @@
 import React, { useContext, useEffect } from "react";
+import { Paper, Button, Tab, Tabs, Breadcrumbs } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { Button, Tab, Tabs } from "@material-ui/core";
 import { AddBox, Delete } from "@material-ui/icons";
-
-import Paper from "@material-ui/core/Paper";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
   getGroup,
@@ -17,11 +14,9 @@ import {
   setSelectedSmartLockId
 } from "@/actions/smartLockActions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
-import ViewMaterialTable from "@/components/common/ViewMaterialTable";
-import TabPanel from "@/components/common/TabPanel";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { ViewMaterialTable, TabPanel } from "@/components/common";
+import { useDidMountEffect } from "@/extensions";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
-
 import {
   AddGroupSmartLockDialog,
   DeleteSmartLockDialog,

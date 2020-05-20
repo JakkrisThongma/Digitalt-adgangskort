@@ -2,12 +2,11 @@
 
 import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import SlideTransition from "@/components/common/SlideTransition";
+import { useDidMountEffect } from "@/extensions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
 import { deleteSmartLockGroup } from "@/actions/smartLockActions";
 import { closeDeleteDialog } from "@/actions/uiActions";
-import DeleteDialog from "@/components/common/DeleteDialog";
+import { DeleteDialog, SlideTransition } from "@/components/common";
 
 const DeleteSmartLockDialog = () => {
   const { enqueueSnackbar } = useSnackbar();

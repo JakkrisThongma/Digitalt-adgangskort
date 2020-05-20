@@ -13,7 +13,6 @@ import { PersonAdd as UserAddIcon } from "@material-ui/icons";
 import { Field, Form, Formik } from "formik";
 import { array, object, string } from "yup";
 import { Autocomplete, Select } from "material-ui-formik-components";
-
 import { useSnackbar } from "notistack";
 import { closeAddDialog } from "@/actions/uiActions";
 import { addUser } from "@/actions/userActions";
@@ -25,7 +24,7 @@ import {
   uiContext,
   userContext
 } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -99,7 +98,6 @@ const AddUserDialog = () => {
         smartLockId: smartLock.id
       }))
     };
-    console.log(payload);
     userDispatch(dispatch => addUser(dispatch, payload));
     uiDispatch(closeAddDialog);
   };
