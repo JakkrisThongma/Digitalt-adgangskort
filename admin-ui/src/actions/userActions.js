@@ -1,14 +1,4 @@
 import {
-  addUser as addUserFromAPI,
-  deleteUser as deleteUserFromAPI,
-  getCurrentAuthenticatedUser as getCurrentAuthenticatedUserFromAPI,
-  getUser as getUserFromAPI,
-  getUserGroups as getUserGroupsFromAPI,
-  getUsers as getUsersFromAPI,
-  getUserSmartLocks as getUserSmartLocksFromAPI,
-  updateUser as updateUserFromAPI
-} from "../services/api";
-import {
   ADD_USER_FAILED,
   ADD_USER_PENDING,
   ADD_USER_SUCCEEDED,
@@ -18,6 +8,9 @@ import {
   GET_CURRENT_AUTHENTICATED_USER_FAILED,
   GET_CURRENT_AUTHENTICATED_USER_PENDING,
   GET_CURRENT_AUTHENTICATED_USER_SUCCEEDED,
+  GET_CURRENT_USER_ACCESS_LEVEL_PENDING,
+  GET_CURRENT_USER_ACCESS_LEVEL_FAILED,
+  GET_CURRENT_USER_ACCESS_LEVEL_SUCCEEDED,
   GET_USER_FAILED,
   GET_USER_GROUPS_FAILED,
   GET_USER_GROUPS_PENDING,
@@ -34,7 +27,18 @@ import {
   UPDATE_USER_FAILED,
   UPDATE_USER_PENDING,
   UPDATE_USER_SUCCEEDED
-} from "./actionTypes";
+} from "@/actions/actionTypes";
+import {
+  addUser as addUserFromAPI,
+  deleteUser as deleteUserFromAPI,
+  getCurrentAuthenticatedUser as getCurrentAuthenticatedUserFromAPI,
+  getCurrentUserAccessLevel as getCurrentUserAccessLevelFromAPI,
+  getUser as getUserFromAPI,
+  getUserGroups as getUserGroupsFromAPI,
+  getUsers as getUsersFromAPI,
+  getUserSmartLocks as getUserSmartLocksFromAPI,
+  updateUser as updateUserFromAPI
+} from "../services/api";
 
 const getUsers = dispatch => {
   dispatch({ type: GET_USERS_PENDING });
@@ -182,6 +186,25 @@ const getCurrentAuthenticatedUser = dispatch => {
     );
 };
 
+const getCurrentUserAccessLevel = dispatch => {
+  dispatch({
+    type: GET_CURRENT_USER_ACCESS_LEVEL_PENDING
+  });
+  getCurrentUserAccessLevelFromAPI()
+    .then(response =>
+      dispatch({
+        type: GET_CURRENT_USER_ACCESS_LEVEL_SUCCEEDED,
+        payload: { currentUserAccessLevel: response.data }
+      })
+    )
+    .catch(error =>
+      dispatch({
+        type: GET_CURRENT_USER_ACCESS_LEVEL_FAILED,
+        payload: { error }
+      })
+    );
+};
+
 const setSelectedUserId = (dispatch, userId) => {
   dispatch({
     type: SET_SELECTED_USER_ID,
@@ -198,5 +221,6 @@ export {
   getUserGroups,
   getUserSmartLocks,
   getCurrentAuthenticatedUser,
+  getCurrentUserAccessLevel,
   setSelectedUserId
 };

@@ -16,7 +16,7 @@ import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
 import { closeAddDialog } from "@/actions/uiActions";
 import { smartLockContext, uiContext, userContext } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { addSmartLockUser } from "@/actions/smartLockActions";
 import helpers from "@/helpers";
 

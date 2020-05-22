@@ -1,17 +1,20 @@
 import React from "react";
 import PropTypes from "prop-types";
-import useApiRequest from "@/extensions/useApiRequest";
-import accessLogReducer from "@/reducers/accessLogReducer";
-import accessLogInitialState from "@/store/accessLogInitialState";
-import userReducer from "../reducers/userReducer";
-import groupReducer from "../reducers/groupReducer";
-import smartLockReducer from "../reducers/smartLockReducer";
-import azureAdReducer from "../reducers/azureAdReducer";
+import { useThunkReducer } from "@/extensions";
+import {
+  accessLogReducer,
+  userReducer,
+  groupReducer,
+  smartLockReducer,
+  azureAdReducer,
+  uiReducer
+} from "@/reducers";
+
+import accessLogInitialState from "./accessLogInitialState";
 import userInitialState from "./userInitialState";
 import groupInitialState from "./groupInitialState";
 import smartLockInitialState from "./smartLockInitialState";
 import azureAdInitialState from "./azureAdInitialState";
-import uiReducer from "../reducers/uiReducer";
 import uiInitialState from "./uiInitialState";
 
 export const userContext = React.createContext({});
@@ -22,27 +25,27 @@ export const accessLogContext = React.createContext({});
 export const uiContext = React.createContext({});
 
 const Store = ({ children }) => {
-  const [userState, userDispatch] = useApiRequest(
+  const [userState, userDispatch] = useThunkReducer(
     userReducer,
     userInitialState
   );
-  const [groupState, groupDispatch] = useApiRequest(
+  const [groupState, groupDispatch] = useThunkReducer(
     groupReducer,
     groupInitialState
   );
-  const [smartLockState, smartLockDispatch] = useApiRequest(
+  const [smartLockState, smartLockDispatch] = useThunkReducer(
     smartLockReducer,
     smartLockInitialState
   );
-  const [azureAdState, azureAdDispatch] = useApiRequest(
+  const [azureAdState, azureAdDispatch] = useThunkReducer(
     azureAdReducer,
     azureAdInitialState
   );
-  const [accessLogState, accessLogDispatch] = useApiRequest(
+  const [accessLogState, accessLogDispatch] = useThunkReducer(
     accessLogReducer,
     accessLogInitialState
   );
-  const [uiState, uiDispatch] = useApiRequest(uiReducer, uiInitialState);
+  const [uiState, uiDispatch] = useThunkReducer(uiReducer, uiInitialState);
 
   return (
     <userContext.Provider value={[userState, userDispatch]}>

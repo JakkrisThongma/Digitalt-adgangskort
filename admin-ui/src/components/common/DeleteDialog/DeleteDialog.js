@@ -1,12 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   Dialog as MuiDialog,
   DialogActions as MuiDialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  DialogContentText
 } from "@material-ui/core";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import PropTypes from "prop-types";
 import DialogActions from "../DialogActions";
 
 const DeleteDialog = ({ title, actions, children, ...rest }) => {

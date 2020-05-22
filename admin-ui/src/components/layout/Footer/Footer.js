@@ -1,9 +1,8 @@
 // https://github.com/mui-org/material-ui/blob/master/docs/src/pages/getting-started/templates/sticky-footer/StickyFooter.js
 
 import React from "react";
-import { Link, Typography } from "@material-ui/core";
+import { Container, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 
 const useStyles = makeStyles(theme => ({
   footer: {

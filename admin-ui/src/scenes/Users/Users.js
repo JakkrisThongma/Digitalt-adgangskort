@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AddBox, Delete, Edit } from "@material-ui/icons";
-import Paper from "@material-ui/core/Paper";
+import { Paper, Button, Breadcrumbs } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link as RouterLink, Redirect } from "react-router-dom";
 import {
@@ -10,14 +10,12 @@ import {
   userContext
 } from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import { useSnackbar } from "notistack";
 import {
   AddUserDialog,
   DeleteUserDialog,
@@ -29,9 +27,9 @@ import {
   getUserSmartLocks,
   setSelectedUserId
 } from "@/actions/userActions";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import { Button } from "@material-ui/core";
 import { getAzureAdUsers } from "@/actions/azureAdActions";
+import { useRequestError } from "@/extensions";
+
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
@@ -71,12 +69,12 @@ const Users = () => {
     selectedUserId,
     error: userError
   } = userState;
-  const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const [azureAdState, azureAdDispatch] = useContext(azureAdContext);
+  const [, smartLockDispatch] = useContext(smartLockContext);
+  const [, azureAdDispatch] = useContext(azureAdContext);
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(userError);
 
   const handleAddUserClick = () => {
     uiDispatch(openAddDialog);
@@ -113,22 +111,11 @@ const Users = () => {
     }
   }, [didInvalidate]);
 
-  useDidMountEffect(() => {
-    if (userError) {
-      enqueueSnackbar(userError.message, {
-        variant: "error"
-      });
-    }
-  }, [userError]);
-
   return (
     <>
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/users">
               Users
             </Button>
@@ -140,7 +127,7 @@ const Users = () => {
               data={users}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddUserClick(),
                   isFreeAction: true
@@ -158,13 +145,11 @@ const Users = () => {
                   tooltip: "Delete",
                   onClick: (event, rowData) => {
                     event.stopPropagation();
-                    console.log(rowData.id);
                     handleDeleteUserClick(rowData.id);
                   }
                 }
               ]}
               onRowClick={(event, rowData) => {
-                console.log(rowData.id);
                 handleViewUserClick(rowData.id);
               }}
             />

@@ -1,6 +1,6 @@
 import React from "react";
-import { Button } from "@material-ui/core";
 import PropTypes from "prop-types";
+import { Button } from "@material-ui/core";
 
 const DialogActions = props => {
   const { actions } = props;

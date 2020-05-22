@@ -6,7 +6,9 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Typography
+  Typography,
+  CircularProgress,
+  Backdrop
 } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Edit as EditIcon } from "@material-ui/icons";
@@ -23,10 +25,8 @@ import {
   uiContext,
   userContext
 } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { closeEditDialog } from "@/actions/uiActions";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { isEqual } from "lodash";
 
 const { isArrayEqual } = helpers;
@@ -73,7 +73,6 @@ const EditUserDialog = () => {
   const [userState, userDispatch] = useContext(userContext);
   const {
     user,
-    userError,
     userSmartLocks,
     loading: userLoading,
     updateFailed,
@@ -195,7 +194,7 @@ const EditUserDialog = () => {
               enableReinitialize
               validateOnChange
               onSubmit={values => handleEditClick(values)}>
-              {formik => (
+              {() => (
                 <Form noValidate autoComplete="off">
                   <Field
                     name="user"

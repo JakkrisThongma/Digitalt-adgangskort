@@ -1,10 +1,7 @@
 import React, { useContext, useEffect } from "react";
+import { Paper, Button, Tab, Tabs, Breadcrumbs } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { Button, Tab, Tabs } from "@material-ui/core";
 import { AddBox, Delete } from "@material-ui/icons";
-
-import Paper from "@material-ui/core/Paper";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
   getUser,
@@ -17,11 +14,9 @@ import {
   setSelectedSmartLockId
 } from "@/actions/smartLockActions";
 import { smartLockContext, uiContext, userContext } from "@/store";
-import ViewMaterialTable from "@/components/common/ViewMaterialTable";
-import TabPanel from "@/components/common/TabPanel";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { ViewMaterialTable, TabPanel } from "@/components/common";
+import { useDidMountEffect, useRequestError } from "@/extensions";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
-
 import {
   AddUserSmartLockDialog,
   UserInfo,
@@ -93,7 +88,7 @@ const User = ({ match }) => {
   const [userState, userDispatch] = useContext(userContext);
   const {
     user,
-    userError,
+    error: userError,
     selectedUserId,
     userSmartLocks,
     userGroups,
@@ -101,9 +96,11 @@ const User = ({ match }) => {
   } = userState;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError, didInvalidate } = smartLockState;
+  const { error: smartLockError, didInvalidate } = smartLockState;
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
+  useRequestError(userError);
+  useRequestError(smartLockError);
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -148,9 +145,6 @@ const User = ({ match }) => {
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
-        <Button component={RouterLink} to="/dashboard">
-          Dashboard
-        </Button>
         <Button component={RouterLink} to="/users">
           Users
         </Button>
@@ -191,7 +185,7 @@ const User = ({ match }) => {
                   onClick: () => null
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add group membership should be done from Azure AD",
                   isFreeAction: true,
                   disabled: true,
@@ -216,7 +210,7 @@ const User = ({ match }) => {
                   }
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   isFreeAction: true,
                   onClick: event => handleAddSmartLockClick(event)

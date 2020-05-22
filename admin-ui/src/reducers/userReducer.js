@@ -8,6 +8,9 @@ import {
   GET_CURRENT_AUTHENTICATED_USER_FAILED,
   GET_CURRENT_AUTHENTICATED_USER_PENDING,
   GET_CURRENT_AUTHENTICATED_USER_SUCCEEDED,
+  GET_CURRENT_USER_ACCESS_LEVEL_PENDING,
+  GET_CURRENT_USER_ACCESS_LEVEL_FAILED,
+  GET_CURRENT_USER_ACCESS_LEVEL_SUCCEEDED,
   GET_USER_FAILED,
   GET_USER_GROUPS_FAILED,
   GET_USER_GROUPS_PENDING,
@@ -264,6 +267,35 @@ const userReducer = (state, action) => {
   }
 
   if (action.type === GET_CURRENT_AUTHENTICATED_USER_FAILED) {
+    return {
+      ...state,
+      loading: false,
+      error: action.payload.error,
+      didInvalidate: false
+    };
+  }
+
+  // Get current user access level
+  if (action.type === GET_CURRENT_USER_ACCESS_LEVEL_PENDING) {
+    return {
+      ...state,
+      loading: true,
+      error: null,
+      didInvalidate: false
+    };
+  }
+
+  if (action.type === GET_CURRENT_USER_ACCESS_LEVEL_SUCCEEDED) {
+    return {
+      ...state,
+      currentUserAccessLevel: action.payload.currentUserAccessLevel,
+      loading: false,
+      error: null,
+      didInvalidate: false
+    };
+  }
+
+  if (action.type === GET_CURRENT_USER_ACCESS_LEVEL_FAILED) {
     return {
       ...state,
       loading: false,

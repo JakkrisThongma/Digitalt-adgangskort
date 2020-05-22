@@ -16,7 +16,7 @@ import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
 import { closeAddDialog } from "@/actions/uiActions";
 import { smartLockContext, uiContext, userContext } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { addSmartLockUser } from "@/actions/smartLockActions";
 import helpers from "@/helpers";
 
@@ -49,11 +49,11 @@ const validationSchema = object().shape({
 const AddUserSmartLockDialog = () => {
   const classes = useStyles();
 
-  const [userState, userDispatch] = useContext(userContext);
-  const { user, userError, userSmartLocks } = userState;
+  const [userState] = useContext(userContext);
+  const { user, userSmartLocks } = userState;
 
   const [userOptions, setUserOptions] = useState([]);
-  const [smartLockOptions, setsmartLockOptions] = useState([]);
+  const [smartLockOptions, setSmartLockOptions] = useState([]);
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const {
@@ -73,7 +73,7 @@ const AddUserSmartLockDialog = () => {
 
   useDidMountEffect(() => {
     const filterdOptions = filterOptions(smartLocks, userSmartLocks);
-    setsmartLockOptions(filterdOptions);
+    setSmartLockOptions(filterdOptions);
   }, [smartLocks]);
 
   useDidMountEffect(() => {
@@ -106,7 +106,7 @@ const AddUserSmartLockDialog = () => {
       addSmartLockUser(dispatch, values.smartLock.id, payload)
     );
     const filterdOptions = filterOptions(smartLocks, userSmartLocks);
-    setsmartLockOptions(filterdOptions);
+    setSmartLockOptions(filterdOptions);
   };
 
   return (

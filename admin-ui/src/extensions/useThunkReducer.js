@@ -1,6 +1,7 @@
+// https://github.com/stevekinney/star-wars-characters-react-state/blob/example-thunk/src/index.js
 import { useCallback, useReducer } from "react";
 
-const useApiRequest = (reducer, initialState) => {
+const useThunkReducer = (reducer, initialState) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const enhancedDispatch = useCallback(
@@ -16,4 +17,4 @@ const useApiRequest = (reducer, initialState) => {
   return [state, enhancedDispatch];
 };
 
-export default useApiRequest;
+export default useThunkReducer;

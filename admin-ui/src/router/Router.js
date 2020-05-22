@@ -1,13 +1,12 @@
 import React from "react";
 import { Redirect, Switch } from "react-router-dom";
-
 import { MainLayout, RouteWithLayout } from "@/components/layout";
-
 import {
   Dashboard,
   Group,
   Groups,
   NotFound,
+  NotAuthorized,
   SmartLock,
   SmartLocks,
   User,
@@ -65,6 +64,12 @@ const Router = () => {
         exact
         layout={MainLayout}
         path="/not-found"
+      />
+      <RouteWithLayout
+        component={NotAuthorized}
+        exact
+        layout={MainLayout}
+        path="/not-authorized"
       />
       <Redirect to="/not-found" />
     </Switch>

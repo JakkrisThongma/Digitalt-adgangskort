@@ -1,5 +1,5 @@
 import { emphasize, withStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui/core/Chip";
+import { Chip } from "@material-ui/core";
 
 const StyledBreadcrumb = withStyles(theme => ({
   root: {

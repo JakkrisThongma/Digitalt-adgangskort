@@ -9,15 +9,12 @@ import {
   uiContext,
   userContext
 } from "@/store";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import { useSnackbar } from "notistack";
-
 import {
   getSmartLock,
   getSmartLockGroups,
@@ -32,6 +29,7 @@ import {
   EditSmartLockDialog
 } from "@/components/smartLock";
 import { getUsers } from "@/actions/userActions";
+import { useRequestError } from "@/extensions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,12 +70,12 @@ const SmartLocks = () => {
     selectedSmartLockId,
     error: smartLockError
   } = smartLockState;
-  const [userState, userDispatch] = useContext(userContext);
-  const [groupState, groupDispatch] = useContext(groupContext);
+  const [, userDispatch] = useContext(userContext);
+  const [, groupDispatch] = useContext(groupContext);
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(smartLockError);
 
   const handleAddSmartLockClick = () => {
     uiDispatch(openAddDialog);
@@ -121,22 +119,11 @@ const SmartLocks = () => {
     }
   }, [didInvalidate]);
 
-  useDidMountEffect(() => {
-    if (smartLockError) {
-      enqueueSnackbar(smartLockError.message, {
-        variant: "error"
-      });
-    }
-  }, [smartLockError]);
-
   return (
     <>
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/smart-locks">
               Smart Locks
             </Button>
@@ -148,7 +135,7 @@ const SmartLocks = () => {
               data={smartLocks}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddSmartLockClick(),
                   isFreeAction: true

@@ -1,6 +1,6 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { Paper } from "@material-ui/core";
+import { EnhancedMaterialTable } from "@/components/common";
 
 const ViewMaterialTable = props => {
   return (

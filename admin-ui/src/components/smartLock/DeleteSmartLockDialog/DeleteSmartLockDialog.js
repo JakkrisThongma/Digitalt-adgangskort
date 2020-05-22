@@ -4,10 +4,9 @@ import React, { useContext } from "react";
 import { useSnackbar } from "notistack";
 import { deleteSmartLock } from "@/actions/smartLockActions";
 import { smartLockContext, uiContext } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { closeDeleteDialog } from "@/actions/uiActions";
-import DeleteDialog from "@/components/common/DeleteDialog";
-import SlideTransition from "@/components/common/SlideTransition";
+import { DeleteDialog, SlideTransition } from "@/components/common";
 
 const DeleteSmartLockDialog = () => {
   const { enqueueSnackbar } = useSnackbar();

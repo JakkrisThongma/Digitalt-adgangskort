@@ -10,14 +10,12 @@ import {
   uiContext
 } from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
-import { useSnackbar } from "notistack";
 import {
   AddGroupDialog,
   DeleteGroupDialog,
@@ -30,6 +28,7 @@ import {
   setSelectedGroupId
 } from "@/actions/groupActions";
 import { getAzureAdGroups } from "@/actions/azureAdActions";
+import { useRequestError } from "@/extensions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,7 +75,7 @@ const Groups = () => {
 
   const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(groupError);
 
   const handleAddGroupClick = () => {
     uiDispatch(openAddDialog);
@@ -113,22 +112,11 @@ const Groups = () => {
     }
   }, [didInvalidate]);
 
-  useDidMountEffect(() => {
-    if (groupError) {
-      enqueueSnackbar(groupError.message, {
-        variant: "error"
-      });
-    }
-  }, [groupError]);
-
   return (
     <>
       {!redirect ? (
         <div className={classes.root}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Button component={RouterLink} to="/dashboard">
-              Dashboard
-            </Button>
             <Button component={RouterLink} to="/groups">
               Groups
             </Button>
@@ -140,7 +128,7 @@ const Groups = () => {
               data={groups}
               actions={[
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   onClick: () => handleAddGroupClick(),
                   isFreeAction: true

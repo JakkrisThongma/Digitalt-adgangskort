@@ -16,7 +16,7 @@ import { Autocomplete } from "material-ui-formik-components";
 import { useSnackbar } from "notistack";
 import { closeAddDialog } from "@/actions/uiActions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { useDidMountEffect } from "@/extensions";
 import { addSmartLockGroup } from "@/actions/smartLockActions";
 import helpers from "@/helpers";
 
@@ -49,8 +49,8 @@ const validationSchema = object().shape({
 const AddGroupSmartLockDialog = () => {
   const classes = useStyles();
 
-  const [groupState, groupDispatch] = useContext(groupContext);
-  const { group, groupError, groupSmartLocks } = groupState;
+  const [groupState] = useContext(groupContext);
+  const { group, groupSmartLocks } = groupState;
 
   const [groupOptions, setGroupOptions] = useState([]);
   const [smartLockOptions, setSmartLockOptions] = useState([]);

@@ -10,7 +10,9 @@ const EnhancedMaterialTable = ({ title, ...rest }) => {
       icons={tableIcons}
       options={{
         actionsColumnIndex: -1,
-        draggable: false
+        draggable: false,
+        exportButton: true,
+        sorting: true
       }}
       localization={{ body: { emptyDataSourceMessage: "No data to display" } }}
     />

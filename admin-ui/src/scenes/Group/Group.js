@@ -1,10 +1,7 @@
 import React, { useContext, useEffect } from "react";
+import { Paper, Button, Tab, Tabs, Breadcrumbs } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import { Button, Tab, Tabs } from "@material-ui/core";
 import { AddBox, Delete } from "@material-ui/icons";
-
-import Paper from "@material-ui/core/Paper";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import {
   getGroup,
@@ -17,11 +14,9 @@ import {
   setSelectedSmartLockId
 } from "@/actions/smartLockActions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
-import ViewMaterialTable from "@/components/common/ViewMaterialTable";
-import TabPanel from "@/components/common/TabPanel";
-import useDidMountEffect from "@/extensions/useDidMountEffect";
+import { ViewMaterialTable, TabPanel } from "@/components/common";
+import { useDidMountEffect, useRequestError } from "@/extensions";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
-
 import {
   AddGroupSmartLockDialog,
   DeleteSmartLockDialog,
@@ -93,7 +88,7 @@ const Group = ({ match }) => {
   const [groupState, groupDispatch] = useContext(groupContext);
   const {
     group,
-    groupError,
+    error: groupError,
     selectedGroupId,
     groupSmartLocks,
     groupUsers,
@@ -101,9 +96,12 @@ const Group = ({ match }) => {
   } = groupState;
 
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
-  const { smartLocks, smartLockError, didInvalidate } = smartLockState;
+  const { error: smartLockError, didInvalidate } = smartLockState;
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
+  useRequestError(groupError);
+  useRequestError(smartLockError);
+
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -149,9 +147,6 @@ const Group = ({ match }) => {
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
         <Breadcrumbs aria-label="breadcrumb">
-          <Button component={RouterLink} to="/dashboard">
-            Dashboard
-          </Button>
           <Button component={RouterLink} to="/groups">
             Groups
           </Button>
@@ -193,7 +188,7 @@ const Group = ({ match }) => {
                   onClick: () => null
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add user to group should be done from Azure AD",
                   isFreeAction: true,
                   disabled: true,
@@ -218,7 +213,7 @@ const Group = ({ match }) => {
                   }
                 },
                 {
-                  icon: () => <AddBox fontSize="large" />,
+                  icon: () => <AddBox />,
                   tooltip: "Add",
                   isFreeAction: true,
                   onClick: event => handleAddSmartLockClick(event)
