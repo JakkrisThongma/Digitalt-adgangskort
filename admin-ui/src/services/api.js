@@ -30,6 +30,13 @@ export function getCurrentAuthenticatedUser() {
   }).then(res => Promise.resolve(res));
 }
 
+export function getCurrentUserAccessLevel() {
+  return http({
+    method: "GET",
+    url: "users/current/access-level"
+  }).then(res => Promise.resolve(res));
+}
+
 export function updateUser(userId, data) {
   return http({
     method: "PATCH",

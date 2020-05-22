@@ -15,15 +15,13 @@ import {
 } from "@/actions/smartLockActions";
 import { groupContext, smartLockContext, uiContext } from "@/store";
 import { ViewMaterialTable, TabPanel } from "@/components/common";
-import { useDidMountEffect } from "@/extensions";
+import { useDidMountEffect, useRequestError } from "@/extensions";
 import { openAddDialog, openDeleteDialog } from "@/actions/uiActions";
 import {
   AddGroupSmartLockDialog,
   DeleteSmartLockDialog,
   GroupInfo
 } from "@/components/group";
-import { authContext } from "@/services/auth";
-import { useSnackbar } from "notistack";
 
 const userColumns = [
   { title: "User ID", field: "id", editable: "never", sorting: false },
@@ -101,7 +99,9 @@ const Group = ({ match }) => {
   const { error: smartLockError, didInvalidate } = smartLockState;
 
   const [, uiDispatch] = useContext(uiContext);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(groupError);
+  useRequestError(smartLockError);
+
 
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -135,34 +135,6 @@ const Group = ({ match }) => {
       groupDispatch(dispatch => getGroupSmartLocks(dispatch, selectedGroupId));
     }
   }, [didInvalidate]);
-
-  useDidMountEffect(() => {
-    if (groupError) {
-      if (
-        groupError.response.status === 401 ||
-        groupError.response.status === 403
-      )
-        authContext.login();
-      else
-        enqueueSnackbar(groupError.message, {
-          variant: "error"
-        });
-    }
-  }, [groupError]);
-
-  useDidMountEffect(() => {
-    if (smartLockError) {
-      if (
-        smartLockError.response.status === 401 ||
-        smartLockError.response.status === 403
-      )
-        authContext.login();
-      else
-        enqueueSnackbar(groupError.message, {
-          variant: "error"
-        });
-    }
-  }, [smartLockError]);
 
   function a11yProps(index) {
     return {

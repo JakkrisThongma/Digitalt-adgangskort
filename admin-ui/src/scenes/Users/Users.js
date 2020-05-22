@@ -10,14 +10,12 @@ import {
   userContext
 } from "@/store";
 import { getSmartLocks } from "@/actions/smartLockActions";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import { useDidMountEffect } from "@/extensions";
-import { useSnackbar } from "notistack";
 import {
   AddUserDialog,
   DeleteUserDialog,
@@ -30,7 +28,7 @@ import {
   setSelectedUserId
 } from "@/actions/userActions";
 import { getAzureAdUsers } from "@/actions/azureAdActions";
-import { authContext } from "@/services/auth";
+import { useRequestError } from "@/extensions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,7 +74,7 @@ const Users = () => {
 
   const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(userError);
 
   const handleAddUserClick = () => {
     uiDispatch(openAddDialog);
@@ -112,20 +110,6 @@ const Users = () => {
       userDispatch(getUsers);
     }
   }, [didInvalidate]);
-
-  useDidMountEffect(() => {
-    if (userError) {
-      if (
-        userError.response.status === 401 ||
-        userError.response.status === 403
-      )
-        authContext.login();
-      else
-        enqueueSnackbar(userError.message, {
-          variant: "error"
-        });
-    }
-  }, [userError]);
 
   return (
     <>

@@ -3,7 +3,7 @@ import { Button, Grid, Breadcrumbs } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { TotalCount } from "@/components/dashboard";
 import { Link as RouterLink } from "react-router-dom";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   Refresh as RefreshIcon,
   Person as PersonIcon,
@@ -18,11 +18,9 @@ import {
   smartLockContext,
   userContext
 } from "@/store";
-import { useDidMountEffect } from "@/extensions";
+import { useDidMountEffect, useRequestError } from "@/extensions";
 import { getUsers } from "@/actions/userActions";
 import { getGroups } from "@/actions/groupActions";
-import { useSnackbar } from "notistack";
-import { authContext } from "@/services/auth";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -95,7 +93,7 @@ const Dashboard = () => {
   const [smartLockState, smartLockDispatch] = useContext(smartLockContext);
   const { smartLocks } = smartLockState;
   const [tableData, setTableData] = useState([]);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(accessLogError);
 
   useEffect(() => {
     accessLogDispatch(getAccessLog);
@@ -116,20 +114,6 @@ const Dashboard = () => {
     event.stopPropagation();
     accessLogDispatch(getAccessLog);
   };
-
-  useDidMountEffect(() => {
-    if (accessLogError) {
-      if (
-        accessLogError.response.status === 401 ||
-        accessLogError.response.status === 403
-      )
-        authContext.login();
-      else
-        enqueueSnackbar(accessLogError.message, {
-          variant: "error"
-        });
-    }
-  }, [accessLogError]);
 
   return (
     <div className={classes.root}>

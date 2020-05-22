@@ -6,6 +6,7 @@ const userInitialState = {
   userGroups: [],
   userSmartLocks: [],
   currentAuthenticatedUser: null,
+  currentUserAccessLevel: null,
   loading: false,
   didInvalidate: false,
   error: null,

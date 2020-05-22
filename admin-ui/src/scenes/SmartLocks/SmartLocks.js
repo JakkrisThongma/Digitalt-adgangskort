@@ -9,15 +9,12 @@ import {
   uiContext,
   userContext
 } from "@/store";
-import EnhancedMaterialTable from "@/components/common/EnhancedMaterialTable";
+import { EnhancedMaterialTable } from "@/components/common";
 import {
   openAddDialog,
   openDeleteDialog,
   openEditDialog
 } from "@/actions/uiActions";
-import { useDidMountEffect } from "@/extensions";
-import { useSnackbar } from "notistack";
-
 import {
   getSmartLock,
   getSmartLockGroups,
@@ -32,7 +29,7 @@ import {
   EditSmartLockDialog
 } from "@/components/smartLock";
 import { getUsers } from "@/actions/userActions";
-import { authContext } from "@/services/auth";
+import { useRequestError } from "@/extensions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,12 +70,12 @@ const SmartLocks = () => {
     selectedSmartLockId,
     error: smartLockError
   } = smartLockState;
-  const [userState, userDispatch] = useContext(userContext);
-  const [groupState, groupDispatch] = useContext(groupContext);
+  const [, userDispatch] = useContext(userContext);
+  const [, groupDispatch] = useContext(groupContext);
 
-  const [uiState, uiDispatch] = useContext(uiContext);
+  const [, uiDispatch] = useContext(uiContext);
   const [redirect, setRedirect] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  useRequestError(smartLockError);
 
   const handleAddSmartLockClick = () => {
     uiDispatch(openAddDialog);
@@ -121,20 +118,6 @@ const SmartLocks = () => {
       smartLockDispatch(getSmartLocks);
     }
   }, [didInvalidate]);
-
-  useDidMountEffect(() => {
-    if (smartLockError) {
-      if (
-        smartLockError.response.status === 401 ||
-        smartLockError.response.status === 403
-      )
-        authContext.login();
-      else
-        enqueueSnackbar(smartLockError.message, {
-          variant: "error"
-        });
-    }
-  }, [smartLockError]);
 
   return (
     <>
