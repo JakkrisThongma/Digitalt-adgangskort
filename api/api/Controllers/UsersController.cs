@@ -402,8 +402,6 @@ namespace api.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUserAccessLevel()
         {
             var userId = Guid.Parse(_identityService.GetId());
-            var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return NotFound();
             
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             var userGroupsIdsFromAzureAd = await _azureAdRepository.GetUserGroupsIds(client, userId.ToString());
