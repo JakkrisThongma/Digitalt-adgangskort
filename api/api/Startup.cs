@@ -34,7 +34,7 @@ namespace api
             _databaseInitialize = databaseInitialize;
         }
 
-        public IConfiguration Configuration { get; }
+        internal static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -56,8 +56,10 @@ namespace api
             
             services.AddAuthorization(options =>
             {
+                var authSettings = Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+
                 options.AddPolicy("admin",
-                    policy => policy.RequireClaim("groups", "8b4b5344-9050-4fd0-858b-5b93125341c9"));
+                    policy => policy.RequireClaim("groups", authSettings.AdminGroupId));
             });
 
             services.AddControllers()
@@ -151,8 +153,6 @@ namespace api
                     .AllowAnyMethod()
                     .AllowCredentials();
             });
-
-            app.UseAuthentication();
             
             if (env.IsDevelopment())
             {
