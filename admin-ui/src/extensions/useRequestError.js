@@ -10,7 +10,7 @@ const useRequestError = error => {
   useDidMountEffect(() => {
     if (error) {
       if (error.response.status === 401) authContext.login();
-      if (error.response.status === 403) {
+      else if (error.response.status === 403) {
         history.push("/not-authorized");
       } else
         enqueueSnackbar(error.message, {
