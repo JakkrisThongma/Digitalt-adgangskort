@@ -9,10 +9,14 @@ namespace api.Services
     {
         [Obsolete]
         public void Initialize(ApiContext context)
-        {
+        {   
+            /*
+            // Initializing database with data for development purposes
+            // Note that the ids for users and groups should belong to users and groups in your Azure Ad tenant
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
+            
             var user1 = new User
             {
                 Id = Guid.Parse("72ba6db2-945e-449a-b8f2-ea6fc1bde02d"),
@@ -157,7 +161,7 @@ namespace api.Services
             
             context.Accesses.AddRange(accessLog1, accessLog2);
 
-            context.SaveChanges();
+            context.SaveChanges();*/
         }
     }
 }
