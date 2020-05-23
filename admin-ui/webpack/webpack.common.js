@@ -23,20 +23,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
-        options: {
-          presets: [
-            [
-              "@babel/preset-env",
-              {
-                targets: {
-                  browsers: "> 1%, not ie 11, not op_mini all"
-                }
-              }
-            ],
-            "@babel/preset-react"
-          ]
-        }
+        loader: "babel-loader"
       },
       {
         test: /\.css$/,
@@ -61,9 +48,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Digital tilgangskort",
+      title: "Digital Access Card",
       template: "public/index.html",
-      inject: true
+      inject: true,
+      favicon: path.resolve(__dirname, "../public/IN-logo.svg")
     }),
     gitRevisionPlugin,
     new DefinePlugin({
@@ -78,7 +66,11 @@ module.exports = {
     extensions: [".jsx", ".js"],
     alias: {
       validation: path.resolve(__dirname, "../src/helpers/validation"),
-      "@": path.resolve("src")
+      "@": path.resolve(__dirname, "../src")
+      // enable next feature will minimize bundle size further, but it meant for advanced use cases,
+      // and might not work if agent lacks some experiential features from ECMAScript
+      // https://material-ui.com/guides/minimizing-bundle-size/#ecmascript
+      // "@material-ui/core": "@material-ui/core/es"
     }
   }
 };

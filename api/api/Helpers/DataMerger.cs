@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using api.Entities;
 using api.Models;
 using AutoMapper;
 using Microsoft.Graph;
@@ -25,8 +26,10 @@ namespace api.Helpers
                 from dbUserFromAzureAd in allUsersFromAzureAd
                 where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<UserDto>(userFromRepo)
-                select mapper.Map(dbUserFromAzureAd, dtoFromDb));
-
+                select mapper.Map(dbUserFromAzureAd, dtoFromDb))
+                .OrderByDescending(u=>u.Surname)
+                .ThenBy(u => u.GivenName)
+                .ThenBy(u => u.DisplayName);
             return mergedUsers;
         }
 
@@ -38,7 +41,10 @@ namespace api.Helpers
                 from dbUserFromAzureAd in usersFromAzureAd
                 where userFromRepo.Id == Guid.Parse(dbUserFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<UserDto>(userFromRepo)
-                select mapper.Map(dbUserFromAzureAd, dtoFromDb));
+                select mapper.Map(dbUserFromAzureAd, dtoFromDb))
+                .OrderByDescending(u=>u.Surname)
+                .ThenBy(u => u.GivenName)
+                .ThenBy(u => u.DisplayName);
 
             return mergedUsers;
         }
@@ -51,19 +57,7 @@ namespace api.Helpers
 
             return mapper.Map(groupFromAzureAd, dtoGroupFromDb);
         }
-
-        public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo,
-            IEnumerable<Microsoft.Graph.User> allGroupsFromAzureAd, IMapper mapper)
-        {
-            var mergedGroups = (from groupFromRepo in groupsFromRepo
-                from dbGroupFromAzureAd in allGroupsFromAzureAd
-                where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
-                let dtoFromDb = mapper.Map<GroupDto>(groupFromRepo)
-                select mapper.Map(dbGroupFromAzureAd, dtoFromDb));
-
-            return mergedGroups;
-        }
-
+        
         public static IEnumerable<GroupDto> MergeGroupsWithAzureData(IEnumerable<Group> groupsFromRepo,
             IEnumerable<Microsoft.Graph.Group> allGroupsFromAzureAd, IMapper mapper)
         {
@@ -71,7 +65,8 @@ namespace api.Helpers
                 from dbGroupFromAzureAd in allGroupsFromAzureAd
                 where groupFromRepo.Id == Guid.Parse(dbGroupFromAzureAd.Id)
                 let dtoFromDb = mapper.Map<GroupDto>(groupFromRepo)
-                select mapper.Map(dbGroupFromAzureAd, dtoFromDb));
+                select mapper.Map(dbGroupFromAzureAd, dtoFromDb))
+                .OrderBy(g=> g.DisplayName);
 
             return mergedGroups;
         }
@@ -98,5 +93,7 @@ namespace api.Helpers
 
             return list2;
         }
+        
+
     }
 }

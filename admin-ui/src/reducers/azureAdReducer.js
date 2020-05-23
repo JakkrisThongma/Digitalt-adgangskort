@@ -1,25 +1,33 @@
 import {
-  READ_RESOURCES_PENDING,
-  READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED
+  GET_AZURE_AD_GROUP_FAILED,
+  GET_AZURE_AD_GROUP_MEMBERS_FAILED,
+  GET_AZURE_AD_GROUP_MEMBERS_PENDING,
+  GET_AZURE_AD_GROUP_MEMBERS_SUCCEEDED,
+  GET_AZURE_AD_GROUP_PENDING,
+  GET_AZURE_AD_GROUP_SUCCEEDED,
+  GET_AZURE_AD_GROUPS_FAILED,
+  GET_AZURE_AD_GROUPS_PENDING,
+  GET_AZURE_AD_GROUPS_SUCCEEDED,
+  GET_AZURE_AD_USER_FAILED,
+  GET_AZURE_AD_USER_GROUPS_FAILED,
+  GET_AZURE_AD_USER_GROUPS_PENDING,
+  GET_AZURE_AD_USER_GROUPS_SUCCEEDED,
+  GET_AZURE_AD_USER_PENDING,
+  GET_AZURE_AD_USER_PHOTO_FAILED,
+  GET_AZURE_AD_USER_PHOTO_PENDING,
+  GET_AZURE_AD_USER_PHOTO_SUCCEEDED,
+  GET_AZURE_AD_USER_SUCCEEDED,
+  GET_AZURE_AD_USERS_FAILED,
+  GET_AZURE_AD_USERS_PENDING,
+  GET_AZURE_AD_USERS_SUCCEEDED
 } from "../actions/actionTypes";
 
-import {
-  AZURE_AD_USERS_RESOURCE_TYPE,
-  AZURE_AD_USER_RESOURCE_TYPE,
-  AZURE_AD_USER_PHOTO_RESOURCE_TYPE,
-  AZURE_AD_USER_GROUPS_RESOURCE_TYPE,
-  AZURE_AD_GROUPS_RESOURCE_TYPE,
-  AZURE_AD_GROUP_RESOURCE_TYPE,
-  AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
-} from "../actions/actionResourceTypes";
-
 const azureAdReducer = (state, action) => {
-  // Read Azure Ad users
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_USERS_RESOURCE_TYPE
-  ) {
+  if (process.env.NODE_ENV !== "development")
+    console.log("Azure Ad action dispatched: ", action.type);
+
+  // Get Azure Ad users
+  if (action.type === GET_AZURE_AD_USERS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -27,10 +35,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USERS_SUCCEEDED) {
     return {
       ...state,
       azureAdUsers: action.payload.azureAdUsers,
@@ -39,10 +44,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_USERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USERS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -50,11 +52,8 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad user
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_USER_RESOURCE_TYPE
-  ) {
+  // Get Azure Ad user
+  if (action.type === GET_AZURE_AD_USER_PENDING) {
     return {
       ...state,
       loading: true,
@@ -62,10 +61,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_SUCCEEDED) {
     return {
       ...state,
       azureAdUser: action.payload.azureAdUser,
@@ -74,10 +70,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_USER_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_FAILED) {
     return {
       ...state,
       loading: false,
@@ -85,12 +78,9 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad user photo
+  // Get Azure Ad user photo
 
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_USER_PHOTO_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_PHOTO_PENDING) {
     return {
       ...state,
       loading: true,
@@ -98,10 +88,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_USER_PHOTO_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_PHOTO_SUCCEEDED) {
     return {
       ...state,
       azureAdUserPhoto: action.payload.azureAdUserPhoto,
@@ -110,10 +97,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_USER_PHOTO_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_PHOTO_FAILED) {
     return {
       ...state,
       loading: false,
@@ -121,11 +105,8 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad user groups
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_USER_GROUPS_RESOURCE_TYPE
-  ) {
+  // Get Azure Ad user groups
+  if (action.type === GET_AZURE_AD_USER_GROUPS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -133,10 +114,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_USER_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_GROUPS_SUCCEEDED) {
     return {
       ...state,
       azureAdUserGroups: action.payload.azureAdUserGroups,
@@ -145,10 +123,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_USER_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_USER_GROUPS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -156,11 +131,8 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad groups
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_GROUPS_RESOURCE_TYPE
-  ) {
+  // Get Azure Ad groups
+  if (action.type === GET_AZURE_AD_GROUPS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -168,10 +140,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUPS_SUCCEEDED) {
     return {
       ...state,
       azureAdGroups: action.payload.azureAdGroups,
@@ -180,10 +149,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_GROUPS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUPS_FAILED) {
     return {
       ...state,
       loading: false,
@@ -191,11 +157,8 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad group
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_GROUP_RESOURCE_TYPE
-  ) {
+  // Get Azure Ad group
+  if (action.type === GET_AZURE_AD_GROUP_PENDING) {
     return {
       ...state,
       loading: true,
@@ -203,10 +166,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUP_SUCCEEDED) {
     return {
       ...state,
       azureAdGroup: action.payload.azureAdGroup,
@@ -215,10 +175,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_GROUP_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUP_FAILED) {
     return {
       ...state,
       loading: false,
@@ -226,11 +183,8 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  // Read Azure Ad group memebers
-  if (
-    action.type === READ_RESOURCES_PENDING &&
-    action.resourceType === AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
-  ) {
+  // Get Azure Ad group members
+  if (action.type === GET_AZURE_AD_GROUP_MEMBERS_PENDING) {
     return {
       ...state,
       loading: true,
@@ -238,10 +192,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_SUCCEEDED &&
-    action.resourceType === AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUP_MEMBERS_SUCCEEDED) {
     return {
       ...state,
       azureAdGroupMembers: action.payload.azureAdGroupMembers,
@@ -250,10 +201,7 @@ const azureAdReducer = (state, action) => {
     };
   }
 
-  if (
-    action.type === READ_RESOURCES_FAILED &&
-    action.resourceType === AZURE_AD_GROUP_MEMBERS_RESOURCE_TYPE
-  ) {
+  if (action.type === GET_AZURE_AD_GROUP_MEMBERS_FAILED) {
     return {
       ...state,
       loading: false,

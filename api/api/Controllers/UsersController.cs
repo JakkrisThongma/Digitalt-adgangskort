@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using api.Configuration;
 using api.Helpers;
 using api.Models;
 using api.Repositories;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Group = Microsoft.Graph.Group;
 using User = api.Entities.User;
@@ -19,7 +20,6 @@ using User = api.Entities.User;
 namespace api.Controllers
 {
     [Produces("application/json")]
-    [Authorize]
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -53,9 +53,20 @@ namespace api.Controllers
                       throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/users
+        // GET: /api/users
+        /// <summary>
+        /// Get a list of db users
+        /// </summary>
+        /// <returns>An ActionResult task of type IEnumerable of UserDto</returns>
+        /// <response code="200">Users retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="404">No users found</response>
+        [Authorize("admin")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -70,34 +81,48 @@ namespace api.Controllers
             return Ok(mergedUsers);
         }
 
-        // POST: api/users
+        // POST: /api/users
+        /// <summary>
+        /// Add Azure Ad user to db
+        /// </summary>
+        /// <param name="userToAdd">The user to add</param>
+        /// <returns>An ActionResult of type UserDto</returns>
+        /// <response code="201">User created successfully</response>
+        /// <response code="404">Azure Ad user not found</response>
+        /// <response code="409">User already exist in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreationDto user)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreationDto userToAdd)
         {
             var client = await MicrosoftGraphClient.GetGraphServiceClient();
             try
             {
-                await _azureAdRepository.GetUser(client, user.Id.ToString());
+                await _azureAdRepository.GetUser(client, userToAdd.Id.ToString());
             }
             catch (ServiceException e)
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
                     ModelState.AddModelError("azureAdUserNotFound",
-                        $"User with id: {user.Id} was not found on Azure AD");
+                        $"User with id: {userToAdd.Id} was not found on Azure AD");
                 }
             }
 
-            var userExists = await _userRepository.UserExists(user.Id);
+            var userExists = await _userRepository.UserExists(userToAdd.Id);
             if (userExists) return Conflict("User already exists");
-            if (user.SmartLockUsers.Count > 0)
+            if (userToAdd.SmartLockUsers.Count > 0)
             {
-                foreach (var smartLockUser in user.SmartLockUsers)
+                foreach (var smartLockUser in userToAdd.SmartLockUsers)
                 {
                     var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
                     if (!smartLockExist)
@@ -113,7 +138,7 @@ namespace api.Controllers
                 return ValidationProblem(ModelState);
             }
             
-            var userEntity = _mapper.Map<User>(user);
+            var userEntity = _mapper.Map<User>(userToAdd);
             _userRepository.AddUser(userEntity);
             await _userRepository.Save();
             var userDto = _mapper.Map<UserDto>(userEntity);
@@ -121,10 +146,23 @@ namespace api.Controllers
             return CreatedAtAction("GetUser", new {userId = userDto.Id}, userDto);
         }
         
-        // GET: api/users/5
+        // GET: /api/users/userId
+        /// <summary>
+        /// Get a db user by id
+        /// </summary>
+        /// <param name="userId">The id of the user to get</param>
+        /// <returns>An ActionResult task of type UserDto</returns>
+        /// <response code="200">User retrieved successfully</response>
+        /// <response code="404">user from db not found</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpGet("{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> GetUser(Guid userId)
         {
@@ -141,43 +179,60 @@ namespace api.Controllers
             return Ok(mergedUser);
         }
         
-        
-        // PUT: api/users/5
-        [HttpPut("{userId}")]
-        [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUser(Guid userId, UserModificationDto user)
-        {
-            var userExists = await _userRepository.UserExists(userId);
-            if (!userExists) return NotFound();
-
-            var userEntity = _mapper.Map<User>(user);
-            userEntity.Id = userId;
-            userEntity.LastModificationDate = new DateTimeOffset(DateTime.Now);
-            _userRepository.UpdateUser(userEntity);
-            await _userRepository.Save();
-
-            return NoContent();
-        }
-        
+        // PATCH: /api/users/userId
+        /// <summary>
+        ///  Update db user partially
+        /// </summary>
+        /// <param name="userId">The id of the user to get</param>
+        /// <param name="patchDocument">The set of operations to apply to the user</param>
+        /// <returns>An ActionResult of type NoContent</returns>
+        /// <remarks>Sample request (this request updates the users's **status**)  
+        /// 
+        /// [ 
+        ///     {
+        ///         "op": "replace", 
+        ///         "path": "/status", 
+        ///         "value": "new status" 
+        ///     } 
+        /// ] 
+        /// </remarks>
+        /// <response code="204">User updated successfully</response>
+        /// <response code="404">User not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpPatch("{userId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUserPartially(Guid userId,
-            [FromBody] JsonPatchDocument<UserModificationDto> patchDoc)
+            [FromBody] JsonPatchDocument<UserModificationDto> patchDocument)
         {
             var userExists = await _userRepository.UserExists(userId);
             if (!userExists) return NotFound();
 
-            var userFromRepo = await _userRepository.GetUser(userId);
+            var userFromRepo = await _userRepository.GetUserWithSmartLocks(userId);
             
             var userToPatch = _mapper.Map<UserModificationDto>(userFromRepo);
             
-            patchDoc.ApplyTo(userToPatch, ModelState);
+            patchDocument.ApplyTo(userToPatch, ModelState);
+            
+            if (userToPatch.SmartLockUsers.Count > 0)
+            {
+                foreach (var smartLockUser in userToPatch.SmartLockUsers)
+                {
+                    var smartLockExist = await _smartLockRepository.SmartLockExists(smartLockUser.SmartLockId);
+                    if (!smartLockExist)
+                    {
+                        ModelState.AddModelError("smartLockNotExist",
+                            $"Smart lock with id: {smartLockUser.SmartLockId} doesn't exist");
+                    }
+                }
+            }
 
             if (!TryValidateModel(userToPatch))
             {
@@ -193,10 +248,23 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/users/5
+        // DELETE: api/users/userId
+        /// <summary>
+        /// Delete user from db
+        /// </summary>
+        /// <param name="userId">The id of user to delete</param>
+        /// <returns>An ActionResult of type no content</returns>
+        /// <response code="204">User deleted successfully</response>
+        /// <response code="404">User not found in db</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpDelete("{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {
@@ -211,10 +279,23 @@ namespace api.Controllers
             return NoContent();
         }
 
-        //GET: api/users/5/groups
+        //GET: api/users/userId/groups
+        /// <summary>
+        /// Get a list of Azure Ad groups which are added to db for a db user
+        /// </summary>
+        /// <param name="userId">The id of user to get a list of the user's groups</param>
+        /// <returns>An ActionResult task of type IEnumerable of GroupDto</returns>
+        /// <response code="200">User Azure Ad groups retrieved successfully</response>
+        /// <response code="404">User have no groups in Azure Ad</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpGet("{userId}/groups")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups(Guid userId)
         {
@@ -232,7 +313,7 @@ namespace api.Controllers
             foreach (var groupId in userGroupsIdsFromAzureAd)
             {
                 var group = await _azureAdRepository
-                    .GetGroup(client, groupId.ToString());
+                    .GetGroup(groupId.ToString());
                 userGroupsFromAzureAd.Add(group);
             }
 
@@ -242,10 +323,23 @@ namespace api.Controllers
             return Ok(mergedGroups);
         }
 
-        // GET: api/users/5/smart-locks
+        // GET: api/users/userId/smart-locks
+        /// <summary>
+        /// Get a list of smart locks for a db user
+        /// </summary>
+        /// <param name="userId">The id of user to get a list of the user's smart locks</param>
+        /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
+        /// <response code="200">User smart locks retrieved successfully</response>
+        /// <response code="404">User have no smart locks</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
+        /// <response code="400">Validation error</response>
+        [Authorize("admin")]
         [HttpGet("{userId}/smart-locks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLockGroups(Guid userId)
         {
@@ -259,9 +353,20 @@ namespace api.Controllers
             return Ok(userSmartLocksDto);
         }
         
+        // Get: /api/users/current
+        /// <summary>
+        /// Get user by token
+        /// </summary>
+        /// <returns>An ActionResult of type UserDto</returns>
+        /// <response code="200">User with valid token retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">User not found in db</response>
+        /// <response code="400">Validation error</response>
+        [Authorize]
         [HttpGet("current")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
@@ -277,6 +382,36 @@ namespace api.Controllers
             var mergedUser = DataMerger.MergeUserWithAzureData(userFromRepo, userFromAzureAd, _mapper);
 
             return Ok(mergedUser);
+        }
+        
+        // Get: /api/users/current/access-level
+        /// <summary>
+        /// Get access level for a user by token
+        /// </summary>
+        /// <returns>An ActionResult of type String</returns>
+        /// <response code="200">Access level for a user with valid token retrieved successfully</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="404">User not found in db</response>
+        /// <response code="400">Validation error</response>
+        [Authorize]
+        [HttpGet("current/access-level")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<UserDto>> GetCurrentUserAccessLevel()
+        {
+            var userId = Guid.Parse(_identityService.GetId());
+            
+            var client = await MicrosoftGraphClient.GetGraphServiceClient();
+            var userGroupsIdsFromAzureAd = await _azureAdRepository.GetUserGroupsIds(client, userId.ToString());
+
+            var authSettings = Startup.Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+            if(userGroupsIdsFromAzureAd.Contains(authSettings.AdminGroupId)){
+                return Ok("admin");
+            }
+
+            return Ok("user");
         }
     }
 }

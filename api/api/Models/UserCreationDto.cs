@@ -12,8 +12,8 @@ namespace api.Models
    
         public Status Status { get; set; }
         
-        public ICollection<SmartLockCollectionCreationDto> SmartLockUsers { get; set; }
-        = new List<SmartLockCollectionCreationDto>();
+        public ICollection<SmartLockCollectionDto> SmartLockUsers { get; set; }
+        = new List<SmartLockCollectionDto>();
 
         
     }

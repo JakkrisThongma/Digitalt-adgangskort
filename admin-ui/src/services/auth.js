@@ -1,11 +1,11 @@
-import { AuthenticationContext, adalFetch, withAdalLogin } from "react-adal";
-
+import { adalFetch, AuthenticationContext, withAdalLogin } from "react-adal";
+// Azure Ad client app configurations
 export const auth = {
   tenant: "3602e498-fd34-4a1e-a61b-b4639ceeaffd",
-  clientId: "61548776-8c50-40bc-9d95-23b1323ea7ff",
+  clientId: "93a5c726-983f-4e8c-a330-f1b34e3d6752",
   redirectUri: "http://localhost:44321/",
   endpoints: {
-    api: "3602e498-fd34-4a1e-a61b-b4639ceeaffd"
+    api: "93a5c726-983f-4e8c-a330-f1b34e3d6752"
   },
   cacheLocation: "sessionStorage"
 };

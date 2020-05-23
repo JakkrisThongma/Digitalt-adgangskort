@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,9 +34,8 @@ namespace api
             _databaseInitialize = databaseInitialize;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        internal static IConfiguration Configuration { get; private set; }
+        
         public void ConfigureServices(IServiceCollection services)
         {
             
@@ -54,8 +55,10 @@ namespace api
             
             services.AddAuthorization(options =>
             {
+                var authSettings = Configuration.GetSection("AzureAd").Get<AzureAdOptions>();
+
                 options.AddPolicy("admin",
-                    policy => policy.RequireClaim("groups", "8b4b5344-9050-4fd0-858b-5b93125341c9"));
+                    policy => policy.RequireClaim("groups", authSettings.AdminGroupId));
             });
 
             services.AddControllers()
@@ -82,7 +85,8 @@ namespace api
                 {
                     Description =
                         "JWT Authorization header with the Bearer scheme. \r\n\r\n " +
-                        "Enter 'Bearer' [space] and then your token in the text input as: \"Bearer 123123abcabc...\"",
+                        "Enter 'Bearer' [space] and then your token in the text input as: \"Bearer 123123abcabc...\" \r\n\r\n " +
+                        "One why to get a token is to check the console after signing in to the administration web in dev mode.",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -106,17 +110,23 @@ namespace api
                         new List<string>()
                     }
                 });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                c.IncludeXmlComments(xmlPath);
             });
             services.AddSwaggerGenNewtonsoftSupport();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IIdentityService, AzureAdIdentityService>();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IAccessService, AccessService>();
             
             services.AddScoped<IAzureAdRepository, AzureAdRepository>();
             services.AddScoped<ISmartLockRepository, SmartLockRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IAccessRepository, AccessRepository>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddDbContext<ApiContext>(opt =>
@@ -128,8 +138,7 @@ namespace api
                     opt.UseSqlServer(Configuration.GetConnectionString("MacLocalDB")));
             }
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             
@@ -141,8 +150,6 @@ namespace api
                     .AllowAnyMethod()
                     .AllowCredentials();
             });
-
-            app.UseAuthentication();
             
             if (env.IsDevelopment())
             {
@@ -156,13 +163,13 @@ namespace api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Digital Access Card API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Digital Access Card API");
                 c.RoutePrefix = string.Empty;
 
                 c.DefaultModelExpandDepth(2);
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
                 c.EnableDeepLinking();
-                c.DisplayOperationId();
+
             });
             
             app.UseHttpsRedirection();

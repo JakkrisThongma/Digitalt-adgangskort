@@ -10,5 +10,6 @@ namespace api.Configuration
         public string ClientSecret { get; set; }
         public string GraphResource { get; set; }
         public string GraphResourceEndPoint { get; set; }
+        public string AdminGroupId { get; set; }
     }
 }

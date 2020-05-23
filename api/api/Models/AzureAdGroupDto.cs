@@ -8,6 +8,7 @@ namespace api.Models
         public string DisplayName { get; set; }
         public string Description { get; set; }
         public DateTimeOffset CreatedDateTime { get; set; }
+        public bool AddedToDb { get; set; }
         
     }
 }

@@ -1,51 +1,51 @@
 import {
-  getGroups as getGroupsFromAPI,
   addGroup as addGroupFromAPI,
-  getGroup as getGroupFromAPI,
-  updateGroup as updateGroupFromAPI,
   deleteGroup as deleteGroupFromAPI,
+  getGroup as getGroupFromAPI,
+  getGroups as getGroupsFromAPI,
+  getGroupSmartLocks as getGroupSmartLocksFromAPI,
   getGroupUsers as getGroupUsersFromAPI,
-  getGroupSmartLocks as getGroupSmartLocksFromAPI
+  updateGroup as updateGroupFromAPI
 } from "../services/api";
 import {
-  READ_RESOURCES_PENDING,
-  READ_RESOURCES_SUCCEEDED,
-  READ_RESOURCES_FAILED,
-  CREATE_RESOURCES_PENDING,
-  CREATE_RESOURCES_SUCCEEDED,
-  CREATE_RESOURCES_FAILED,
-  UPDATE_RESOURCES_PENDING,
-  UPDATE_RESOURCES_SUCCEEDED,
-  UPDATE_RESOURCES_FAILED,
-  DELETE_RESOURCES_PENDING,
-  DELETE_RESOURCES_SUCCEEDED,
-  DELETE_RESOURCES_FAILED
+  ADD_GROUP_FAILED,
+  ADD_GROUP_PENDING,
+  ADD_GROUP_SUCCEEDED,
+  DELETE_GROUP_FAILED,
+  DELETE_GROUP_PENDING,
+  DELETE_GROUP_SUCCEEDED,
+  GET_GROUP_FAILED,
+  GET_GROUP_PENDING,
+  GET_GROUP_SMART_LOCKS_FAILED,
+  GET_GROUP_SMART_LOCKS_PENDING,
+  GET_GROUP_SMART_LOCKS_SUCCEEDED,
+  GET_GROUP_SUCCEEDED,
+  GET_GROUP_USERS_FAILED,
+  GET_GROUP_USERS_PENDING,
+  GET_GROUP_USERS_SUCCEEDED,
+  GET_GROUPS_FAILED,
+  GET_GROUPS_PENDING,
+  GET_GROUPS_SUCCEEDED,
+  SET_SELECTED_GROUP_ID,
+  UPDATE_GROUP_FAILED,
+  UPDATE_GROUP_PENDING,
+  UPDATE_GROUP_SUCCEEDED
 } from "./actionTypes";
-
-import {
-  GROUPS_RESOURCE_TYPE,
-  GROUP_RESOURCE_TYPE,
-  GROUP_USERS_RESOURCE_TYPE,
-  GROUP_SMART_LOCKS_RESOURCE_TYPE
-} from "./actionResourceTypes";
 
 const getGroups = dispatch => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: GROUPS_RESOURCE_TYPE
+    type: GET_GROUPS_PENDING
   });
   getGroupsFromAPI()
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: GROUPS_RESOURCE_TYPE,
-        payload: { groups: response }
+        type: GET_GROUPS_SUCCEEDED,
+        payload: { groups: response.data }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: GROUPS_RESOURCE_TYPE,
+        type: GET_GROUPS_FAILED,
         payload: { error }
       })
     );
@@ -53,40 +53,35 @@ const getGroups = dispatch => {
 
 const addGroup = (dispatch, data) => {
   dispatch({
-    type: CREATE_RESOURCES_PENDING,
-    resourceType: GROUP_RESOURCE_TYPE
+    type: ADD_GROUP_PENDING
   });
   addGroupFromAPI(data)
     .then(response =>
       dispatch({
-        type: CREATE_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_RESOURCE_TYPE,
-        payload: { newGroup: response }
+        type: ADD_GROUP_SUCCEEDED,
+        payload: { newGroup: response.data }
       })
     )
     .catch(error =>
       dispatch({
-        type: CREATE_RESOURCES_FAILED,
-        resourceType: GROUP_RESOURCE_TYPE,
+        type: ADD_GROUP_FAILED,
         payload: { error }
       })
     );
 };
 
 const getGroup = (dispatch, groupId) => {
-  dispatch({ type: READ_RESOURCES_PENDING, resourceType: GROUP_RESOURCE_TYPE });
+  dispatch({ type: GET_GROUP_PENDING });
   getGroupFromAPI(groupId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_RESOURCE_TYPE,
-        payload: { group: response }
+        type: GET_GROUP_SUCCEEDED,
+        payload: { group: response.data }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: GROUP_RESOURCE_TYPE,
+        type: GET_GROUP_FAILED,
         payload: { error }
       })
     );
@@ -94,20 +89,17 @@ const getGroup = (dispatch, groupId) => {
 
 const updateGroup = (dispatch, groupId, data) => {
   dispatch({
-    type: UPDATE_RESOURCES_PENDING,
-    resourceType: GROUP_RESOURCE_TYPE
+    type: UPDATE_GROUP_PENDING
   });
   updateGroupFromAPI(groupId, data)
     .then(() =>
       dispatch({
-        type: UPDATE_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_RESOURCE_TYPE
+        type: UPDATE_GROUP_SUCCEEDED
       })
     )
     .catch(error =>
       dispatch({
-        type: UPDATE_RESOURCES_FAILED,
-        resourceType: GROUP_RESOURCE_TYPE,
+        type: UPDATE_GROUP_FAILED,
         payload: { error }
       })
     );
@@ -115,41 +107,35 @@ const updateGroup = (dispatch, groupId, data) => {
 
 const deleteGroup = (dispatch, groupId) => {
   dispatch({
-    type: DELETE_RESOURCES_PENDING,
-    resourceType: GROUP_RESOURCE_TYPE
+    type: DELETE_GROUP_PENDING
   });
   deleteGroupFromAPI(groupId)
     .then(() =>
       dispatch({
-        type: DELETE_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_RESOURCE_TYPE
+        type: DELETE_GROUP_SUCCEEDED
       })
     )
     .catch(error =>
       dispatch({
-        type: DELETE_RESOURCES_FAILED,
-        resourceType: GROUP_RESOURCE_TYPE,
+        type: DELETE_GROUP_FAILED,
         payload: { error }
       })
     );
 };
 const getGroupUsers = (dispatch, groupId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: GROUP_USERS_RESOURCE_TYPE
+    type: GET_GROUP_USERS_PENDING
   });
   getGroupUsersFromAPI(groupId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_USERS_RESOURCE_TYPE,
-        payload: { groupUsers: response }
+        type: GET_GROUP_USERS_SUCCEEDED,
+        payload: { groupUsers: response.data }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: GROUP_USERS_RESOURCE_TYPE,
+        type: GET_GROUP_USERS_FAILED,
         payload: { error }
       })
     );
@@ -157,24 +143,28 @@ const getGroupUsers = (dispatch, groupId) => {
 
 const getGroupSmartLocks = (dispatch, groupId) => {
   dispatch({
-    type: READ_RESOURCES_PENDING,
-    resourceType: GROUP_SMART_LOCKS_RESOURCE_TYPE
+    type: GET_GROUP_SMART_LOCKS_PENDING
   });
   getGroupSmartLocksFromAPI(groupId)
     .then(response =>
       dispatch({
-        type: READ_RESOURCES_SUCCEEDED,
-        resourceType: GROUP_SMART_LOCKS_RESOURCE_TYPE,
-        payload: { groupSmartLocks: response }
+        type: GET_GROUP_SMART_LOCKS_SUCCEEDED,
+        payload: { groupSmartLocks: response.data }
       })
     )
     .catch(error =>
       dispatch({
-        type: READ_RESOURCES_FAILED,
-        resourceType: GROUP_SMART_LOCKS_RESOURCE_TYPE,
+        type: GET_GROUP_SMART_LOCKS_FAILED,
         payload: { error }
       })
     );
+};
+
+const setSelectedGroupId = (dispatch, groupId) => {
+  dispatch({
+    type: SET_SELECTED_GROUP_ID,
+    payload: { groupId }
+  });
 };
 
 export {
@@ -183,6 +173,7 @@ export {
   getGroup,
   updateGroup,
   deleteGroup,
+  setSelectedGroupId,
   getGroupUsers,
   getGroupSmartLocks
 };
