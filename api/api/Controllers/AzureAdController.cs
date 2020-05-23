@@ -13,12 +13,14 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
 
 namespace api.Controllers
 {
+    [Authorize("admin")]
     [Produces("application/json")]
     [Route("api/azure-ad")]
     public class AzureAdController : ControllerBase
@@ -48,11 +50,13 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type IEnumerable of AzureAdUserDto</returns>
         /// <response code="200">Users retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">No users found</response>
         [HttpGet("users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetUsers()
         {
@@ -98,11 +102,13 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type AzureAdUserDto</returns>
         /// <response code="200">User retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">No users found</response>
         [HttpGet("users/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AzureAdUserDto>> GetUser(string userId)
         {
@@ -152,11 +158,13 @@ namespace api.Controllers
         /// <response code="200">User's photo retrieved successfully</response>
         /// <response code="404">User not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("users/{userId}/photo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<string>> GetUserPhoto(string userId)
         {
@@ -192,11 +200,13 @@ namespace api.Controllers
         /// <response code="200">Groups retrieved successfully</response>
         /// <response code="404">User id from db not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("users/{userId}/groups")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<String>>> GetUserGroups(string userId)
         {
@@ -234,11 +244,13 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type IEnumerable of AzureAdGroupDto</returns>
         /// <response code="200">Groups retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">No groups found</response>
         [HttpGet("groups/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdGroupDto>>> GetGroups()
         {
@@ -282,10 +294,13 @@ namespace api.Controllers
         /// <response code="200">Group retrieved successfully</response>
         /// <response code="404">Group not not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AzureAdGroupDto>> GetGroup(string groupId)
         {
@@ -326,11 +341,13 @@ namespace api.Controllers
         /// <response code="200">Users retrieved successfully</response>
         /// <response code="404">Group members not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("groups/{groupId}/members")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<AzureAdUserDto>>> GetGroupMembers(string groupId)
         {

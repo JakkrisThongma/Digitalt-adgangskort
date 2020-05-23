@@ -8,16 +8,17 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
-using Status = api.Types.Status;
 
 
 namespace api.Controllers
 {
+    [Authorize("admin")]
     [Produces("application/json")]
     [Route("api/smart-locks")]
     [ApiController]
@@ -59,10 +60,12 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type IEnumerable of SmartLockDto</returns>
         /// <response code="200">Smart-locks retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">No smart-locks found</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<SmartLockDto>>> GetSmartLocks()
         {
@@ -81,12 +84,14 @@ namespace api.Controllers
         /// <response code="201">Smart-lock created successfully</response>
         /// <response code="404">The user or group in the payload was not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> CreateSmartLock(SmartLockCreationDto smartLock)
         {
@@ -134,11 +139,13 @@ namespace api.Controllers
         /// <response code="200">Smart lock retrieved successfully</response>
         /// <response code="404">Smart lock from db not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockDto>> GetSmartLock(Guid smartLockId)
         {
@@ -172,12 +179,14 @@ namespace api.Controllers
         /// <response code="204">smart lock updated successfully</response>
         /// <response code="404">smart lock not found in db</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpPatch("{smartLockId}")]
         [Consumes("application/json-patch+json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSmartLockPartially(Guid smartLockId,
             [FromBody] JsonPatchDocument<SmartLockModificationDto> patchDoc)
@@ -236,11 +245,13 @@ namespace api.Controllers
         /// <response code="204">Smart lock deleted successfully</response>
         /// <response code="404">Smart lock not found in db</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLock(Guid smartLockId)
         {
@@ -264,11 +275,13 @@ namespace api.Controllers
         /// <response code="200">User retrieved successfully</response>
         /// <response code="404">Smart lock id not found in db</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetSmartLockUsers(Guid smartLockId)
         {
@@ -297,11 +310,14 @@ namespace api.Controllers
         /// <response code="404">Azure Ad user not found</response>
         /// <response code="409">User already exist for this smart lock</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpPost("{smartLockId}/users")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<UserDto>>> AddSmartLockUser(Guid smartLockId,
             SmartLockUserCreationDto smartLockUser)
@@ -349,11 +365,13 @@ namespace api.Controllers
         /// <response code="200">Smart lock user retrieved successfully</response>
         /// <response code="404">Smart lock user from db not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/users/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockUserDto>> GetSmartLockUser(Guid smartLockId, Guid userId)
         {
@@ -383,11 +401,13 @@ namespace api.Controllers
         /// <response code="204">Smart lock user deleted successfully</response>
         /// <response code="404">Smart lock user not found in db</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}/users/{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLockUser(Guid smartLockId, Guid userId)
         {
@@ -417,10 +437,13 @@ namespace api.Controllers
         /// <response code="200">Smart lock groups retrieved successfully</response>
         /// <response code="404">Smart lock groups from db not found</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpGet("{smartLockId}/groups")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<GroupDto>>> GetSmartLockGroups(Guid smartLockId)
         {
@@ -448,11 +471,14 @@ namespace api.Controllers
         /// <response code="404">Azure Ad group not found</response>
         /// <response code="409">Group already exist for this smart lock</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpPost("{smartLockId}/groups")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockGroupDto>> AddSmartLockGroup(Guid smartLockId,
             SmartLockGroupCreationDto smartLockGroup)
@@ -496,11 +522,13 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type SmartLockGroupDto</returns>
         /// <response code="200">Smart lock group retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">Smart lock group not found in db</response>
         [HttpGet("{smartLockId}/groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SmartLockGroupDto>> GetSmartLockGroup(Guid smartLockId, Guid groupId)
         {
@@ -530,11 +558,13 @@ namespace api.Controllers
         /// <response code="204">Smart lock group deleted successfully</response>
         /// <response code="404">Smart lock or group or smart lock group not found in db</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="400">Validation error</response>
         [HttpDelete("{smartLockId}/groups/{groupId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteSmartLockGroup(Guid smartLockId, Guid groupId)
         {

@@ -6,6 +6,7 @@ using api.Models;
 using api.Repositories;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
@@ -47,10 +48,13 @@ namespace api.Controllers
         /// <returns>An ActionResult task of type IEnumerable of AdminAccessDto</returns>
         /// <response code="200">Access log retrieved successfully</response>
         /// <response code="401">Not authorized</response>
+        /// <response code="403">Forbidden (User don't have enough privileges)</response>
         /// <response code="404">No users found</response>
+        [Authorize("admin")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<AdminAccessDto>>> GetAccesses()
         {
@@ -70,6 +74,7 @@ namespace api.Controllers
         /// <response code="401">Not authorized</response>
         /// <response code="400">Validation error</response>
         [HttpPost]
+        [Authorize]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
