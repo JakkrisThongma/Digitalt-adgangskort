@@ -15,7 +15,7 @@ namespace api.Services
 
             var user1 = new User
             {
-                Id = Guid.Parse("48984aba-64e1-4eef-b2bd-af2061cb2616"),
+                Id = Guid.Parse("b719d5c3-884e-443a-8e63-6c036725f0f8"),
                 Status = Status.Active
             };
 

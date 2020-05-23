@@ -1,8 +1,11 @@
-import React, {useState, useEffect} from "react";
-import{ View, Text, StyleSheet, SafeAreaView, Image, Button} from "react-native";
-
+import React, {useState, useEffect, useContext,} from "react";
+import{ View, Text, StyleSheet, Image} from "react-native";
+import Context from '../Context'
 
 const Profile = (props) => {
+    
+   
+    const token = useContext(Context)
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -12,10 +15,11 @@ const Profile = (props) => {
 
     useEffect(() => {
 
-        fetch('http://127.0.0.1:5000/api/users/b0568c49-a276-4eeb-9000-6555c0bc3801'
+        fetch('http://localhost:5000/api/users/current'
         ,{
           method: 'GET',
           headers: {
+            Authorization: `Bearer ${token}`,
             Accept: 'application/json',
             'Content-Type': 'application/json',
           }
@@ -29,9 +33,6 @@ const Profile = (props) => {
     .catch((error) =>{
         console.error(error);
     })  
-
-
-
     }, [] )
 
   
@@ -43,32 +44,27 @@ const Profile = (props) => {
 
 
     return(
-
-
       <View style={styles.container}> 
     { isLoading ?
     null :
 
-    <SafeAreaView >
+    
+            
+    <View style={{alignItems:'center'}}>
         <View style={{ alignSelf: "center"}}>
-            <View style={styles.profileImage}>
-                <Image source ={{ uri:"https://haas.berkeley.edu/wp-content/uploads/410-767f3e6a3c673281e0d59f3324a17a71-600x600.jpg"}}
-                style={styles.image} resizeMode="center"/>
+        <View style={styles.profileImage}>
+                <Image source ={{ uri:"https://lh3.googleusercontent.com/proxy/nPVkz_vmQEadWeSMebMni_irJwY7cax4ZL0a0v0IrsV6lAq00eNlCld5PaA2k5W_YCRvLuTu9-oBsOfV4Sbd_Kd7xof9adrkWDq8BAL7LKjm"}}
+                style={styles.image}/>
             </View>
+            
             <View style={styles.infoContainer}>
     <Text style={[styles.text, {fontWeight: "200", fontSize: 18}]}>{data.givenName+ " " + data.surname}</Text>
-                <Text style={[styles.text, {color: "#ee3124", fontSize:15}]}>{data.jobTitle}</Text>
+                <Text style={[styles.text, {color: "#3362b8", fontSize:15}]}>{data.jobTitle}</Text>
             </View>
             <View style={styles.rowContainer}>
                     <Image source ={{ uri:"https://pluspng.com/img-png/email-icon-png-download-icons-logos-emojis-email-icons-2400.png", width:28, height:20}}/>
                     <Text style={[styles.text, {marginLeft:20}]}>
-                        {data.mail}
-                    </Text>
-            </View>
-            <View style={styles.rowContainer}>
-                    <Image source ={{ uri:"https://cdn2.iconfinder.com/data/icons/font-awesome/1792/phone-512.png", width:28, height:23}}/>
-                    <Text style={[styles.text, {marginLeft:20}]}>
-                        {"48383012"}
+                        {data.userPrincipalName}
                     </Text>
             </View>
             <View style={styles.rowContainer}>
@@ -77,30 +73,24 @@ const Profile = (props) => {
                         {data.officeLocation}
                     </Text>
             </View>
+            
         </View>
-    </SafeAreaView>
-    }
-    
     </View>
-
-
-
+    }
+    </View>
     );
 };
-
-
 
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff"
+        backgroundColor: '#c6d6e3'
     },
     rowContainer:{
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 25
-        
+        marginTop: 25   
     },
 
     text: {
@@ -117,24 +107,30 @@ const styles = StyleSheet.create({
     image: {
         flex: 1,
         width: undefined,
-        height: undefined
+        height: undefined,
+        alignContent:"center"
+ 
+        
+    
     },
     profileImage:{
+        position: "absolute",
+        alignSelf:"center",
         width: 200,
         height: 200,
         borderRadius: 100,
         marginTop: 70,
         overflow: "hidden",
         borderWidth: 3,
-        borderColor: "#ee3124"
+        borderColor: "#3362b8"
     },
     infoContainer: {
         alignSelf:"center",
         alignItems:"center",
-        marginTop: 16,
+        marginTop: 300,
 
     }
-
+    
 
 });
  

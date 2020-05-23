@@ -46,13 +46,13 @@ export default class CustomModal extends Component {
           }
           {success
           ?
-            <LottieView style = {styles.lottie} source={require('./animatons/782-check-mark-success.json')} autoPlay loop={false} speed={1}/>
+            <LottieView style = {styles.lottie} source={require('../animatons/782-check-mark-success.json')} autoPlay loop={false} speed={1}/>
             :
             null
           }
           {error
           ?
-            <LottieView style = {styles.lottie} source={require('./animatons/3932-error-cross.json')} autoPlay loop={false} speed={1}/>
+            <LottieView style = {styles.lottie} source={require('../animatons/3932-error-cross.json')} autoPlay loop={false} speed={1}/>
             :
             null
           }

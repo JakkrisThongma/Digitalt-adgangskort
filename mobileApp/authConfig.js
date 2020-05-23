@@ -5,11 +5,5 @@ export default config = {
     additionalParameters: {
       resource: '61548776-8c50-40bc-9d95-23b1323ea7ff',
       prompt: 'login'
-  
-    // serviceConfiguration: {
-    //   authorizationEndpoint: 'https://demo.identityserver.io/connect/authorize',
-    //   tokenEndpoint: 'https://demo.identityserver.io/connect/token',
-    //   revocationEndpoint: 'https://demo.identityserver.io/connect/revoke'
-    // }
   }
 };
