@@ -8,10 +8,11 @@ export function getCurrentUserApi(headers) {
   }).then(res => Promise.resolve(res.data));
 }
 
-export function accessRequestApi(data) {
+export function accessRequestApi(data, headers) {
   return http({
     method: "POST",
-    url: "smart-locks/get-access",
+    url: "accesses",
+    headers: headers,
     data
   }).then(res => Promise.resolve(res.data));
 }

@@ -53,7 +53,7 @@ const Profile = (props) => {
     <View style={{alignItems:'center'}}>
         <View style={{ alignSelf: "center"}}>
         <View style={styles.profileImage}>
-                <Image source ={{ uri:"https://lh3.googleusercontent.com/proxy/nPVkz_vmQEadWeSMebMni_irJwY7cax4ZL0a0v0IrsV6lAq00eNlCld5PaA2k5W_YCRvLuTu9-oBsOfV4Sbd_Kd7xof9adrkWDq8BAL7LKjm"}}
+                <Image source ={require('../Images/profileicon.png')}
                 style={styles.image}/>
             </View>
             
@@ -61,14 +61,16 @@ const Profile = (props) => {
     <Text style={[styles.text, {fontWeight: "200", fontSize: 18}]}>{data.givenName+ " " + data.surname}</Text>
                 <Text style={[styles.text, {color: "#3362b8", fontSize:15}]}>{data.jobTitle}</Text>
             </View>
+
+            
             <View style={styles.rowContainer}>
-                    <Image source ={{ uri:"https://pluspng.com/img-png/email-icon-png-download-icons-logos-emojis-email-icons-2400.png", width:28, height:20}}/>
+                    <Image style = {{width:28, height:20}} source ={require('../Images/emailicon.png')}/>
                     <Text style={[styles.text, {marginLeft:20}]}>
                         {data.userPrincipalName}
                     </Text>
             </View>
             <View style={styles.rowContainer}>
-                    <Image source ={{ uri:"https://image.flaticon.com/icons/png/512/1239/1239525.png", width:28, height:30}}/>
+            <Image style = {{width:28, height:30}} source ={require('../Images/homeicon.png')}/>
                     <Text style={[styles.text, {marginLeft:20}]}>
                         {data.officeLocation}
                     </Text>

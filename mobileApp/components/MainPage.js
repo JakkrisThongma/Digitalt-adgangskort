@@ -86,7 +86,7 @@ export default class MainPage extends Component {
   componentDidMount() {
   NfcManager.start();
   const token = this.context;
-  console.log(token)
+  
   const headers = { Authorization: `Bearer ${token}` };
   getCurrentUserApi(headers).then(response =>this.setState({
     user: response.id
@@ -107,6 +107,10 @@ export default class MainPage extends Component {
    
     try {
       this.showModal()
+      const token = this.context;
+      const headers = { Authorization: `Bearer ${token}` };
+
+
       let tech = Platform.OS === 'ios' ? NfcTech.MifareIOS : NfcTech.NfcA;
       let resp = await NfcManager.requestTechnology(tech, {
         alertMessage: 'Ready to do some custom Mifare cmd!'
@@ -129,7 +133,7 @@ export default class MainPage extends Component {
         smartLockId: this.state.parsed[0][0]
       }
       
-      accessRequestApi(data).then(response =>{
+      accessRequestApi(data, headers ).then(response =>{
       if(response.accessAuthorized == true)
       {
         this.grantAccess();
@@ -155,7 +159,7 @@ export default class MainPage extends Component {
       
       <Container>
         <Content contentContainerStyle= {styles.container}>
-        <Text style={styles.text}>LÅS OPP DØR</Text>
+        <Text style={styles.text}>UNLOCK DOOR</Text>
           <TouchableOpacity primary style = {styles.button} onPress={()=>this.Scan()}>
             <Animatable.View animation="zoomIn" easing="ease-out" iterationCount={1}>
               <Animatable.View animation="pulse" easing="ease-out" iterationCount={1}>

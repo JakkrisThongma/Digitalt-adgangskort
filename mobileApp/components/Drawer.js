@@ -56,7 +56,7 @@ const DrawerContent = props =>{
 
             </View>
       <DrawerItem
-        label="MainPage"
+        label="Mainpage"
         labelStyle={{ marginLeft: -10}}
         onPress={() => props.navigation.navigate("MainPage")}
         icon={() => <Image source ={{ uri:"https://cdn0.iconfinder.com/data/icons/google-material-design-3-0/48/ic_home_48px-512.png", height: 20, width:20 }}/> } 
