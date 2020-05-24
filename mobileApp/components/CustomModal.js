@@ -15,14 +15,14 @@ export default class CustomModal extends Component {
     function setText(){
       if(success)
       {
-        return 'Du har tilgang'
+        return 'Access permitted'
       }
       else if(error)
       {
-        return 'Du har ikke tilgang'
+        return 'Access denied'
       }
       else{
-        return 'Klar for scanning'
+        return 'Ready to scan'
       }
     }
     const  {scanning, success, cancelScan, error} = this.props
@@ -58,7 +58,7 @@ export default class CustomModal extends Component {
           }
           
           <Button primary style = {styles.button}  onPress={() => cancelScan()} >
-          <Text style= {styles.buttonText}>Avbryt</Text>
+          <Text style= {styles.buttonText}>Cancel</Text>
           </Button>
 
         </View>
