@@ -4,10 +4,7 @@ const { DefinePlugin } = require("webpack");
 
 const BUILD_DIR = path.join(__dirname, "../dist");
 const APP_BUNDEL = path.join(__dirname, "../src", "index");
-const GitRevisionPlugin = require("git-revision-webpack-plugin");
-const { version } = require("../package.json");
 
-const gitRevisionPlugin = new GitRevisionPlugin();
 
 module.exports = {
   entry: {
@@ -52,14 +49,6 @@ module.exports = {
       template: "public/index.html",
       inject: true,
       favicon: path.resolve(__dirname, "../public/IN-logo.svg")
-    }),
-    gitRevisionPlugin,
-    new DefinePlugin({
-      BUILDINFO: JSON.stringify({
-        revision: gitRevisionPlugin.commithash(),
-        version,
-        buildTime: Date.now()
-      })
     })
   ],
   resolve: {
