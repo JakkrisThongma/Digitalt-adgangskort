@@ -32,7 +32,7 @@
     "eslint-import-resolver-webpack": "^0.12.1",
     "formik": "^2.1.4",
     "formik-material-ui": "^2.0.0-beta.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "material-table": "^1.57.2",
     "material-ui-chip-input": "^1.1.0",
     "material-ui-formik-components": "^0.6.1",
